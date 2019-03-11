@@ -18,7 +18,7 @@ for name in pics.keys():
     #删除临时图片
     os.remove(name)
 
-
+#test一下
 #root.iconbitmap('D:/MyProject/Applications/logo_3.ico')
 #root.geometry('')
 
