@@ -952,7 +952,7 @@ class SecondPage():
         '''
         servername = com1.get()
         ld = linkdatabase.LinkDatabase(*servers[servername])
-        if id == None:
+        if ld == None:
             now_time = self.get_now_time()
             tex.insert(tk.END, now_time + ': 选择服务器<%s>失败\n' % servername)
             return
@@ -1408,7 +1408,7 @@ class ThirdPage():
             self.insert_info('被测包名为： %s'%self.package_name)
         else:
             third_label_info['待测包(必选)'][1][3].set('')
-            self.insert_info('请检查导入包是否为符合要求的.apk包', 1, 2)
+            self.insert_info('请检查导入包是否为符合要求的.apk包, 或者路径有包含中文', 1, 2)
             self.package_name = ''
             return
         self.package_name = name[0]
@@ -1668,7 +1668,7 @@ class FifthPage():
                 self.insert_info('获取设备号失败！, 请检查手机是否已经通过usb连接成功或已经正确打开开发者模式。', 1, 2)
                 self.insert_info(ret)
                 '''
-                用于检查adb命令返回的格式
+                #用于检查adb命令返回的格式
                 ret = ret.replace(' ', "空格")
                 ret = ret.replace('\t', "缸t")
                 ret = ret.replace('\n', "缸n")
