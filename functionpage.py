@@ -266,8 +266,8 @@ def show_dif_excel(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif
 #打印差异信息到text上
 def show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, table_name='tables', row_name=[]):
     if dif_array == [] and dif_row_excel == [] and dif_column_excel == [] and dif_row_data == [] and dif_column_data == []:
-        #now_time = get_now_time()
-        now_time = "2019-06-15 11:31:11"
+        now_time = get_now_time()
+        #now_time = "2019-06-15 11:31:11"
         tex.insert(tk.END, now_time + ': <%s>完全一致\n' % table_name, 'tag1')
         tex.tag_config('tag1', foreground='green')
     else:
