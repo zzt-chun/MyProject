@@ -1,0 +1,911 @@
+option java_package = "com.manager.biz.protocol";
+option java_outer_classname = "BaseRrotos";
+
+//客户端用命名空间
+package com.proto;
+
+//异常统一回包
+message ExceptionRes {
+    optional    sint32  ret            = 1;//响应码
+}
+
+//int型
+message IntReq {
+    optional    sint32  req = 1;//数值
+}
+
+//int list 请求包
+message IntListReq {
+    repeated    sint32  req = 1;//数值
+}
+
+
+//2个int型
+message TwoIntReq {
+    optional    sint32  one = 1;//数值1
+    optional    sint32  two = 2;//数值2
+}
+
+
+message IntRes {
+    optional    sint32  ret            = 1;//响应码
+    optional    sint32  res            = 2;//数值
+}
+
+//intList回包
+message IntListRes {
+    optional    sint32  ret            = 1;//响应码
+    repeated     sint32  res 		   = 2;//数值
+}
+
+//long型
+message LongReq {
+    optional    sint64  req = 1;//数值
+}
+message LongRes {
+    optional    sint32  ret            = 1;//响应码
+    optional    sint64  res            = 2;//数值
+}
+//string 型
+message StringReq {
+    optional    string  req = 1;//数值
+}
+
+
+message StringListReq {
+    repeated    string  req = 1;//数值
+}
+
+message StringRes {
+	optional    sint32  ret            = 1;//响应码
+    optional    string  res 		   = 2;//数值
+}
+message StringListRes {
+	optional    sint32  ret            = 1;//响应码
+    repeated    string  res 		   = 2;//数值
+}
+
+
+message KIVIPB {
+    optional    sint32              key               = 1;//key
+    optional    sint32              value             = 2;//value
+}
+
+message KIVSPB {
+    optional    sint32              key               = 1;//key
+    optional    string             value              = 2;//value
+}
+message KSVIPB {
+    optional    string              key               = 1;//key
+    optional    sint32             value              = 2;//value
+}
+
+
+message ServerIdAndTeamIdReq {
+    optional    string  server_id               = 1;//服务器ID
+    optional    sint32  team_id                 = 2;//球队ID
+}
+
+
+//服务器信息
+message ServerInfoPB {
+	optional 	string	 channel				= 1;//渠道
+	optional 	string	 server_id				= 2;//服务器ID
+	optional	string	 name   				= 3;//服务器名称
+	optional	sint32	 version   				= 4;//版本
+	optional	sint32	 aggregate   				= 5;//集群
+	optional	sint32	 status   				= 6;//状态
+
+}
+
+//管理员信息PB
+message ManagerAccountPB {
+	optional	sint32	user_id					= 1;//管理员id
+	optional	string	user_name				= 2;//管理员名称
+	optional	string	user_email				= 3;//管理员邮箱
+	optional	sint32	permission				= 4;//管理员权限
+	optional    string  remark					= 5;//备注
+	optional	string	account_id				= 6;//管理员帐号
+	optional	sint32	position				= 7;//职位
+}
+
+//球队信息PB
+message TeamPB {
+	optional   			sint32 				team_id						= 1;//球队ID
+	optional   			string 				account_id					= 2;//账号id
+	optional   			sint32 				level						= 3;//球队等级
+	optional   			sint32 				exp							= 4;//球队经验
+	optional   			sint32 				index						= 5;//新手引导步骤
+	optional   			sint64 				last_login_time				= 6;//最近登录时间
+	optional   			TeamInfoPB 			team_info   				= 7;//球队资源
+	optional   			TeamMoneyPB 		team_money  				= 8;//球队金钱
+	optional   			RechargeStatisticsPB 	recharge				= 9;//球队充值
+	optional   			string           	name        				= 10;//球队名
+	optional   			sint64 				create_time 				= 11;//创号时间
+	optional   			sint32 				old_team_id 				= 12;//旧球队ID
+	optional   			string 				old_server_id 				= 13;//旧服务器ID
+	optional   			string 				phone_number 				= 14;//手机号
+	optional   			string 				id_card 				    = 15;//身份证号
+	optional   			sint32 				roster_type 			    = 16;//阵容
+	optional   			sint32 				alliance_id 			    = 17;//所在联盟id
+	optional   			sint64 				quit_alliance_time 			    = 18;//退出联盟时间'
+}
+
+
+//球队资源PB
+message TeamInfoPB {
+	optional   			sint32 				team_id						                    = 1;//球队ID
+	optional   			sint32 				training_points				                    = 2;//健身点
+	optional   			sint32 				skill_points				                    = 3;//训练点
+	optional   			sint32 				tactics_points				                    = 4;//战术点
+	optional   			sint32 				draft_tickets				                    = 5;//选秀劵
+	optional   			sint32 				energy						                    = 6;//体能
+	optional   			sint32 				skill_accelerate_tickets						= 7;//维他命水,训练加速卷
+	optional   			sint32 				training_accelerate_tickets						= 8;//蛋白粉,健身加速卷
+	optional   			sint32 				scout_accelerate_tickets						= 9;//专机票,球探兑换劵
+	optional   			sint32 				medical_tickets						            = 10;//医疗券
+	optional   			sint32 				recovery_tickets					            = 11;//康复券
+	optional   			sint32 				rookie_contract						            = 12;//新秀合同
+	optional   			sint32 				video						                    = 13;//录像带
+	optional   			sint32 				fan_petition						            = 14;//球迷请愿书
+	optional   			sint32 				super_star_invitation						    = 15;//巨星邀请函
+	optional   			sint32 				orange_ball						                = 16;//橘色球
+	optional   			sint32 				flower_ball						                = 17;//花球
+	optional   			PlayerContractAwardPB 	player_contract						        = 18;//球队合同
+    optional            sint32              chance_card                                     = 19;//机会卡
+    optional            sint32              tour_icon                                       = 20;//巡回币
+    optional            sint32              broadcasting_agreement                          = 21;//转播协议
+    optional            sint32              sponsorship_agreement                           = 22;//赞助协议
+    optional            sint32              throw_tickets                                   = 23;//投篮之星入场券
+    optional            sint32              alliance_coin                                   = 24;//联盟币
+    optional            sint32              inheritance_coin                                = 25;//传承券
+}
+
+//用户其他资源奖励
+message TeamOtherAwardPB {
+    optional    sint32    team_id                                                        = 1;//球队id
+    optional    sint32    award_type                                                     = 2;//奖励类型
+    optional    sint32    number                                                         = 3;//数量
+}
+
+
+//球队资金
+message TeamMoneyPB {
+	optional   			sint32 				team_id						= 1;//球队ID
+	optional   			sint32 				gem				            = 2;//宝石
+	optional   			sint64 				dollar				        = 3;//美元
+}
+
+//球队充值
+message RechargeStatisticsPB {
+	optional   			sint32 				team_id						= 1;//球队ID
+	optional   			sint32 				max_recharge				= 2;//单笔最大充值
+	optional   			sint32 				all_recharge				= 3;//历史累计充值
+}
+
+
+
+//邮件PB
+message MailPB{
+	optional 	sint32 id									= 1;//id
+	optional 	sint32 team_id								= 2;//球队id 0
+	optional 	sint32 type									= 3;//类型0
+	optional 	sint32 read									= 4;//是否已读0
+	optional 	string title								= 5;//标题
+	optional 	string content								= 6;//内容
+	optional 	string info									= 7;//信息
+	optional	AwardPB	award								= 8;//奖励
+	optional	sint64	create_time							= 9;//创建时间
+	optional	sint32	status								= 10;//领取状态(0未领取，1已领取)
+}
+
+//球员奖励
+message PlayerAwardPB {
+		optional 	sint32 case_id								= 1;//球员ID
+		optional 	sint32 age									= 2;//年龄
+		optional 	sint32 skill_stage							= 3;//训练级别
+		optional 	sint32 quality_stage						= 4;//健身级别
+		optional 	sint32 player_source						= 5;//来源
+		optional 	sint32 level						        = 6;//等级
+		optional 	string star_period						    = 7;//突破(星)格式: 0-1-0,(要到达的星数-该星下的某个点-该点下的某个阶段)
+
+}
+
+//黑市合同
+message PlayerContractAwardPB {
+		optional    sint32    sn_player                                                     = 1;//s-合同数量
+        optional    sint32    s_player                                                      = 2;//s合同数量
+        optional    sint32    sp_player                                                     = 3;//s+合同数量
+        optional    sint32    cl_player                                                     = 4;//cl合同数量
+}
+
+
+//奖励
+message AwardPB {
+		optional 	sint32 gem								                           = 1;//奖励类型
+    	optional 	sint32 exp										                   = 2;//奖励经验
+    	optional	sint64 dollar											           = 3;//美元
+    	optional	sint32	skill_point							                       = 4;//训练房训练点
+    	optional    sint32  training_point                                            = 5;//健身点
+    	repeated	PlayerAwardPB	player_award							            = 6;//奖励球员
+    	optional    sint32  tactics_points                                            = 7;//战术点
+    	optional    sint32  energy                                                    = 8;//体力
+    	optional    sint32  draft_tickets                                             = 9;//选秀劵
+        optional    PlayerContractAwardPB   player_contract_award                     = 10;//黑市合同
+        optional    sint32            training_accelerate_tickets                     = 11;//蛋白粉
+        optional    sint32             skill_accelerate_tickets                       = 12;//维他命水
+        optional    sint32              scout_accelerate_tickets                      = 13;//专机机票
+        optional    sint32              garage_kits                                   = 14;//手办
+        optional    sint32              rookie_contract                               = 16;//新秀合同
+        optional    sint32              medical_tickets                               = 17;//医疗包
+        optional    sint32              recovery_tickets                              = 18;//营养液
+        optional    sint32              logo_id                                       = 19;//队徽ID
+        optional    sint32              building_type                                 = 20;//奖励建筑
+        optional    sint32              lucky_resource                                = 21;//幸运夺宝币
+        optional    sint32              video                                         = 22;//录像带
+        optional    sint32              garage_kits_1                                 = 23;//手办1
+        optional    sint32              easter_egg                                    = 24;//复活节彩蛋
+        repeated    PlayerExchangePropsPB   player_exchange_props                     = 25;//球员兑换道具
+        optional    sint32              fan_petition                                 = 26;//球迷请愿书
+        optional    sint32              super_star_invitation                        = 27;//巨星邀请函
+        optional    sint32              orange_ball                                  = 28;//橘色球
+        optional    sint32              flower_ball                                  = 29;//花球
+        optional    sint32              chance_card                                  = 31;//机会币
+        optional    sint32              tour_icon                                    = 32;//巡回币
+        optional    sint32              sponsorship_agreement                        = 34;//赞助协议
+        optional    sint32              broadcasting_agreement                       = 35;//转播协议
+        optional    sint32              throw_tickets                                = 36;//投篮入场券
+        optional    sint32              alliance_coin                                = 37;//联盟币
+        repeated    OtherAwardPB        other_award                                  = 38;//其他奖励
+        repeated    sint32              theme_skin_id                                = 39;//主题皮肤
+        optional    sint32              inheritance_coin                             = 40;//传承券
+        optional     sint32              player_star_buff                              =41;//记忆大师特权
+}
+
+//其他奖励
+message OtherAwardPB {
+		optional 	sint32         award_type					                          = 1;//奖励类型
+		optional 	sint32         award_num					                          = 2;//奖励数量
+		optional 	sint32         other					                              = 3;//其他
+}
+
+
+
+
+//球员兑换道具
+message PlayerExchangePropsPB {
+        optional    sint32    model                                                             = 1;//模型ID
+		optional    sint32    special_case                                                      = 2;//球员特例
+        optional    sint32    special_train                                                     = 3;//球员特训卡
+        optional    sint32    transfer_agreement                                                = 4;//转会协议
+}
+
+
+
+//球员 TeamPlayer
+message TeamPlayerPB {
+    optional    sint32               team_id                 = 1;//球队id
+    optional    sint32               team_player_num         = 2;//球队所属球员id
+    optional    TeamPlayerBasePB     player_base             = 3;//球员  基础数据
+    optional    TeamPlayerCapPB      player_cap              = 4;//球员  能力数据
+    optional    TeamPlayerGrowInfoPB  grow_info              = 5;//球员成长信息
+    optional    sint32              activate_state           = 6;//激活状态(0:激活，1未激活（即收藏夹球员）)
+    optional    sint32              quality_cap                 = 7;//健身级别
+    optional    sint32              skill_cap                       = 8;//训练级别
+    optional    TeamPlayerRosterPB          team_player_roster_one            = 9;//阵容信息
+    optional    TeamPlayerRosterPB          team_player_roster_two            = 10;//阵容信息
+
+}
+
+
+//球员基础数据 TeamPlayerBase
+message TeamPlayerBasePB {
+    optional    sint32              team_id                 = 1;//球队id
+    optional    sint32              team_player_num         = 2;//球队所属球员id
+    optional    sint32              country_id              = 3;//国家id
+    optional    string              name                    = 4;//球员名字
+    optional    sint32              age                     = 5;//获得球员时的年龄
+    optional    sint64              age_begin_time          = 6;//年龄开始时间
+    optional    sint64              contract_time           = 7;//合同到期时间
+    optional    sint32              bday                    = 8;//天数
+    optional    sint32              height                  = 9;//身高
+    optional    sint32              character               = 10;//性格
+    optional    sint64              create_time             = 11;//获取时间
+    optional    sint32              source                  = 12;//球员来源
+    optional    sint32              club_id                 = 13;//俱乐部 id
+    optional    sint32              club_no                 = 14;//俱乐部 号码
+    optional    sint32              national_id             = 15;//国家队  id 如果没有双国籍球员，这个字段等于countryId
+    optional    sint32              national_no             = 16;//国家队 号码
+    optional    sint32              credits                 = 17;//评级
+    optional    sint32              potential               = 18;//潜力
+    optional    float               step                    = 19;//步长
+    optional    float               initial_coe             = 20;//常规初始系数
+    optional    sint32              positionNumber_1        = 21;//球员擅长的位置类型1
+    optional    sint32              positionNumber_2        = 22;//球员擅长的位置类型2
+    optional    sint32              durability              = 23;//易受伤程度
+
+    optional    sint32              model                   = 24;//球员模板
+    optional    sint32              salary                  = 25;//薪酬
+    optional    sint32              race_color              = 26;//球员人种肤色
+    optional    sint32              hair_color              = 27;//球员发色
+    optional    sint32              hair_style              = 28;//球员发型
+
+    optional    sint32              status                  = 29;//球员状态
+    optional    string              head_logo               = 30;//球员头像
+    optional    sint32              nba_team_id             = 31;//NBA球员所属的球队
+    optional    sint32              case_id                 = 32;//caseId
+    optional    sint32              star_sign                = 33;//当家球星
+    optional    string              home_star_head_logo      = 34;//主队球星图片
+    optional    string              away_star_head_logo      = 35;//客队球星图片
+    optional    string              full_name                = 36;//球员全名
+    optional    sint32              half_body                = 37;//球员身体
+    optional    string              jersey_name              = 38;//球衣上的名字
+    optional    string              duty_year                = 39;//年代
+    optional    sint32              beard                    = 40;//胡须
+    optional    sint32              face_feature             = 41;//脸型
+    optional    sint32              hair_tex                 = 42;//头发纹理
+    optional    float               proficiency2             = 43;//位置熟练度
+    optional    sint32              cap_status               = 44;//球员能力状态
+    optional    sint32              recuperate_time          = 45;//疗养时长s
+    optional    sint32              dynamic                  = 46;//进入非激活名单后，有没有活跃过（如主力名单，训练，健身，医疗，复健，商业活动及比赛) 默认扣薪水没有折扣
+    optional    sint32              recuperate_good          = 47;//疗养效果佳(1佳，0普通)
+    optional    sint32              injury_rate              = 48;//受伤率
+}
+
+
+//球员能力 TeamPlayerCap
+message TeamPlayerCapPB {
+    optional    sint32              team_id                 = 1;//球队id
+    optional    sint32              team_player_num         = 2;//球队所属球员id
+    optional    sint32              position                = 3;//球员在场上的位置
+    optional    sint64              contract_ms             = 4;//合同到期时间,毫秒
+    optional    sint32              energy                  = 5;//球员体力
+    optional    sint64              energy_Time             = 6;//最近一次计算球员体力时间
+    optional    sint32              level                   = 7;//等级
+    optional    sint32              exp                     = 8;//经验
+    optional    sint32              no                      = 9;//球员号码
+    optional    sint32              mood                    = 10;//心情
+    optional    sint32              loyalty                 = 11;//忠诚度
+    optional    sint32              injure                  = 12;//伤病
+    optional    sint32              weight                  = 13;//体重
+
+    optional    sint32              tpt                     = 14;//三分 3pt
+    optional    sint32              ast                     = 15;//助攻 ast
+    optional    sint32              fg                      = 16;//两分 fg
+    optional    sint32              ft                      = 17;//罚篮 ft
+    optional    sint32              reb                     = 18;//篮板 reb
+    optional    sint32              stl                     = 19;//抢断 stl
+    optional    sint32              blk                     = 20;//盖帽 blk
+
+    optional    sint32              stamina                 = 21;//体能 stamina
+    optional    sint32              jumping                 = 22;//弹跳 jumping
+    optional    sint32              recation                = 23;//反应 recation
+    optional    sint32              agility                 = 24;//敏捷 agility
+    optional    sint32              speed                   = 25;//速度 speed
+    optional    sint32              explosivity             = 26;//爆发 explosivity
+    optional    sint32              stength                 = 27;//强壮 stength
+
+    optional    sint32              attack                  = 28;//球员进攻能力
+    optional    sint32              defense                 = 29;//球员防守能力
+    optional    sint32              capability              = 30;//球员总能力
+    optional    sint32              star_period              = 31;//球员突破星级阶段
+
+}
+
+//球员能力 TeamPlayerGrowInfo
+message TeamPlayerGrowInfoPB {
+    optional    sint32              team_id                 = 1;//球队id
+    optional    sint32              team_player_num         = 2;//球队所属球员id
+    repeated    KIVIPB              attr_practice_val       = 3;//球员14项属性实践经验加成值
+    repeated    KIVIPB              attr_training_val       = 4;//球员14项属性训练加成值
+    repeated    BaseAttrVal         base_attr_val           = 5;//球员14项属性基础值
+    repeated    BaseAttrAllot       base_attr_allot         = 6;//球员14项属性分配系数
+    repeated    KIVIPB              attr_achieve_val        = 7;//球员14项属性成就加成值百分比
+
+}
+
+//球队统计数据 TeamPlayerData
+message TeamPlayerDataPB {
+    optional  sint32                 team_id   			= 1;//球队id
+    optional  sint32                 team_player_num  		= 2;//球队所属球员id
+    optional  sint32                 data_type   			= 3;//数据类型(场均:1 累计:2 最高:3)
+    optional  sint32                 net_time   			= 4;//有效时间(永久:1 赛季:2)
+    optional  sint32                 statistical_type   	= 5;//统计范围(所有:1 竞技:2)
+    optional  sint32                 score  			    = 6;//得分
+    optional  sint32                 lose_score  		    = 7;//失分
+    optional  sint32                 assist  			    = 8;//助攻
+    optional  sint32                 steals 		    	= 9;//抢断
+    optional  sint32                 rebounding  	    	= 10;//篮板
+    optional  sint32                 blocks  		    	= 11;//盖帽
+    optional  sint32                 three_hit_num  	    = 12;//三分命中数
+    optional  sint32                 two_hit_num  		    = 13;//两分命中数
+    optional  sint32                 fouls  			    = 14;//犯规
+    optional  sint32                 fault  			    = 15;//失误
+    optional  sint32                 two_pairs_num         = 16;//两双次数
+    optional  sint32                 three_pairs_num       = 17;//三双次数
+    optional  sint32                 four_pairs_num   		= 18;//四双次数
+    optional  sint32                 five_pairs_num   		= 19;//五双次数
+    optional  TeamDataBasePB         max_two_pairs_num     = 20;//最高两双
+    optional  TeamDataBasePB         max_three_pairs_num   = 21;//最高三双
+    optional  TeamDataBasePB         max_four_pairs_num    = 22;//最高四双
+    optional  TeamDataBasePB         max_five_pairs_num    = 23;//最高五双
+    optional  sint32                 game_session   		= 24;//游戏场次
+
+}
+
+//球队基础属性 TeamDataBase
+message TeamDataBasePB {
+    optional  sint32   score  			= 1;//得分
+    optional  sint32   lose_score  		= 2;//失分
+    optional  sint32   assist  			= 3;//助攻
+    optional  sint32   steals 			= 4;//抢断
+    optional  sint32   rebounding  		= 5;//篮板
+    optional  sint32   blocks  			= 6;//盖帽
+    optional  sint32   three_hit_num  	= 7;//三分命中数
+    optional  sint32   two_hit_num  		= 8;//两分命中数
+    optional  sint32   fouls  			= 9;//犯规
+    optional  sint32   fault  			= 10;//失误
+}
+
+//球员14项属性基础值
+message BaseAttrVal{
+    optional    sint32              attr_type = 1;//属性类型
+    optional    sint32              attr_val  = 2;//基础值
+}
+//球员14项属性分配系数
+message BaseAttrAllot{
+    optional    sint32              attr_type  = 1;//属性类型
+    optional    float               attr_allot = 2;//属性分配系数
+}
+
+//变更日志
+message ChangeLogPB {
+     optional           sint32              team_id             = 1;//球队ID
+     optional           sint32              level               = 2;//球队等级
+     optional           sint32              type                = 3;//日志大类型
+     optional           sint32              log_type            = 4;//日志小类型
+     optional           sint64              before_num          = 5;//变化前数量
+     optional           sint64              num                 = 6;//变化数量
+     optional           sint64              curr_um             = 7;//变化后数量
+     optional           sint64              create_time         = 8;//记录时间
+     optional           string              ext1                = 9;//额外信息
+     optional           sint32              id                  = 10;//日志id
+}
+
+//公告PB
+message NoticePB{
+    optional           sint32              id                       = 1;//id
+    optional           sint32              type                     = 2;///**类型 1最新活动，2版本更新,100停服公告*/
+    optional           string              title                    = 3;//公告标题
+    optional           string              content                  = 4;//公告内容
+    optional           sint64              create_time              = 5;//创建时间
+    optional           sint32              num                      = 6;//排序
+    optional           sint32              use                      = 7;//是否使用，0不使用，1使用
+    optional           string              channel                  = 8;//渠道标识
+    optional           string              server_id                = 9;//区服
+    optional           sint64              start_time               = 10;//开始时间
+    optional           sint64              end_time                 = 11;//结束时间
+}
+
+//消耗日志统计信息
+message ChangeLogStatisticsPB {
+    optional           sint32              team_id             = 1;//球队ID
+    optional           sint64              record_time         = 2;//记录时间
+    optional           sint64              num                 = 3;//变化数量
+    optional           sint64              create_time         = 4;//创建时间
+}
+
+
+
+
+//日志统计
+message ChangeLogStatisticsTypePB {
+    optional           sint32                               type                = 1;//类型(与请求类型一致)
+    repeated           ChangeLogStatisticsPB                log                 = 2;//日志信息
+}
+
+
+//神秘商店礼包规则
+message SecretStoreRulePB {
+    optional           sint32                               secret_goods_id                = 1;//神秘商品ID
+    optional           string                               secret_goods_name              = 2;//商品名称
+    optional           sint32                               limit_time                     = 3;//显示持续时间(单位：小时)
+    optional           sint64                               open_time                      = 4;//显示开始时间
+    optional           sint32                               is_open                        = 5;//是否开放
+	optional	        AwardPB	                              award						     = 6;//奖励
+    optional           sint32                               secret_goods_add_type_id       = 7;//礼包小类型(1:普通礼包/循环礼包,2:普通礼包/一定时间后消失，3：节日礼包)
+    optional           sint32                               secret_goods_type_id           = 8;//指定为普通礼包还是情景礼包
+    optional           sint32                               cycle_time                     = 9;//循环周期时间
+    optional           sint32                               level                          = 10;//排序
+    optional           sint32                               price                          = 11;//商品价格:要除以100
+    optional           sint32                               tw_price                          = 12;//台湾价格:要除以100
+    optional           sint32                               hk_price                          = 13;//香港价格:要除以100
+    optional           sint32                               limitation                          = 14;//限购次数
+    optional           sint32                               give_total                          = 15;//赠送比例（300%就填300）
+    optional           string                               img                                   = 16;//商品图片
+    optional           sint32                               show_limit_time                      = 17;//循环礼包显示限制时间
+    optional           sint32                               show_limit_group                     = 18;//循环礼包组别
+    optional            sint32                                goods_id                            =19;//礼包id(每种礼包的唯一健)
+    optional              sint32                               active_time                          =20;//激活天数
+    optional               sint32                             trigger_limit                         =21;//情景礼包触发次数限制
+     optional               sint32                              trigger_level                      =22;//触发优先级
+      optional               sint32                             trigger_module                      =23;//触发模块
+    optional               sint32                                   award_ext_num                  =24;//礼包内容额外信息
+}
+
+//神秘商店礼包背景图
+message SecretStoreRuleImgPB {
+        optional           sint32                              img_id                          = 1;//图片ID
+        optional           sint32                              back_img                         = 2;//背景图ID
+        optional           string                              bg_color                        = 3;//背景颜色
+}
+
+
+
+//用户账号信息
+message UserPB {
+     optional           sint32                               user_id                    = 1;//userid
+     optional           string                               account                    = 2;//登陆账号
+     optional           string                               phone                      = 3;//绑定手机
+     optional           string                               email                      = 4;//绑定邮箱
+     optional           string                               id_card                    = 5;//绑定身份证
+}
+
+
+//管理后台操作日志
+message ManagerChangeLogPB {
+     optional           sint32              id                  = 1;//日志ID
+     optional           sint32              user_id             = 2;//管理员ID
+     optional           string              user_name           = 3;//管理员信息名
+     optional           sint32              type                = 4;//日志大类型
+     optional           sint32              log_type            = 5;//日志小类型
+     optional           sint32              team_id             = 6;//操作的球队ID
+     optional           sint32              before_num          = 7;//变化前数量
+     optional           sint32              num                 = 8;//变化数量
+     optional           sint32              curr_um             = 9;//变化后数量
+     optional           sint64              create_time         = 10;//记录时间
+     optional           string              ext1                = 11;//额外信息
+     optional           string              remark              = 12;//备注
+}
+
+//预测问题规则
+message GuessingQuestionRulePB {
+    optional    sint32    period                                                         =1;//届数
+    optional    sint32    question_id                                                    =2;//问题ID
+    optional    string    question_desc                                                  =3;//问题描述
+    repeated    GuessingAnswerPB    answer_list                                                    =4;//答案列表
+    optional    sint64    start_time                                                    =5;//展示开始时间
+    optional    sint64    bet_end_time                                                   =6;//投注截止时间
+    optional    sint64    end_time                                                       =7;//展示结束时间
+    optional    sint32    status                                                         =8;//状态（0未产生答案，1已产生答案）
+}
+
+//预测答案信息
+message GuessingAnswerPB {
+    optional    sint32    answer_no                                                         =1;//答案序号
+    optional    sint32    case_id                                                    =2;//球员ID
+    optional    sint32    result                                                  =3;//问题结果，0错误，1正确
+    optional    sint32    jackpot                                                  =4;//奖池
+}
+
+//消耗的球员规则表
+message PlayerBlackMarketConversionRulePB {
+    optional    sint32    id                                                             =1;//球员id
+    optional    sint32    player_type                                                    =2;//球员类型
+    optional    sint32    credits                                                        =3;//球员评级
+    optional    sint32    potential                                                      =4;//球员潜力
+    optional    sint32    level                                                          =5;//球员等级
+    optional    sint32    age                                                            =6;//球员年龄
+    optional    sint32    position                                                       =7;//球员位置
+    optional    sint32    skill_level                                                    =8;//球员训练状态
+    optional    sint32    quality_level                                                  =9;//球员健身状态
+    optional    sint32    passive_id                                                     =10;//被兑换表球员ID
+    repeated    KSVIPB    open_value                                                     =11;//各项属性是否开放
+    optional    sint32    case_id                                                        =12;//指定球员caseID
+}
+
+//获得的球员规则表
+message PlayerBlackMarketRulePB {
+    optional    sint32                                  id                                                             =1;//id
+    optional    sint32                                  player_id                                                      =2;//球员id
+    optional    string                                  player_name                                                    =3;//球员名字
+    optional    sint32                                  credits                                                        =4;//球员评级
+    optional    sint32                                  contract_type                                                  =5;//合同类型
+    optional    sint32                                  contract_num                                                   =6;//合同数量
+    optional    sint32                                  player1_num                                                    =7;//兑换球员1数量
+    optional    sint32                                  player2_num                                                    =8;//兑换球员2数量
+    repeated    PlayerBlackMarketConversionRulePB       player_black_market_conversion                                 =9;//具体球员要求
+    optional    sint32                                  bm_limit                                                       =10;//类型(0：普通：1限量：2限时)
+    optional    sint32                                  limit_num                                                      =11;//限量数量
+    optional    sint64                                  limit_time                                                     =12;//限量球员截止时间
+    optional    string                                  team_image                                                     =13;//球队图片
+    optional    string                                  player_desc                                                    =14;//球员描述
+    optional    sint32                                  level                                                          =15;//限量数量
+    optional    sint32                                  skill_level                                                    =16;//球员训练等级
+    optional    sint32                                  quality_level                                                  =17;//球员健身等级
+}
+
+
+//预测
+message GuessGameSchedulePB {
+    optional    sint32    period                                                         =1;//期数
+    optional    sint32    game_id                                                        =2;//比赛场次id
+    optional    sint64    bet_home_sum_dollar                                            =3;//当前主队投注总数(美元)
+    optional    sint64    bet_away_sum_dollar                                            =4;//当前客队投注总数(美元)
+    optional    sint64    guess_end_time                                                 =5;//投注截止时间
+    optional    sint64    game_start_time                                                =6;//比赛开始时间
+    optional    sint32    home_team_id                                                   =7;//主队ID
+    optional    sint32    away_team_id                                                   =8;//客队ID
+    optional    sint32    home_team_score                                                =9;//主队比分
+    optional    sint32    away_team_score                                                =10;//客队比分
+    optional    sint32    game_end_status                                                =11;//比赛结果（0未结束，1主队赢，2客队赢）
+    optional    sint64    game_end_time                                                  =12;//比赛结束时间
+}
+
+//球员基本信息
+message PlayerInfoPB {
+    optional            sint32                  case_id                                             =1;//球员ID
+    optional            sint32                  model                                               =2;//球员数据模型
+    optional            sint32                  credits                                             =3;//评级
+    optional            sint32                  potential                                           =4;//潜力
+    optional            string                  en_name                                             =5;//英文简称
+    optional            string                  full_en_name                                        =6;//英文全称
+    optional            string                  cn_name                                             =7;//中文简称
+    optional            string                  full_cn_name                                        =8;//中文全称
+    optional            sint32                  position_number                                     =9;//球员擅长的位置类型
+    optional            sint32                  position_number_2                                   =10;//球员擅长的第二位置类型
+    optional            sint32                  team_id                                             =11;//所属球队
+    optional            string                  year                                                =12;//所属赛季
+}
+
+//NBA球队信息
+message NbaTeamPB{
+       optional    sint32   nba_team_id                             = 1;//球队id
+       optional    string   team_name                               = 2;//球队名
+       optional    string   team_full_name                          = 3;//球队全名
+       optional    string   logo                                    = 4;//球队logo
+       optional    sint32   choose_type                             = 5;//所在分区(东、西)
+       optional    sint32   country_id                              = 6;//国家id
+       optional    sint32   city_id                                 = 7;//城市id
+       repeated    string   jersey                                  = 8;//球衣(NBA球队有多套)
+       optional    sint32   star_player_case_id                     = 9;//当家球星caseId
+       optional    string   star_player_name                        = 10;//当家球星名
+       optional    string   vital_game_before                       = 11;//关键比赛赛前对话
+       optional    string   vital_game_after_los                    = 12;//关键比赛赛后对话（失败）
+       optional    string   vital_game_after_win                    = 13;//关键比赛赛后对话（胜利）
+       optional    sint32   schedule_year                           = 14;//年份
+}
+
+//jdbc信息
+message JdbcInfoPB {
+        optional            string          server_id                               = 1;//数据库ID
+        optional            string          server_name                             = 2;//数据库名字
+}
+
+//渠道信息
+message ChannelInfoPB {
+    optional    string    channel                                                        = 1;//渠道
+    optional    string    channel_name                                                   = 2;//渠道名
+}
+
+
+
+//活动规则
+message ActivityPB {
+        optional                sint32                  activity_id                                = 1;//活动ID
+        optional                sint32                  unique_identify                            = 2;//唯一标识
+        optional                sint32                  type                                       = 3;//类型
+        optional                string                  name                                       = 4;//活动名
+        optional                string                  desc                                       = 5;//活动描述
+        optional                sint32                  corner_mark_picture                        = 6;//角标图片
+        optional                sint32                  background_picture                         = 7;//背景图片
+        optional                sint64                  start_time                                 = 8;//开始时间
+        optional                sint64                  end_time                                   = 9;//结束时间
+}
+
+
+
+//积分活动排行奖励规则
+message ActivityIntegralRankAwardRulePB {
+		optional 	sint32               type								    = 1;//类型：和活动类型一致
+    	optional 	sint32               level									= 2;//等级
+    	optional	sint32               rank_min								= 3;//最低排名（包含）
+    	optional    sint32               rank_max                               = 4;//最高排名（包含）
+    	optional	AwardPB	             award							     	= 5;//奖励
+    	optional 	sint32               activity_id							= 6;//活动ID
+}
+
+//活动玩法
+message ActivityPlayPB {
+        optional    sint32   activity_id                                = 1;//活动ID
+        optional    sint32   play_id                                    = 2;//玩法ID
+        optional    string   name                                       = 3;//名称
+        optional    AwardPB   award                                     = 4;//奖励
+        optional    sint32   finish                                     = 5;//完成数值
+        optional    sint32   select_player                              = 6;//可选球员个数:0表是不是可选奖励类型
+        optional    string   link                                       = 7;//跳转
+}
+
+
+
+//积分活动排行奖励规则模板
+message ActivityIntegralRankAwardRuleTemplatePB {
+		optional 	sint32               type								    = 1;//类型：和活动类型一致
+    	optional 	sint32               level									= 2;//等级
+    	optional	sint32               rank_min								= 3;//最低排名（包含）
+    	optional    sint32               rank_max                               = 4;//最高排名（包含）
+    	optional	AwardPB	             award							     	= 5;//奖励
+}
+
+
+//活动玩法模板
+message ActivityPlayTemplatePB {
+        optional    sint32   id                                         = 1;//ID
+        optional    sint32   activity_type                              = 2;//活动类型
+        optional    string   name                                       = 3;//名称
+        optional    AwardPB   award                                     = 4;//奖励
+        optional    sint32   finish                                     = 5;//完成数值
+        optional    sint32   select_player                              = 6;//可选球员个数:0表是不是可选奖励类型
+        optional    string   link                                       = 7;//跳转
+}
+
+
+
+
+//登陆日志
+message LoginLogPB {
+    optional    sint32    id                                                             =1;//id
+    optional    sint32    team_id                                                        =2;//球队id
+    optional    sint64    login_time                                                     =3;//登陆时间
+    optional    string    ip                                                             =4;//登陆ip
+}
+
+//球队巨星球员道具表 TeamSuperstarPlayerProps
+message TeamSuperstarPlayerPropsPB {
+    optional    sint32    team_id                                                        =1;//球队id
+    optional    sint32    model                                                          =2;//球员id
+    optional    sint32    special_case_num                                               =3;//球员特例数量
+    optional    sint32    special_train_num                                              =4;//球员特训卡数量
+    optional    sint32    transfer_agreement_num                                         =5;//转会协议数量
+}
+
+
+//球队状态 TeamStatus
+message TeamStatusPB {
+    optional    sint32  team_id        		    = 1;//球队id
+    optional    sint32  status        		    = 2;//状态
+    optional    sint64  ban_time      		    = 3;//封号时间
+    optional    sint64  mute_time        		= 4;//禁言时间
+    optional    string  contentt                = 5;//内容
+}
+
+//全服滚动公告
+message NoticeScrollPB {
+    optional    sint32    id                                                             = 1;//公告id
+    optional    sint32    type                                                           = 2;//公告类型
+    optional    string    data_server_id                                                 = 3;//data库serverId
+    optional    string    server_id                                                      = 4;//服务器id
+    optional    sint64    start_time                                                     = 5;//开始时间
+    optional    sint64    end_time                                                       = 6;//结束时间
+    optional    string    content                                                        = 7;//公告内容
+    optional    sint32    use                                                            = 8;//是否使用
+    optional    sint32    order_id                                                       = 9;//排序
+}
+
+//server
+message NoticeServerPB {
+    optional    string    data_server_id                                                   = 1;//data服务器id
+    repeated    string    game_server_id                                                   = 2;//game服务器id
+}
+
+//周最佳球员信息
+message WeekBestPlayerInfoPB {
+    optional    sint32    week_id                                                        = 1;//周次
+    optional    sint32    player_case                                                    = 2;//球员种类
+    repeated    float    game_show                                                      = 3;//球员场上数据信息
+    optional    string    desc                                                           = 4;//球员描述
+    optional    sint32    position                                                       = 5;//球员为止
+}
+
+//限时球员
+message WeekScoutPlayerPB{
+     optional    sint32    scout_sort                                                     = 1;//排序
+     optional    sint32    player_case                                                    = 2;//球员caseId
+}
+
+//日志type规则
+message ChangeLogTypeRulePB {
+    optional   sint32  type                                             = 1;//typeid
+    optional   string  type_name                                        = 2;//type名称
+}
+
+//主题皮肤规则
+message ThemeSkinRulePB {
+    optional    sint32    skin_id                                                        = 1;//主题皮肤id
+    optional    string    name                                                           = 2;//名称
+    optional    string    img                                                            = 3;//资源
+    optional    string    desc                                                           = 4;//描述
+    optional    AwardPB    share_award                                                   = 5;//分享奖励
+    optional    AwardPB    giving_award                                                  = 6;//购买赠送奖励
+}
+
+//订单记录
+message OrderPB {
+    optional    sint32    team_id                                                        = 1;//球队id
+    optional    string    order_id                                                       = 2;//合作伙伴订单号
+    optional    sint32    type                                                           = 3;//充值类型,0:普通充值,1:宝石月卡,2:神秘商店礼包,3:每月福利,4:王朝崛起
+    optional    sint32    status                                                         = 4;//订单状态,0:充值失败,1:充值成功,2:退单
+    optional    float     amout                                                          = 5;//订单金额
+    optional    string    accoutn_id                                                     = 6;//账户id
+    optional    sint32    mobile_os                                                      = 7;//操作系统,0:android,1:ios
+    optional    sint64    create_time                                                    = 8;//订单创建时间
+    optional    sint64    last_modify_time                                               = 9;//最近修改时间
+    optional    sint64    secret_goods_type                                              = 10;//礼包id
+    optional    string    order_info                                                     = 11;//订单信息
+}
+
+
+
+//比赛结果 GameResultFull
+message GameResultFullPB {
+    optional    sint32             game_id        		            = 1;//配置key
+    optional    sint32             game_type        	            = 2;//比赛类型
+    optional    sint32             home_team                        = 3;//主队id
+    optional    sint32             home_score                       = 4;//主队得分
+    optional    sint32             away_team                        = 5;//客队id
+    optional    sint32             away_core                        = 6;//客队得分
+    optional    sint64             start_time                       = 7;//比赛开始时间
+    optional    sint64             end_time                         = 8;//结束时间
+    optional    sint64             create_time                      = 9;//创建时间
+    optional    string             home_server_id                   = 10;//主队server
+    optional    string             away_server_id                   = 11;//客队server
+}
+
+message GiantStarWayStarGoalPB {
+    optional    sint32    id                                                             = 1;//id
+    optional    sint32    home_model_id                                                  = 2;//我方modelId
+    optional    sint32    away_case_id                                                   = 3;//对方caseID
+    optional    sint32    player_num                                                     = 4;//球员数量
+    optional    sint32    integral                                                       = 5;//积分
+    optional    sint32    position                                                       = 6;//位置
+    optional    sint32    x                                                              = 7;//其他数量
+    optional    sint32    period                                                         = 8;//比赛节数要求
+    optional    string    away_case_name                                                 = 9;//对方球员名
+}
+
+// 巨星之路规则
+message GiantStarWayPassRulePB {
+    optional    sint32                      case_id                                      = 1;//球员ID
+    optional    sint32                      chapter                                      = 2;//章节
+    optional    sint32                      customs_pass                                 = 3;//关卡
+    optional    sint32                      type                                         = 4;//类型,1:比赛,2:限制条件比赛,3:投篮
+    repeated    GiantStarWayStarGoalPB      star_goal                                    = 5;//星级条件
+    optional    string                      title                                        = 6;//标题
+    optional    string                      desc                                         = 7;//描述
+    optional    sint32                      challenge_num                                = 8;//每日可参与次数
+    optional    sint32                      game_condition                               = 9;//是否是限制条件的比赛
+
+}
+// 阵容信息
+message TeamPlayerRosterPB {
+    optional    sint32    team_id                                                        = 1;//球队id
+    optional    sint32    roster_type                                                    = 2;//球队阵容
+    optional    sint32    team_player_num                                                = 3;//球队所属球员id
+    optional    sint32    position                                                       = 4;//球员在场上的位置
+    optional    sint32    activate_status                                                = 5;//激活状态（0激活，1未激活）
+}
+
+message MonthlyWelfareRulePB {
+    optional    sint32    id                                                             = 1;//id
+    optional    string    name                                                           = 2;//名称
+}
+
+message DynasticRiseBuyLevelRulePB {
+    optional    sint32                    open_elites_type                               =1;//开启精英类型
+    optional    string                    name                                           =2;//名称
+}
+
+
+
+
+

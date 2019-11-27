@@ -1,0 +1,21 @@
+//数据对比回包
+message DataComparisonRes {
+        optional        sint32                            ret                         = 1[default=0];//响应吗
+        repeated        DataComparisonPB                        data                            = 2;//表和对应数据
+        optional        string                                  res                           = 3;//额外信息
+}
+
+
+//数据对比
+message DataComparisonPB {
+        optional        string                            table_name                         = 1;//表明
+        repeated        string                                  data                         = 2;//表数据
+}
+
+
+
+//数据对比请求包
+message DataComparisonReq {
+        optional        string                            server_id                         = 1;//服务器ID
+        optional        string                            table_name                         = 2;//表明
+}

@@ -64,9 +64,9 @@ class LinkDatabase():
     def __del__(self):
         try:
             self.cursor.close()
+            self.db.close()
         except AttributeError:
             pass
-        self.db.close()
 
     def get_table_row(self, name):
         if not self.db_is_exist:
@@ -85,7 +85,8 @@ if __name__ == '__main__':
     buf = LinkDatabase("192.168.1.201", "test", "L*&k34HC98K.kDG%KH", 3307)
     #array = buf.get_databases()
     buf.set_database('basketball_test')
-    import dataanalyze
+    from Util import dataanalyze
+
     table_names = buf.show_tables()
     table_names = dataanalyze.change_dic(table_names)
     table_names.pop(0)

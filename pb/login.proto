@@ -1,0 +1,45 @@
+option java_package = "com.manager.biz.protocol";
+option java_outer_classname = "LoginProtos"; 
+import "base.proto";
+
+
+//客户端用命名空间
+package com.proto;
+
+
+//登录
+message LoginReq {
+	optional    string  account_id          = 1;//登录账号
+	optional    string  account_pwd         = 2;//登录密码
+}
+
+
+//登录回包
+message LoginRes {
+	optional    		sint32						ret           			= 1[default=0];//响应码
+	optional    		ManagerAccountPB  			administrator  			= 2;//管理员信息
+	repeated    		string			  			ui_switch	  			= 3;//ui开关
+	repeated            PlayerInfoPB                player_info             = 4;//球员信息
+	repeated            NbaTeamPB                   nba_team                = 5;//nba球队信息
+	repeated            JdbcInfoPB                  jdbc_info               = 6;//jdbc信息
+	repeated            ChannelInfoPB               channel_info            = 7;//渠道信息
+	repeated            JdbcInfoPB                  date_jdbc               = 8;//data库jdbc
+	repeated            sint32                superstar_player_model        = 9;//球星商店的球员model
+	repeated            ManagerAccountPB            manager_account         = 10;//管理员信息
+	optional            JdbcInfoPB                  sel_jdbc                = 11;//选服信息
+	optional            sint32                      version                 = 12;//最新版本号
+}
+
+//验证邮箱请求包
+message VerifyMailReq {
+	optional    string	  code            = 1;//验证码
+	optional    sint32   language         = 2;//语言类型
+	optional    sint32   login_type       = 3;//登陆类型
+}
+
+//管理后台版本PB
+message ManagerVersionPB{
+    optional   sint32   id                = 1;//自增ID
+    optional   string   version           = 2;//版本号
+}
+
