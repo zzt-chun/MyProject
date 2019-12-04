@@ -38,20 +38,8 @@ class HttpClient(object):
 
     def download_content(self, data):
         self.set_url("/teamC/dataComparison")
-        print("request befor_0 :", data)
-        #_data = dict2pb(DataComparisonReq, data).SerializeToString()
-        _data = DataComparisonReq()
-        _data.server_id = data["server_id"]
-        _data.table_name = data["table_name"]
-        print("request befor_1 :", _data)
-        _data = _data.SerializeToString()
-        print("request befor_2 :", _data)
+        _data = dict2pb(DataComparisonReq, data).SerializeToString()
         ret = self._request(_data)
-        print("ret status_code :", ret.status_code)
-        print("ret content :", ret.content)
-        #print("ret befor_0 :", ret)
-        #print("ret befor_0 :", ret)
-
         res = DataComparisonRes()
         res.ParseFromString(ret.content)
         return res
@@ -59,21 +47,17 @@ class HttpClient(object):
     def login(self, id, pwd):
         self.set_url("/loginC/login")
         _data = LoginReq()
-        #_data.account_id = "zhangxuefei@galasports.com"
         _data.account_id = id
-        #_data.account_pwd = "xi333206"
         _data.account_pwd = pwd
         self.cookie = {}
         _data = _data.SerializeToString()
         ret = self._request(_data)
-        #print('cookie = %s ' % ret.cookies)
         self.set_cookie(requests.utils.dict_from_cookiejar(ret.cookies))
         res = StringRes()
         res.ParseFromString(ret.content)
         return res
 
     def verification_email(self, msg):
-        #self.set_cookie({"JSESSIONID": "1u8pes70rdrfb1wmixlydcygx1"})
         self.set_url("/loginC/verifyMail")
         _data = VerifyMailReq()
         _data.code = msg
@@ -82,7 +66,7 @@ class HttpClient(object):
         ret = self._request(_data)
         res = LoginRes()
         res.ParseFromString(ret.content)
-        #UiShow().show(_data, pb2json(res))
+        #UiShow().show("", pb2json(res))
         return res
 
     def set_url(self, url):
@@ -96,7 +80,17 @@ class HttpClient(object):
 
 
 if __name__ == "__main__":
-
+    from pb.proto_pb2 import DataComparisonReq
+    # a = DataComparisonReq()
+    # a.server_id = "test_1"
+    # a.table_name.append('1')
+    # a.table_name.append('2')
+    data = {
+        "server_id": "test_1",
+        "table_name": ['1', '2'],
+    }
+    a = dict2pb(DataComparisonReq, data)
+    print(a)
 
     # data = {
     #     "server_id": "basketball_data",
