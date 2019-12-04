@@ -13,7 +13,7 @@ class MailClient():
         self.connect.login(user, password)
 
     def find_my_mail(self, send, toal_title):
-        d1 = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+        d1 = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()-5*60))
         return self.re_connect_server1(d1, send, toal_title)
 
     def select_mail1(self, d1, send, toal_title, range=100):
@@ -62,13 +62,15 @@ class MailClient():
                     raise Exception("没有找到该发件人的邮件")
             else:
                 break
+        return []
 
     def re_connect_server1(self, d1, send, total_title, count=5):
         while count > 0:
+            time.sleep(1)
             count -= 1
             toal_list = self.select_mail1(d1, send, total_title)
+            #print("toal_list = %s " % toal_list)
             if len(toal_list) == 0:
-                time.sleep(1)
                 print("第'%s'次重连没找到指定邮件" % str(count))
             else:
                 return toal_list
