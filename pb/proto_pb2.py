@@ -18,7 +18,7 @@ _sym_db = _symbol_database.Default()
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='proto.proto',
   package='',
-  serialized_pb=_b('\n\x0bproto.proto\"Q\n\x11\x44\x61taComparisonRes\x12\x0e\n\x03ret\x18\x01 \x01(\x11:\x01\x30\x12\x1f\n\x04\x64\x61ta\x18\x02 \x03(\x0b\x32\x11.DataComparisonPB\x12\x0b\n\x03res\x18\x03 \x01(\t\"4\n\x10\x44\x61taComparisonPB\x12\x12\n\ntable_name\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x02 \x03(\t\":\n\x11\x44\x61taComparisonReq\x12\x11\n\tserver_id\x18\x01 \x01(\t\x12\x12\n\ntable_name\x18\x02 \x01(\t')
+  serialized_pb=_b('\n\x0bproto.proto\"Q\n\x11\x44\x61taComparisonRes\x12\x0e\n\x03ret\x18\x01 \x01(\x11:\x01\x30\x12\x1f\n\x04\x64\x61ta\x18\x02 \x03(\x0b\x32\x11.DataComparisonPB\x12\x0b\n\x03res\x18\x03 \x01(\t\"4\n\x10\x44\x61taComparisonPB\x12\x12\n\ntable_name\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x02 \x03(\t\":\n\x11\x44\x61taComparisonReq\x12\x11\n\tserver_id\x18\x01 \x01(\t\x12\x12\n\ntable_name\x18\x02 \x03(\t')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -122,8 +122,8 @@ _DATACOMPARISONREQ = _descriptor.Descriptor(
       options=None),
     _descriptor.FieldDescriptor(
       name='table_name', full_name='DataComparisonReq.table_name', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      number=2, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
