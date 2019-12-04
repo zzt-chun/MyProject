@@ -17,5 +17,5 @@ message DataComparisonPB {
 //数据对比请求包
 message DataComparisonReq {
         optional        string                            server_id                         = 1;//服务器ID
-        optional        string                            table_name                         = 2;//表明
+        repeated        string                            table_name                         = 2;//表明
 }
