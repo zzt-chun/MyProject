@@ -114,11 +114,11 @@ class FirstPage():
             self.tex.insert(tk.END, self.get_now_time() + ': 先提取version内容\n')
             return
         data_1, data_2 = dict(), dict()
-        data_1[self.key_2[0]] = dataanalyze.read_excel_columns(self.path_2[0], self.key_2[0])
-        data_2[self.key_2[0]] = dataanalyze.read_excel_columns(self.path_2[1], self.key_2[0])
+        data_1[self.key_2[0]] = dataanalyze.read_excel_columns(self.path_2[0], self.key_2[0], "t_version")
+        data_2[self.key_2[0]] = dataanalyze.read_excel_columns(self.path_2[1], self.key_2[0], "t_version")
         for name in t_version_rule[2:]:
-            data_1[name] = dataanalyze.read_excel_columns(self.path_2[0], name)
-            data_2[name] = dataanalyze.read_excel_columns(self.path_2[1], name)
+            data_1[name] = dataanalyze.read_excel_columns(self.path_2[0], name, "t_version")
+            data_2[name] = dataanalyze.read_excel_columns(self.path_2[1], name, "t_version")
         data_key_1, data_key_2 = dict(), dict()
         for i in range(len(data_1[self.key_2[0]])):
             if data_1[self.key_2[0]][i] == self.server:
@@ -225,8 +225,8 @@ class FirstPage():
             self.tex.insert(tk.END, self.get_now_time()+': 导入<%s>文件成功！\n'%os.path.basename(path))
             self.tex.insert(tk.END, self.get_now_time()+': 目前只导入一份t_version文件，无法选择区服！\n')
             return
-        rows_1 = dataanalyze.read_cxcel_rows(self.path_2[0])
-        rows_2 = dataanalyze.read_cxcel_rows(self.path_2[1])
+        rows_1 = dataanalyze.read_cxcel_rows(self.path_2[0], "t_version")
+        rows_2 = dataanalyze.read_cxcel_rows(self.path_2[1], "t_version")
         for i in range(2, len(t_version_rule)):
             if t_version_rule[i] not in rows_1 or t_version_rule[i] not in rows_2:
                 self.tex.insert(tk.END, self.get_now_time()+': 发现导入文件中存在不包含<%s>字段的情况，请检查是否为合法的t_version文件\n'%t_version_rule[i])
@@ -243,8 +243,8 @@ class FirstPage():
         if self.key_2[0] != self.key_2[1]:
             self.tex.insert(tk.END, self.get_now_time()+': 表一中区服列表名为<%s>， 而表二中的区服列表名为<%s>， 请检查两份表是否为相同项目的t_version文件\n'%(self.key_2[0], self.key_2[1]))
             return
-        column_1 = dataanalyze.read_excel_columns(self.path_2[0], self.key_2[0])
-        column_2 = dataanalyze.read_excel_columns(self.path_2[1], self.key_2[1])
+        column_1 = dataanalyze.read_excel_columns(self.path_2[0], self.key_2[0], "t_version")
+        column_2 = dataanalyze.read_excel_columns(self.path_2[1], self.key_2[1], "t_version")
         server_1, server_2 = [], []
         for i in column_1:
             if i not in server_1:
