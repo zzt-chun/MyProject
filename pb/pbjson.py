@@ -42,7 +42,11 @@ def dict2pb(cls, adict, strict=False):
                     item = getattr(obj, field.name).add()
                     item.CopyFrom(dict2pb(msg_type._concrete_class, sub_dict))
             else:
-                map(getattr(obj, field.name).append, adict[field.name])
+                #源代码
+                #map(getattr(obj, field.name).append, adict[field.name])
+                #修改后的
+                list(map(getattr(obj, field.name).append, adict[field.name]))
+
         else:
             if field.type == FD.TYPE_MESSAGE:
                 value = dict2pb(msg_type._concrete_class, adict[field.name])
