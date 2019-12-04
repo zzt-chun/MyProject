@@ -161,7 +161,7 @@ class SecondPage():
         self.com1_4.grid(row=0, column=2, padx=10, pady=3)
         # 添加选择数据库下拉按钮
         self.com2_4 = ttk.Combobox(tab4, state='readonly')
-        self.com2_4.bind("<<ComboboxSelected>>", lambda *args: self.show_database(self.com2_4))
+        self.com2_4.bind("<<ComboboxSelected>>", lambda *args: self.show_database(self.com1_4, self.com2_4))
         self.com2_4.set('选择数据库')
         self.com2_4.grid(row=1, column=2, padx=10, pady=3)
         # 添加文本显示框
@@ -289,34 +289,38 @@ class SecondPage():
             self._account[3] = cfg['account']['验证的邮箱密码']
             self.insert_info('读取管理后台/邮箱账号成功！ 可一键登录后台和邮件', 1, 1)
 
-    @except_ui_show
+    #@except_ui_show
     def login(self):
         if '' in self._account:
             self.insert_info('请先填写管理后台账号!', 1, 2)
+            return
         #初始化http
         self._http = HttpClient()
         #先登录
         self.insert_info('正在登陆管理后台账号：%s ...' % self._account[0], 1)
         self._http.login(self._account[0], self._account[1])
-        self.insert_info('登陆管理后台账号成功!!!', 1, 1)
-        time.sleep(1)
+        self.insert_info('登陆管理后台账号成功。-》下一步登录邮箱', 1, 1)
+        #time.sleep(1)
         #a = MailClient('liyang@galasports.net', "23fPa'62")
         #登录邮箱
         self.insert_info('正在登陆验证码邮件账号：%s...' % self._account[2], 1)
         a = MailClient(self._account[2], self._account[3])
-        self.insert_info('登陆验证码邮件账号成功！！！', 1, 1)
+        self.insert_info('登陆验证码邮件账号成。 -》下一步验证邮箱', 1, 1)
         #获取验证码
         msg = a.find_my_mail('account@galasports.com', 'The server authentication code-GALA Sports').split(':')[1][:4]
-        self.insert_info('获取邮箱验证码《%s》成功正在验证....' % msg, 1,)
+        self.insert_info('获取邮箱验证码《%s》成功. —》下一步验证....' % msg, 1,)
         a.close()
         #发送验证码
         ret = self._http.verification_email(msg)
+        if ret.ret != 0:
+            self.insert_info("验证失败： %s" % ret.msg)
+            return
         ret = pb2dict(ret)
         # import json
         # ret = json.loads(pb2json(ret))
         #解析回包内容初始化UI中的下拉框
         self.server_list["data库"] = self.list2dict(ret["date_jdbc"])
-        self.server_list["选服"] = self.list2dict([ret["sel_jdbc"]])
+        self.server_list["选服"] = self.list2dict(ret["sel_jdbc"])
         self.server_list["提审服"] = self.list2dict(ret["jdbc_info"], "STS")
         self.server_list["官网"] = self.list2dict(ret["jdbc_info"], "SLI")
         self.server_list["混服"] = self.list2dict(ret["jdbc_info"], "SLY")
@@ -325,6 +329,8 @@ class SecondPage():
         self.insert_info('邮箱验证成功， 所有步骤操作完成！！！', 1, 1)
 
     def list2dict(self, obj, key=''):
+        if isinstance(obj, dict):
+            obj = [obj]
         _dict = {}
         for i in obj:
             if i["server_id"].startswith(key):
@@ -336,9 +342,9 @@ class SecondPage():
         self.com2_4['values'] = list(self.server_list[_key])
         self.insert_info('选择的服务器名为： %s' % _key, 1)
 
-    def show_database(self, com):
-        _key = com.get()
-        self.server_id = com.get()
+    def show_database(self, com1, com2):
+        _key = com2.get()
+        self.server_id = self.server_list[com1.get()][_key]
         self.insert_info('选择的数据库名为： %s' % _key, 1)
 
 
@@ -504,36 +510,33 @@ class SecondPage():
         if self.server_id == None:
             self.insert_info('没有选择服务器', 1, 2)
             return
-
-        savenames = dataanalyze.read_save_names(path)
-        if savenames == -1:
+        local_table_names = dataanalyze.read_save_names(path)
+        if local_table_names == -1:
             self.insert_info('文件第一页内容为空或超过300行/列，请检查配置文件', 1, 2)
             return
-        datas = '' #获取数据名list
-        #数据库格式转化为字符串
-        datas = dataanalyze.change_dic(datas)
-        #存放所有数据库表名
-        datanames = []
-        for name in datas:
-            datanames.append(name[0])
-        is_continue = True
-        for each in savenames:
-            if each not in datanames:
-                tex.insert(tk.END, '数据库里找不到表<%s>\n'%each)
-                is_continue =False
-        if not is_continue:
-            now_time = self.get_now_time()
-            tex.insert(tk.END, now_time+': 配置表有误，保存失败！\n')
+        data = {
+            "server_id": self.server_id,
+            "table_name": local_table_names
+        }
+        ret = self._http.download_content(data)
+        if ret.ret != 0:
+            self.insert_info("下载数据失败： %s" % ret.res, 1, 2)
             return
+        data = pb2dict(ret)
+        remote_data = dict()
+        for _ in data['data']:
+            remote_data[_['table_name']] = _['data']
         bigdatas = dict()
-        for name in savenames:
-            datas = useserver['now'].get_table(name)
-            if datas == 'no table':
-                now_time = self.get_now_time()
-                tex.insert(tk.END, now_time + ': 配置表有误，保存失败！\n')
-                return
-            datas = dataanalyze.change_dic(datas)
-            bigdatas[name] = datas
+        remote_table_names = list(remote_data.keys())
+        if len(local_table_names) != len(remote_table_names):
+            self.insert_info("下载的数据表数量与导入配置表不一致，请联系管理员", 1, 2)
+            self.insert_info("下载的数据表: %s " % remote_table_names, 1)
+            self.insert_info("导入的配置表: %s " % local_table_names, 1)
+        for _key, _value in remote_data.items():
+            content = []
+            for _ in _value:
+                content.append(_.split('|'))
+            bigdatas[_key] = content
         if not os.path.exists('配置文件夹'):
             os.mkdir('配置文件夹')
         if not os.path.exists('配置文件夹\母文件'):
@@ -543,11 +546,10 @@ class SecondPage():
             filename = ''
         filename = ''.join([os.getcwd(), '\配置文件夹\母文件\\', filename, '母文件_', get_now_time().replace(':', '_'), '.xlsx'])
         key = dataanalyze.write_excel(bigdatas, filename)
-        now_time = self.get_now_time()
         if key:
-            tex.insert(tk.END, now_time+': 保存成功, 路径为<%s>\n'%filename)
+            self.insert_info('保存成功, 路径为<%s>'%filename, 1, 1)
         else:
-            tex.insert(tk.END, now_time+'没东西可保存或表名超过50个字符\n')
+            self.insert_info('没东西可保存或表名超过50个字符', 1, 2)
 
     def save_file(self, v, v1, tex):
         #保存配置表可能需要一些时间这里应考虑锁屏
@@ -592,7 +594,11 @@ class SecondPage():
                 now_time = self.get_now_time()
                 tex.insert(tk.END, now_time + ': 配置表有误，保存失败！\n')
                 return
-            datas = dataanalyze.change_dic(datas)
+            if len(datas) == 0:
+                datas = useserver['now'].get_table_row([name])
+                datas = [dataanalyze.change_dic(datas)]
+            else:
+                datas = dataanalyze.change_dic(datas)
             bigdatas[name] = datas
         if not os.path.exists('配置文件夹'):
             os.mkdir('配置文件夹')
@@ -608,6 +614,27 @@ class SecondPage():
             tex.insert(tk.END, now_time+': 保存成功, 路径为<%s>\n'%filename)
         else:
             tex.insert(tk.END, now_time+'没东西可保存或表名超过50个字符\n')
+
+    #有效性检查
+    def is_valid_4(self, path, tex):
+        if not os.path.isfile(path):
+            self.insert_info('没有选择配置表或者文件路径不正确， 请检查', 1, 2)
+            return False
+
+        if self.server_id == None:
+            self.insert_info('没有选择服务器', 1, 2)
+            return False
+
+        names = dataanalyze.read_excel_names(path)
+        if names == -2:
+            self.insert_info('文件页签不应该包含‘sheet’或其他错误，请检查母文件', 1, 2)
+            return False
+
+        if len(names) >= 300:
+            self.insert_info('需要检查的表数量太多， 超过300个。 操作失败', 1, 2)
+            return False
+
+        return True
 
     #有效性检查
     def is_valid(self, path, tex):
@@ -634,6 +661,72 @@ class SecondPage():
             tex.insert(tk.END, now_time + ': 需要检查的表数量太多， 超过300个。 操作失败\n')
             return False
         return True
+
+
+    #用于检查配置表与数据库表的差异
+    def button_check_file_4(self, v, tex):
+        path = v.get()
+        if not self.is_valid_4(path, tex):
+            return
+        #time_6 = time.clock()
+        local_datas = dataanalyze.read_excel_mu_datas(path)
+        # print('一次性读取所有数据花费时间： %f'%(time.clock()-time_6))
+        local_table_names = list(local_datas.keys())
+        data = {
+            "server_id": self.server_id,
+            "table_name": local_table_names
+        }
+        ret = self._http.download_content(data)
+        if ret.ret != 0:
+            self.insert_info("下载数据失败： %s" % ret.res, 1, 2)
+            return
+        data = pb2dict(ret)
+        bigdatas = dict()
+        for _ in data['data']:
+            bigdatas[_['table_name']] = _['data']
+        del data
+        #存放数据库所有数据
+        remote_datas = dict()
+        # 存放数据库所有表名
+        remote_table_names = list(bigdatas.keys())
+        if len(local_table_names) != len(remote_table_names):
+            self.insert_info("下载的数据表数量与导入配置表不一致，请联系管理员", 1, 2)
+            self.insert_info("下载的数据表: %s " % remote_table_names, 1)
+            self.insert_info("导入的配置表: %s " % local_table_names, 1)
+        for _key, _value in bigdatas.items():
+            content = []
+            for _ in _value:
+                content.append(_.split('|'))
+            remote_datas[_key] = content
+        del bigdatas
+
+        #index = 1
+        for name in local_datas.keys():
+            data_array = remote_datas[name]
+            excel_array = local_datas[name]
+            if len(excel_array) == 0:
+                print("name = %s, excel_array = %s " % (name, excel_array))
+
+            #time_4 = time.clock()
+            #print('读取某文件花费时间： %f'%(time_4-time_3))
+            dif_array, dif_row_data, dif_column_data, dif_row_excel, dif_column_excel = check_datas(excel_array, data_array)
+            #time_5 = time.clock()
+            #print('比对花费时间： %f'%(time_5-time_4))
+            if len(data_array) == 0:
+                data_array = ['']
+            if len(excel_array) == 0:
+                excel_array = ['']
+            #try:
+            show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name, [data_array[0], excel_array[0]])
+            tex.update()
+            # except Exception:
+            #     print('data_array = %s'%str(data_array))
+            #     print('excel_array = %s'%str(excel_array))
+            #     return
+            #print('第%d个文件检查结束 《%s》,一共花费时间： %f'%(index, name, (time.clock()-time_1)))
+            #index += 1
+        #print('本次检查花费时间： %f'%(time.clock()-time_6))
+
 
     #用于检查配置表与数据库表的差异
     def button_check_file(self, v, tex):
@@ -679,13 +772,13 @@ class SecondPage():
                 data_array = ['']
             if len(excel_array) == 0:
                 excel_array = ['']
-            try:
-                show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name, [data_array[0], excel_array[0]])
-                tex.update()
-            except Exception:
-                print('data_array = %s'%str(data_array))
-                print('excel_array = %s'%str(excel_array))
-                return
+            # try:
+            show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name, [data_array[0], excel_array[0]])
+            tex.update()
+            # except Exception:
+            #     print('data_array = %s'%str(data_array))
+            #     print('excel_array = %s'%str(excel_array))
+            #     return
             #print('第%d个文件检查结束 《%s》,一共花费时间： %f'%(index, name, (time.clock()-time_1)))
             #index += 1
         #print('本次检查花费时间： %f'%(time.clock()-time_6))
