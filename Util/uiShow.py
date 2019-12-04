@@ -13,13 +13,13 @@ class UiShow(object):
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("发送与接口数据展示工具")
-        self.root.resizable(0, 0)
+        #self.root.resizable(0, 0)
         #self.f = tk.Frame(self.root, height=300, width=130)
         #self.f.pack()
         self.f0 = tk.LabelFrame(self.root, text="req")
         self.f1 = tk.LabelFrame(self.root, text="res")
-        self.f0.grid(row=0, column=0)
-        self.f1.grid(row=0, column=1)
+        self.f0.pack(side="left", expand="yes", fill="both")
+        self.f1.pack(side="right", expand="yes", fill="both")
         self.sb0 = tk.Scrollbar(self.f0)
         self.sb1 = tk.Scrollbar(self.f1)
         self.sb0.pack(side=tk.RIGHT, fill=tk.Y)
@@ -28,13 +28,10 @@ class UiShow(object):
         self.tex1 = tk.Text(self.f1, yscrollcommand=self.sb1.set)
         self.sb0.config(command=self.tex0.yview)
         self.sb1.config(command=self.tex1.yview)
-        self.tex0.pack(side=tk.LEFT, fill=tk.BOTH)
+        self.tex0.pack(expand="yes", fill=tk.BOTH)
         self.tex0.pack()
-        self.tex1.pack(side=tk.LEFT, fill=tk.BOTH)
+        self.tex1.pack(expand="yes", fill=tk.BOTH)
         self.tex1.pack()
-        #self.tex0.pack_propagate(0)
-        #self.tex1.pack_propagate(0)
-        #self.root.mainloop()
 
     def show(self, req, res):
         req = req if not isinstance(req, dict) else json.dumps(req, sort_keys=True, indent=4)
@@ -92,7 +89,7 @@ def dict2pb(cls, adict, strict=False):
                     item = getattr(obj, field.name).add()
                     item.CopyFrom(dict2pb(msg_type._concrete_class, sub_dict))
             else:
-                map(getattr(obj, field.name).append, adict[field.name])
+                list(map(getattr(obj, field.name).append, adict[field.name]))
         else:
             if field.type == FD.TYPE_MESSAGE:
                 value = dict2pb(msg_type._concrete_class, adict[field.name])
