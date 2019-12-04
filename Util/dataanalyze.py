@@ -14,6 +14,15 @@ def change_dic(dic):
         buf.append(list(each.values()))
     return buf
 
+def change_dic_by_name(dic):
+    dic = change_dic(dic)
+    _dic = list()
+    for _ in dic:
+        if _[0] == "column_name":
+            continue
+        _dic.append(_[0])
+    return [_dic]
+
 #保存常规excel文件：内容保存在第一页sheet中的第一列
 def write_general_excel(datas, file_name):
     xls = xlwt.Workbook()
