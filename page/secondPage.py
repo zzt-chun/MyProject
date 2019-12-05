@@ -203,9 +203,20 @@ class SecondPage():
         but5.pack(anchor=tk.S, side=tk.RIGHT, padx=3, pady=5)
         but7 = tk.Button(self.parent, text='清除日志', command=lambda: self.clear_log(tex))
         but7.pack(anchor=tk.S, side=tk.RIGHT, padx=3, pady=5)
+        but8 = tk.Button(self.parent, text='下一个', command=lambda: self.next_cursor())
+        but8.pack(anchor=tk.S, side=tk.RIGHT, padx=3, pady=5)
         self.tex = tex
         self.tex.tag_config('tag1', foreground='green')
         self.tex.tag_config('tag2', foreground='red')
+
+    def next_cursor(self):
+        pos = self.tex.search("存在差异", tk.INSERT)
+        if not pos:
+            self.insert_info("未找到目标内容", 1)
+        else:
+            x, y = pos.split('.')
+            self.tex.mark_set("insert", ".".join([x, str(int(y)+4)]))
+            self.tex.see(pos)
 
     def set_account(self):
         top = tk.Toplevel()
@@ -596,7 +607,8 @@ class SecondPage():
                 return
             if len(datas) == 0:
                 datas = useserver['now'].get_table_row([name])
-                datas = [dataanalyze.change_dic(datas)]
+                datas = [dataanalyze.change_dic(datas)[1:]]
+                #print("name = %s , datas = %s " % (name, str(datas)))
             else:
                 datas = dataanalyze.change_dic(datas)
             bigdatas[name] = datas
@@ -630,8 +642,8 @@ class SecondPage():
             self.insert_info('文件页签不应该包含‘sheet’或其他错误，请检查母文件', 1, 2)
             return False
 
-        if len(names) >= 300:
-            self.insert_info('需要检查的表数量太多， 超过300个。 操作失败', 1, 2)
+        if len(names) >= 1000:
+            self.insert_info('需要检查的表数量太多， 超过1000个。 操作失败', 1, 2)
             return False
 
         return True
@@ -650,15 +662,16 @@ class SecondPage():
         if datas == -1:
             now_time = self.get_now_time()
             tex.insert(tk.END, now_time + ': 没有选择数据库\n')
+            tex.search()
             return False
         names = dataanalyze.read_excel_names(path)
         if names == -2:
             now_time = self.get_now_time()
             tex.insert(tk.END, now_time + ': 文件页签不应该包含‘sheet’或其他错误，请检查母文件\n')
             return False
-        if len(names) >= 300:
+        if len(names) >= 1000:
             now_time = self.get_now_time()
-            tex.insert(tk.END, now_time + ': 需要检查的表数量太多， 超过300个。 操作失败\n')
+            tex.insert(tk.END, now_time + ': 需要检查的表数量太多， 超过1000个。 操作失败\n')
             return False
         return True
 
@@ -704,8 +717,8 @@ class SecondPage():
         for name in local_datas.keys():
             data_array = remote_datas[name]
             excel_array = local_datas[name]
-            if len(excel_array) == 0:
-                print("name = %s, excel_array = %s " % (name, excel_array))
+            # if len(excel_array) == 0:
+            #     print("name = %s, excel_array = %s " % (name, excel_array))
 
             #time_4 = time.clock()
             #print('读取某文件花费时间： %f'%(time_4-time_3))
@@ -757,9 +770,14 @@ class SecondPage():
             #print('开始检查<%s>'%name)
             #time_1 = time.clock()
             data_array = useserver['now'].get_table(name)
+            if len(data_array) == 0:
+                data_array = useserver['now'].get_table_row([name])
+                data_array = dataanalyze.change_dic_by_name(data_array)
+                #print('data_array = %s ' % data_array)
+            else:
             #time_2 = time.clock()
             #print('从数据库读取花费时间： %f'%(time_2-time_1))
-            data_array = dataanalyze.change_dic(data_array)
+                data_array = dataanalyze.change_dic(data_array)
             #time_3 = time.clock()
             #print('转化数据库数据花费时间： %f'%(time_3-time_2))
             excel_array = names[name]
