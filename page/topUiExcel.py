@@ -58,8 +58,8 @@ class TopUiExcel():
 
         self.tree = ttk.Treeview(f3, show='headings', xscrollcommand=sb1.set, yscrollcommand=sb3.set)  # 表格
         self.tree_1 = ttk.Treeview(f4, show='headings', xscrollcommand=sb2.set, yscrollcommand=sb4.set)  # 表格
-        self.tree.pack(side=tk.TOP)
-        self.tree_1.pack(side=tk.TOP)
+        self.tree.pack(side=tk.TOP, expand="yes", fill="both")
+        self.tree_1.pack(side=tk.TOP, expand="yes", fill="both")
         sb1.config(command=self.tree.xview)
         sb2.config(command=self.tree_1.xview)
         sb3.config(command=self.tree.yview)
