@@ -146,8 +146,21 @@ class FirstPage():
                 dif_1.append(name)
         for name in data_key_2.keys():
             dif_2.append(name)
+        print('********dif_1***********\n')
+        print(dif_1)
+        print('********dif_2***********\n')
+        print(dif_2)
+        print('*********dif_1_1*********\n')
+        print(dif_1_1)
+        print('********dif_2_2**********\n')
+        print(dif_2_2)
+        print('**********self.version********\n')
+        print(self.version)
+        print('********dif_array**********\n')
+        print(dif_array)
+        print('******************\n')
         if dif_1 == dif_2 == dif_1_1 == dif_2_2 == []:
-            if self.version.sort() == dif_array.sort():
+            if sorted(self.version) == sorted(dif_array):
                 self.tex.insert(tk.END, self.get_now_time()+':检查通过，所有版本号升级都符合规定\n', 'tag1')
                 self.tex.tag_config('tag1', foreground='green')
                 for i in dif_array:

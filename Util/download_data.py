@@ -14,8 +14,12 @@ from pb.pbjson import dict2pb
 
 class HttpClient(object):
 
-    def __init__(self):
-        self.host = "http://123.57.55.156:8003"
+    def __init__(self, style):
+        self.host = {
+            "篮球国内": "http://123.57.55.156:8003",
+            "篮球港澳台": "http://47.90.44.198:8002",
+                     }
+        self.style = style
         self._url = ''
         self.cookie = {}
         self.headers = {
@@ -29,7 +33,7 @@ class HttpClient(object):
 
     def _request(self, data=None):
         ret = requests.request(method="PUT",
-                               url=''.join([self.host, self._url]),
+                               url=''.join([self.host[self.style], self._url]),
                                headers=self.headers,
                                cookies=self.cookie,
                                data=data
@@ -71,7 +75,7 @@ class HttpClient(object):
 
     def set_url(self, url):
         self._url = url
-        return self
+        return True
 
     def set_cookie(self, cookies: {}):
         self._cookie = cookies

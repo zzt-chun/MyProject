@@ -24,14 +24,15 @@ servers = dict()
 
 #servers['篮球242'] = "192.168.1.242", "root", "wckj#2017", 3306
 #servers['篮球242_1(内网)'] = "192.168.1.242", "nbatest", "DGAG(&Jh23858klh", 3306
-servers['篮球201_1(内网)'] = "192.168.1.201", "test", "L*&k34HC98K.kDG%KH", 3307
+servers['篮球201(内网)'] = "192.168.1.201", "test", "L*&k34HC98K.kDG%KH", 3307
+servers['篮球139_合服(内网)'] = "192.168.1.139", "lizheng", "DT*^^kjdg245", 3306
 servers['新足球(内网)'] = "192.168.1.123", "root", "wckj@2017", 3306
 servers['老足球(内网)'] = "192.168.1.204", "root", "wckj#2015", 3306
 servers['老足球(内网126)'] = "192.168.1.126", "root", "wckj@2018", 3306
 servers['中超(内网)'] = "192.168.1.204", "root", "wckj#2015", 3306
 #存放活跃数据库对象实例useserver['now'] = xxx
 useserver = dict()
-
+managemnt_background = ["篮球国内", "篮球港澳台"]
 
 def get_now_time():
     return datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
@@ -40,9 +41,9 @@ class SecondPage():
 
     def __init__(self, parent):
         self.parent = parent
-        self._account = ['', '', '', ''] #存放管理后台账号 邮箱账号
+        self._account = ['', '', '', '', ''] #存放管理后台账号 邮箱账号
         self.create_buttons()
-        self.init_account()
+        #self.init_account()
         self._http = None
         self.server_list = {}
         self.server_id = None
@@ -151,10 +152,10 @@ class SecondPage():
         but4_3.grid(row=1, column=4, padx=3, pady=1)
 
         #第二页四小页
-        but5_4 = tk.Button(tab4, text='修改', command=lambda: self.set_account(), width=5)
+        but5_4 = tk.Button(tab4, text='登录账号', command=lambda: self.set_account(), width=15)
         but5_4.grid(row=0, column=0, padx=5, pady=3, rowspan=2)
-        but0_4 = tk.Button(tab4, text='一键登录后台和邮件', command=lambda: self.login(), width=18)
-        but0_4.grid(row=0, column=1, padx=5, pady=3, rowspan=2)
+        # but0_4 = tk.Button(tab4, text='一键登录后台和邮件', command=lambda: self.select_server(), width=18)
+        # but0_4.grid(row=0, column=1, padx=5, pady=3, rowspan=2)
         self.com1_4 = ttk.Combobox(tab4, state='readonly')
         self.com1_4.bind("<<ComboboxSelected>>", lambda *args: self.show_server(self.com1_4))
         self.com1_4.set('选择服务器')
@@ -219,39 +220,53 @@ class SecondPage():
             self.tex.see(pos)
 
     def set_account(self):
+        self.reset_account()
         top = tk.Toplevel()
-        top.title("修改账号密码")
+        top.title("管理账号密码")
         #设置窗口初始位置
         top.geometry("+800+400")
-        tk.Label(top, text="管理后台账号：").grid(row=0, column=0, padx=3, pady=1)
-        tk.Label(top, text="管理后台密码：").grid(row=1, column=0, padx=3, pady=1)
-        tk.Label(top, text="验证的邮箱账号：").grid(row=2, column=0, padx=3, pady=1)
-        tk.Label(top, text="验证的邮箱密码：").grid(row=3, column=0, padx=3, pady=1)
+        tk.Label(top, text="选择服务器：").grid(row=0, column=0, padx=3, pady=1)
+        com = ttk.Combobox(top, state='readonly')
+        com.bind("<<ComboboxSelected>>", lambda *args: self.load_account(ent6_v_1, ent6_v_2, ent6_v_3, ent6_v_4, com))
+        com.set('下拉选择服务器')
+        com['values'] = managemnt_background
+        com.grid(row=0, column=1, padx=10, pady=3)
+        tk.Label(top, text="管理后台账号：").grid(row=1, column=0, padx=3, pady=1)
+        tk.Label(top, text="管理后台密码：").grid(row=2, column=0, padx=3, pady=1)
+        tk.Label(top, text="验证的邮箱账号：").grid(row=3, column=0, padx=3, pady=1)
+        tk.Label(top, text="验证的邮箱密码：").grid(row=4, column=0, padx=3, pady=1)
         ent6_v_1 = tk.StringVar()
         ent6_1 = tk.Entry(top, textvariable=ent6_v_1, width=26)
-        ent6_1.grid(row=0, column=1, padx=3, pady=1)
+        ent6_1.grid(row=1, column=1, padx=3, pady=1)
         ent6_v_2 = tk.StringVar()
         ent6_2 = tk.Entry(top, textvariable=ent6_v_2, width=26)
-        ent6_2.grid(row=1, column=1, padx=3, pady=1)
+        ent6_2.grid(row=2, column=1, padx=3, pady=1)
         ent6_v_3 = tk.StringVar()
         ent6_3 = tk.Entry(top, textvariable=ent6_v_3, width=26)
-        ent6_3.grid(row=2, column=1, padx=3, pady=1)
+        ent6_3.grid(row=3, column=1, padx=3, pady=1)
         ent6_v_4 = tk.StringVar()
         ent6_4 = tk.Entry(top, textvariable=ent6_v_4, width=26)
-        ent6_4.grid(row=3, column=1, padx=3, pady=1)
-        but6_1 = tk.Button(top, text='保存', command=lambda: self.save_account(ent6_v_1, ent6_v_2, ent6_v_3, ent6_v_4), width=12)
+        ent6_4.grid(row=4, column=1, padx=3, pady=1)
+        but6_1 = tk.Button(top, text='保存账号', command=lambda: self.save_account(ent6_v_1, ent6_v_2, ent6_v_3, ent6_v_4, com), width=12)
         but6_1.grid(row=1, column=2, padx=3, pady=1, rowspan=2)
-        self.load_account(ent6_v_1, ent6_v_2, ent6_v_3, ent6_v_4)
+        but6_1 = tk.Button(top, text='登录账号', command=lambda: self.login(), width=12)
+        but6_1.grid(row=3, column=2, padx=3, pady=1, rowspan=2)
+        #self.load_account(ent6_v_1, ent6_v_2, ent6_v_3, ent6_v_4)
 
-    def save_account(self, ent0, ent1, ent2, ent3):
-        self._account[0] = ent0.get()
+    def save_account(self, ent0, ent1, ent2, ent3, com):
+        self._account[0] = com.get()
+        if self._account[0] not in managemnt_background:
+            self.insert_info("保存失败！ 没有选择服务器", 1, 2)
+            self._account[0] = ''
+            return
+        self._account[1] = ent0.get()
         _content = ent1.get()
         if _content != "******":
-            self._account[1] = ent1.get()
-        self._account[2] = ent2.get()
+            self._account[2] = ent1.get()
+        self._account[3] = ent2.get()
         _content = ent3.get()
         if _content != "******":
-            self._account[3] = ent3.get()
+            self._account[4] = ent3.get()
 
         if '' in self._account:
             self.insert_info("保存失败！ 请检查账号信息是否填写完整", 1, 2)
@@ -259,33 +274,43 @@ class SecondPage():
         cfg = configparser.ConfigParser()
         cfg.read('cfg.ini')
 
-        cfg['account'] = {}
-        cfg['account']['管理后台账号'] = self._account[0]
-        cfg['account']['管理后台密码'] = self._account[1]
-        cfg['account']['验证的邮箱账号'] = self._account[2]
-        cfg['account']['验证的邮箱密码'] = self._account[3]
+        cfg[self._account[0]] = {}
+        cfg[self._account[0]]['服务器'] = self._account[0]
+        cfg[self._account[0]]['管理后台账号'] = self._account[1]
+        cfg[self._account[0]]['管理后台密码'] = self._account[2]
+        cfg[self._account[0]]['验证的邮箱账号'] = self._account[3]
+        cfg[self._account[0]]['验证的邮箱密码'] = self._account[4]
         with open('cfg.ini', 'w') as f:
             cfg.write(f)
 
-        self.insert_info('管理后台账号： %s' % self._account[0], 1,1)
+        self.insert_info('服务器： %s' % self._account[0], 1,1)
+        self.insert_info('管理后台账号： %s' % self._account[1], 1,1)
         self.insert_info('管理后台密码： ******', 1, 1)
-        self.insert_info('验证的邮箱账号： %s' % self._account[2], 1, 1)
+        self.insert_info('验证的邮箱账号： %s' % self._account[3], 1, 1)
         self.insert_info('验证的邮箱密码： ******', 1, 1)
-        self.insert_info('保存成功！\n', 1, 1)
+        self.insert_info('保存成功！', 1, 1)
 
-    def load_account(self, ent0, ent1, ent2, ent3):
+    def load_account(self, ent0, ent1, ent2, ent3, com):
         cfg = configparser.ConfigParser()
         cfg.read('cfg.ini')
-        if 'account' in cfg.sections():
-            self._account[0] = cfg['account']['管理后台账号']
-            self._account[1] = cfg['account']['管理后台密码']
-            self._account[2] = cfg['account']['验证的邮箱账号']
-            self._account[3] = cfg['account']['验证的邮箱密码']
-            ent0.set(self._account[0])
+        style = com.get()
+        if style in cfg.sections():
+            self._account[0] = style
+            self._account[1] = cfg[style]['管理后台账号']
+            self._account[2] = cfg[style]['管理后台密码']
+            self._account[3] = cfg[style]['验证的邮箱账号']
+            self._account[4] = cfg[style]['验证的邮箱密码']
+            ent0.set(self._account[1])
             ent1.set("******")
-            ent2.set(self._account[2])
+            ent2.set(self._account[3])
             ent3.set("******")
             self.insert_info('读取管理后台/邮箱账号成功！', 1, 1)
+        else:
+            ent0.set('')
+            ent1.set('')
+            ent2.set('')
+            ent3.set('')
+            self.insert_info('读取管理后台/邮箱账号失败 ：%s' % style, 1, 2)
 
     def init_account(self):
         cfg = configparser.ConfigParser()
@@ -294,28 +319,38 @@ class SecondPage():
         if section_list == [] or 'account' not in section_list:
             self.insert_info('配置文件《config.ini》不存在或没有管理后台/邮箱账号信息! 请先修改后台和邮件信息', 1)
         else:
-            self._account[0] = cfg['account']['管理后台账号']
-            self._account[1] = cfg['account']['管理后台密码']
-            self._account[2] = cfg['account']['验证的邮箱账号']
-            self._account[3] = cfg['account']['验证的邮箱密码']
+            self._account[0] = cfg['account']['服务器']
+            self._account[1] = cfg['account']['管理后台账号']
+            self._account[2] = cfg['account']['管理后台密码']
+            self._account[3] = cfg['account']['验证的邮箱账号']
+            self._account[4] = cfg['account']['验证的邮箱密码']
             self.insert_info('读取管理后台/邮箱账号成功！ 可一键登录后台和邮件', 1, 1)
+
+    def select_server(self):
+        pass
+
+    def reset_account(self):
+        self._account = ['', '', '', '', '']
 
     #@except_ui_show
     def login(self):
         if '' in self._account:
             self.insert_info('请先填写管理后台账号!', 1, 2)
             return
+        if self._account[0] not in managemnt_background:
+            self.insert_info('登陆管理后台失败，服务器选择错误！ ： %s' % str(self._account), 1, 2)
+            return
         #初始化http
-        self._http = HttpClient()
+        self._http = HttpClient(self._account[0])
         #先登录
-        self.insert_info('正在登陆管理后台账号：%s ...' % self._account[0], 1)
-        self._http.login(self._account[0], self._account[1])
+        self.insert_info('正在登陆管理后台账号：%s ...' % self._account[1], 1)
+        self._http.login(self._account[1], self._account[2])
         self.insert_info('登陆管理后台账号成功。-》下一步登录邮箱', 1, 1)
         #time.sleep(1)
         #a = MailClient('liyang@galasports.net', "23fPa'62")
         #登录邮箱
-        self.insert_info('正在登陆验证码邮件账号：%s...' % self._account[2], 1)
-        a = MailClient(self._account[2], self._account[3])
+        self.insert_info('正在登陆验证码邮件账号：%s...' % self._account[3], 1)
+        a = MailClient(self._account[3], self._account[4])
         self.insert_info('登陆验证码邮件账号成。 -》下一步验证邮箱', 1, 1)
         #获取验证码
         msg = a.find_my_mail('account@galasports.com', 'The server authentication code-GALA Sports').split(':')[1][:4]
@@ -330,14 +365,24 @@ class SecondPage():
         # import json
         # ret = json.loads(pb2json(ret))
         #解析回包内容初始化UI中的下拉框
-        self.server_list["data库"] = self.list2dict(ret["date_jdbc"])
-        self.server_list["选服"] = self.list2dict(ret["sel_jdbc"])
-        self.server_list["提审服"] = self.list2dict(ret["jdbc_info"], "STS")
-        self.server_list["官网"] = self.list2dict(ret["jdbc_info"], "SLI")
-        self.server_list["混服"] = self.list2dict(ret["jdbc_info"], "SLY")
-        self.server_list["腾讯"] = self.list2dict(ret["jdbc_info"], "STX")
-        self.com1_4['values'] = list(self.server_list.keys())
-        self.insert_info('邮箱验证成功， 所有步骤操作完成！！！', 1, 1)
+        if self._account[0] == managemnt_background[0]:
+            self.server_list = {}
+            self.server_list["data库"] = self.list2dict(ret["date_jdbc"])
+            self.server_list["选服"] = self.list2dict(ret["sel_jdbc"])
+            self.server_list["提审服"] = self.list2dict(ret["jdbc_info"], "STS")
+            self.server_list["官网"] = self.list2dict(ret["jdbc_info"], "SLI")
+            self.server_list["混服"] = self.list2dict(ret["jdbc_info"], "SLY")
+            self.server_list["腾讯"] = self.list2dict(ret["jdbc_info"], "STX")
+            self.com1_4['values'] = list(self.server_list.keys())
+            self.insert_info('邮箱验证成功， 所有步骤操作完成！！！', 1, 1)
+        elif self._account[0] == managemnt_background[1]:
+            self.server_list = {}
+            self.server_list["data库"] = self.list2dict(ret["date_jdbc"])
+            self.server_list["选服"] = self.list2dict(ret["sel_jdbc"])
+            self.server_list["港澳台"] = self.list2dict(ret["jdbc_info"], "SSEA")
+            self.com1_4['values'] = list(self.server_list.keys())
+            self.insert_info('邮箱验证成功， 所有步骤操作完成！！！', 1, 1)
+
 
     def list2dict(self, obj, key=''):
         if isinstance(obj, dict):
@@ -628,7 +673,7 @@ class SecondPage():
             tex.insert(tk.END, now_time+'没东西可保存或表名超过50个字符\n')
 
     #有效性检查
-    def is_valid_4(self, path, tex):
+    def is_valid_4(self, path):
         if not os.path.isfile(path):
             self.insert_info('没有选择配置表或者文件路径不正确， 请检查', 1, 2)
             return False
@@ -679,7 +724,7 @@ class SecondPage():
     #用于检查配置表与数据库表的差异
     def button_check_file_4(self, v, tex):
         path = v.get()
-        if not self.is_valid_4(path, tex):
+        if not self.is_valid_4(path):
             return
         #time_6 = time.clock()
         local_datas = dataanalyze.read_excel_mu_datas(path)
