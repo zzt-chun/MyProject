@@ -332,7 +332,7 @@ class FirstPage():
         self.sheet[index] = sheet_name
         self.key[index] = None
         if rows == -2:
-            self.tex.insert(tk.END, self.get_now_time()+': <%s>分页没有内容，设置失败！\n'%sheet_name)
+            self.tex.insert(tk.END, self.get_now_time()+': <%s>分页没有内容，设置失败！\n' % sheet_name)
             com1.set('选择sheet(默认不选)')
             self.sheet[index] = None
             com2['values'] = []
@@ -341,7 +341,7 @@ class FirstPage():
         com2['values'] = rows
         com2.set('选择列名(默认不选)')
         now_time = self.get_now_time()
-        self.tex.insert(tk.END, now_time+': 选择<%s>作为对比的sheet页成功！\n'%sheet_name)
+        self.tex.insert(tk.END, now_time+': 选择<%s>作为对比的sheet页成功！\n' % sheet_name)
 
     def import_file_1(self, e, com1, com2, index):
         path = filedialog.askopenfilename(filetypes=[('XLSX', '.xlsx'), ('XLS', '.xls')])

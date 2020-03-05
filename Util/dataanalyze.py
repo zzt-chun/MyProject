@@ -243,7 +243,7 @@ def read_save_names(path):
     excelfile = xlrd.open_workbook(path)
     sheet = excelfile.sheet_by_index(0)
     array = []
-    if (sheet.nrows>=300) or (sheet.nrows==0) or (sheet.ncols>=300):
+    if (sheet.nrows>=500) or (sheet.nrows==0) or (sheet.ncols>=500):
         return -1
     for nrow in range(sheet.nrows):
         for content in sheet.row_values(nrow):

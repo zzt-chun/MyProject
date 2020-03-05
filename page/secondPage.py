@@ -542,7 +542,7 @@ class SecondPage():
             array = dataanalyze.read_excel_names(path)
         if array == -1:
             now_time = self.get_now_time()
-            tex.insert(tk.END, now_time+': 文件第一页内容为空或超过300行/列，请检查配置文件\n')
+            tex.insert(tk.END, now_time+': 文件第一页内容为空或超过500行/列，请检查配置文件\n')
             return
         elif array == -2:
             now_time = self.get_now_time()
@@ -626,7 +626,7 @@ class SecondPage():
         savenames = dataanalyze.read_save_names(path)
         if savenames == -1:
             now_time = self.get_now_time()
-            tex.insert(tk.END, now_time+': 文件第一页内容为空或超过300行/列，请检查配置文件\n')
+            tex.insert(tk.END, now_time+': 文件第一页内容为空或超过500行/列，请检查配置文件\n')
             return
         #数据库格式转化为字符串
         datas = dataanalyze.change_dic(datas)
