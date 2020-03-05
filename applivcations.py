@@ -7,11 +7,18 @@ from page.secondPage import SecondPage
 from page.thirdPage import ThirdPage
 from page.fifthPage import FifthPage
 from page.functionPageFrame import FunctionPageFrame
+import sys
+from tkinter import messagebox
+
+def callbackClose():
+    if messagebox.askokcancel('提示', "真的要退出吗？"):
+        sys.exit(0)
 
 root = tk.Tk()
-root.title('测试内部工具')
+root.title('测试内部工具 v_2.2')
 root.resizable(0, 0)
 root.geometry("+500+200")
+root.protocol("WM_DELETE_WINDOW", callbackClose)
 
 #读取已经转码成.py格式的资源文件
 for name in pics.keys():
