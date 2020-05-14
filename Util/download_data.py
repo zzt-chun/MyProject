@@ -4,11 +4,9 @@
 # @File    : download_data.py
 
 import requests
-from pb.proto_pb2 import DataComparisonRes, DataComparisonReq
-from pb.login_pb2 import LoginReq, LoginRes, VerifyMailReq
-from pb.base_pb2 import StringRes
-from Util.uiShow import UiShow, pb2json
-
+from pb.basketballPB.proto_pb2 import DataComparisonRes
+from pb.basketballPB.login_pb2 import LoginReq, LoginRes, VerifyMailReq
+from pb.basketballPB.base_pb2 import StringRes
 
 from pb.pbjson import dict2pb
 
@@ -84,7 +82,7 @@ class HttpClient(object):
 
 
 if __name__ == "__main__":
-    from pb.proto_pb2 import DataComparisonReq
+    from pb.basketballPB.proto_pb2 import DataComparisonReq
     # a = DataComparisonReq()
     # a.server_id = "test_1"
     # a.table_name.append('1')

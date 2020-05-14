@@ -15,6 +15,7 @@ from page.function import show_dif, show_dif_ui, check_datas
 import configparser
 from Util.download_data import HttpClient
 from Util.mailUtil import MailClient
+from Util.login.factory_client import FactoryHttpClient
 import time
 from Util.uiShow import pb2dict, except_ui_show
 
@@ -26,13 +27,14 @@ servers = dict()
 #servers['篮球242_1(内网)'] = "192.168.1.242", "nbatest", "DGAG(&Jh23858klh", 3306
 servers['篮球201(内网)'] = "192.168.1.201", "test", "L*&k34HC98K.kDG%KH", 3307
 servers['篮球139_合服(内网)'] = "192.168.1.139", "lizheng", "DT*^^kjdg245", 3306
-servers['新足球(内网)'] = "192.168.1.123", "root", "wckj@2017", 3306
+servers['新足球(内网)'] = "192.168.1.201", "root", "KH*^35KH@%%9654", 3309
+servers['新足球(外网)'] = "47.94.228.86", "test", "S7#ks%^&&*khlls234", 3306
 servers['老足球(内网)'] = "192.168.1.204", "root", "wckj#2015", 3306
 servers['老足球(内网126)'] = "192.168.1.126", "root", "wckj@2018", 3306
 servers['中超(内网)'] = "192.168.1.204", "root", "wckj#2015", 3306
 #存放活跃数据库对象实例useserver['now'] = xxx
 useserver = dict()
-managemnt_background = ["篮球国内", "篮球港澳台"]
+managemnt_background = ["篮球国内", "篮球港澳台", "最佳11人"]
 
 def get_now_time():
     return datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
@@ -341,32 +343,33 @@ class SecondPage():
             self.insert_info('登陆管理后台失败，服务器选择错误！ ： %s' % str(self._account), 1, 2)
             return
         #初始化http
-        self._http = HttpClient(self._account[0])
-        #先登录
-        self.insert_info('正在登陆管理后台账号：%s ...' % self._account[1], 1)
-        self._http.login(self._account[1], self._account[2])
-        self.insert_info('登陆管理后台账号成功。-》下一步登录邮箱', 1, 1)
-        #time.sleep(1)
-        #a = MailClient('liyang@galasports.net', "23fPa'62")
-        #登录邮箱
-        self.insert_info('正在登陆验证码邮件账号：%s...' % self._account[3], 1)
-        a = MailClient(self._account[3], self._account[4])
-        self.insert_info('登陆验证码邮件账号成。 -》下一步验证邮箱', 1, 1)
-        #获取验证码
-        msg = a.find_my_mail('account@galasports.com', 'The server authentication code-GALA Sports').split(':')[1][:4]
-        self.insert_info('获取邮箱验证码《%s》成功. —》下一步验证....' % msg, 1,)
-        a.close()
-        #发送验证码
-        ret = self._http.verification_email(msg)
-        if ret.ret != 0:
-            self.insert_info("验证失败： %s" % ret.msg)
-            return
-        ret = pb2dict(ret)
+        self._http = FactoryHttpClient().create_client(self._account[0], self)
+        ret = self._http.login(self._account[1:])
+        # #先登录
+        # self.insert_info('正在登陆管理后台账号：%s ...' % self._account[1], 1)
+        # self._http.login(self._account[1], self._account[2])
+        # self.insert_info('登陆管理后台账号成功。-》下一步登录邮箱', 1, 1)
+        # #time.sleep(1)
+        # #a = MailClient('liyang@galasports.net', "23fPa'62")
+        # #登录邮箱
+        # self.insert_info('正在登陆验证码邮件账号：%s...' % self._account[3], 1)
+        # a = MailClient(self._account[3], self._account[4])
+        # self.insert_info('登陆验证码邮件账号成。 -》下一步验证邮箱', 1, 1)
+        # #获取验证码
+        # msg = a.find_my_mail('account@galasports.com', 'The server authentication code-GALA Sports').split(':')[1][:4]
+        # self.insert_info('获取邮箱验证码《%s》成功. —》下一步验证....' % msg, 1,)
+        # a.close()
+        # #发送验证码
+        # ret = self._http.verification_email(msg)
+        # if ret.ret != 0:
+        #     self.insert_info("验证失败： %s" % ret.msg)
+        #     return
+        # ret = pb2dict(ret)
         # import json
         # ret = json.loads(pb2json(ret))
         #解析回包内容初始化UI中的下拉框
+        self.server_list = {}
         if self._account[0] == managemnt_background[0]:
-            self.server_list = {}
             self.server_list["data库"] = self.list2dict(ret["date_jdbc"])
             self.server_list["选服"] = self.list2dict(ret["sel_jdbc"])
             self.server_list["提审服"] = self.list2dict(ret["jdbc_info"], "STS")
@@ -376,12 +379,18 @@ class SecondPage():
             self.com1_4['values'] = list(self.server_list.keys())
             self.insert_info('邮箱验证成功， 所有步骤操作完成！！！', 1, 1)
         elif self._account[0] == managemnt_background[1]:
-            self.server_list = {}
             self.server_list["data库"] = self.list2dict(ret["date_jdbc"])
             self.server_list["选服"] = self.list2dict(ret["sel_jdbc"])
             self.server_list["港澳台"] = self.list2dict(ret["jdbc_info"], "SSEA")
             self.com1_4['values'] = list(self.server_list.keys())
             self.insert_info('邮箱验证成功， 所有步骤操作完成！！！', 1, 1)
+        elif self._account[0] == managemnt_background[2]:
+            self.server_list["data库"] = self.list2dict(ret["date_jdbc"])
+            self.server_list["官网"] = self.list2dict(ret["game_jdbc"], "SIOS")
+            self.server_list["混服"] = self.list2dict(ret["game_jdbc"], "SLY")
+            self.server_list["腾讯"] = self.list2dict(ret["game_jdbc"], "STX")
+            self.com1_4['values'] = list(self.server_list.keys())
+            self.insert_info('服务器信息拉取成功， 所有步骤操作完成！！！', 1, 1)
 
 
     def list2dict(self, obj, key=''):
@@ -529,6 +538,42 @@ class SecondPage():
     def clear_log(self, tex):
         tex.delete(1.0, tk.END)
 
+    # def generally_import_file(self, v, tex, is_save):
+    #     path = filedialog.askopenfilename(filetypes=[('XLSX', '.xlsx'), ('XLS', '.xls')])
+    #     if path == '':
+    #         now_time = self.get_now_time()
+    #         tex.insert(tk.END, now_time+': 没有选中导入文件\n')
+    #         return
+    #     v.set(path)
+    #     array = dataanalyze.read_excel_sheets(path)
+    #     if "字段表" in array:
+    #         pass
+    #         #todo 读取字段类型未实现
+    #     else:
+    #         if is_save:
+    #             array = dataanalyze.read_save_names(path)
+    #         else:
+    #             array = dataanalyze.read_excel_names(path)
+    #     if array == -1:
+    #         now_time = self.get_now_time()
+    #         tex.insert(tk.END, now_time+': 文件第一页内容为空或超过500行/列，请检查配置文件\n')
+    #         return
+    #     elif array == -2:
+    #         now_time = self.get_now_time()
+    #         tex.insert(tk.END, now_time+': 文件页签不应该包含‘sheet’或其他错误，请检查母文件\n')
+    #         return
+    #     if not is_save:
+    #         array = array.keys()
+    #     for name in array:
+    #         try:
+    #             tex.insert(tk.END, name+'\n')
+    #         except:
+    #             error_buf = sys.exc_info()
+    #             messagebox.showerror(error_buf[0].__name__, error_buf[1])
+
+
+
+
     def import_file(self, v, tex, is_save):
         path = filedialog.askopenfilename(filetypes=[('XLSX', '.xlsx'), ('XLS', '.xls')])
         if path == '':
@@ -552,10 +597,17 @@ class SecondPage():
             array = array.keys()
         for name in array:
             try:
-                tex.insert(tk.END, name+'\n')
+                tex.insert(tk.END, str(name)+'\n')
             except:
                 error_buf = sys.exc_info()
                 messagebox.showerror(error_buf[0].__name__, error_buf[1])
+
+    def is_field_table(self, tables):
+        #判断是否为字段下载方式
+        for name in ['tables', "key", "value"]:
+            if name not in tables:
+                return False
+        return True
 
     def save_file_4(self, v, v1):
         #保存配置表可能需要一些时间这里应考虑锁屏
@@ -570,28 +622,76 @@ class SecondPage():
         if local_table_names == -1:
             self.insert_info('文件第一页内容为空或超过300行/列，请检查配置文件', 1, 2)
             return
-        data = {
-            "server_id": self.server_id,
-            "table_name": local_table_names
-        }
+        print("tales: ", str(local_table_names))
+        field_tables = ''
+        if self._account[0] == managemnt_background[2]:
+            #最佳11人
+            params = []
+            if not self.is_field_table(local_table_names):
+                #正常下载方式
+                params = [{'table_name': table_name} for table_name in local_table_names]
+                query_type = 1
+            else:
+                #字段表下载方式
+                query_type = 2
+                #params = [{'table_name': "t_team", "col_name": "team_id", "col_value": ["111mb", "1114a"]}]
+                field_tables = dataanalyze.read_field_table(path)
+                if field_tables == -1:
+                    self.insert_info("字段下载文件没有内容或不是 tables， key， value 格式", 1, 2)
+                    return
+                print("field_tables: ", str(field_tables))
+                for item in field_tables:
+                    _col_value = list(map(lambda x: x if not isinstance(x, float) else str(int(x)), item['col_value']))
+                    for _ in item.get('table_name', []):
+                        params.append({"table_name": _, "col_name": item['col_name'][0], "col_value": _col_value})
+            data = {
+                "server_id": self.server_id,
+                "source_mark": "data" if "data" in self.com1_4.get() else "game",
+                "query_type": query_type,
+                "query_param": params,
+            }
+        else:
+            #篮球
+            data = {
+                "server_id": self.server_id,
+                "table_name": local_table_names
+            }
+        print("data:", str(data))
         ret = self._http.download_content(data)
-        if ret.ret != 0:
-            self.insert_info("下载数据失败： %s" % ret.res, 1, 2)
-            return
+        if self._account[0] == managemnt_background[2]:
+            if getattr(ret, "ret"):
+                self.insert_info("下载数据失败： %s" % ret.extra, 1, 2)
+                return
+            print("ret = ", str(ret))
+        else:
+            if ret.ret != 0:
+                self.insert_info("下载数据失败： %s" % ret.res, 1, 2)
+                return
         data = pb2dict(ret)
         remote_data = dict()
         for _ in data['data']:
             remote_data[_['table_name']] = _['data']
         bigdatas = dict()
         remote_table_names = list(remote_data.keys())
-        if len(local_table_names) != len(remote_table_names):
+        if self.is_field_table(local_table_names):
+            local_table_names = []
+            #为字段下载表添加field内容用于比对时收集目标表
+            remote_data['field'] = field_tables
+            for item in field_tables:
+                local_table_names.extend(item.get('table_name'))
+
+        if len(set(local_table_names)) != len(remote_table_names):
             self.insert_info("下载的数据表数量与导入配置表不一致，请联系管理员", 1, 2)
             self.insert_info("下载的数据表: %s " % remote_table_names, 1)
             self.insert_info("导入的配置表: %s " % local_table_names, 1)
+            return
         for _key, _value in remote_data.items():
             content = []
-            for _ in _value:
-                content.append(_.split('|'))
+            if _key != "field":
+                for _ in _value:
+                    content.append(_.split('|'))
+            else:
+                content = _value
             bigdatas[_key] = content
         if not os.path.exists('配置文件夹'):
             os.mkdir('配置文件夹')
@@ -603,7 +703,7 @@ class SecondPage():
         filename = ''.join([os.getcwd(), '\配置文件夹\母文件\\', filename, '母文件_', get_now_time().replace(':', '_'), '.xlsx'])
         key = dataanalyze.write_excel(bigdatas, filename)
         if key:
-            self.insert_info('保存成功, 路径为<%s>'%filename, 1, 1)
+            self.insert_info('保存成功, 路径为<%s>' % filename, 1, 1)
         else:
             self.insert_info('没东西可保存或表名超过50个字符', 1, 2)
 
@@ -730,10 +830,40 @@ class SecondPage():
         local_datas = dataanalyze.read_excel_mu_datas(path)
         # print('一次性读取所有数据花费时间： %f'%(time.clock()-time_6))
         local_table_names = list(local_datas.keys())
-        data = {
-            "server_id": self.server_id,
-            "table_name": local_table_names
-        }
+        if self._account[0] == managemnt_background[2]:
+            #最佳11人
+            #todo 还需具体实现
+            params = []
+            if "field" not in local_table_names:
+                #正常下载方式
+                params = [{'table_name': table_name} for table_name in local_table_names]
+                query_type = 1
+            else:
+                # 字段表下载方式
+                query_type = 2
+                # params = [{'table_name': "t_team", "col_name": "team_id", "col_value": ["111mb", "1114a"]}]
+                field_tables = dataanalyze.read_field_table(path)
+                if field_tables == -1:
+                    self.insert_info("字段下载文件没有内容或不是 tables， key， value 格式", 1, 2)
+                    return
+                print("field_tables: ", str(field_tables))
+                for item in field_tables:
+                    _col_value = list(map(lambda x: x if not isinstance(x, float) else str(int(x)), item['col_value']))
+                    for _ in item.get('table_name', []):
+                        params.append({"table_name": _, "col_name": item['col_name'][0], "col_value": _col_value})
+
+            data = {
+                "server_id": self.server_id,
+                "source_mark": "data" if "data" in self.com1_4.get() else "game",
+                "query_type": query_type,
+                "query_param": params,
+            }
+        else:
+            #篮球
+            data = {
+                "server_id": self.server_id,
+                "table_name": local_table_names
+            }
         ret = self._http.download_content(data)
         if ret.ret != 0:
             self.insert_info("下载数据失败： %s" % ret.res, 1, 2)
@@ -747,10 +877,13 @@ class SecondPage():
         remote_datas = dict()
         # 存放数据库所有表名
         remote_table_names = list(bigdatas.keys())
+        if "field" in local_table_names:
+            local_table_names.remove('field')
         if len(local_table_names) != len(remote_table_names):
             self.insert_info("下载的数据表数量与导入配置表不一致，请联系管理员", 1, 2)
             self.insert_info("下载的数据表: %s " % remote_table_names, 1)
             self.insert_info("导入的配置表: %s " % local_table_names, 1)
+            return
         for _key, _value in bigdatas.items():
             content = []
             for _ in _value:
@@ -759,7 +892,7 @@ class SecondPage():
         del bigdatas
 
         #index = 1
-        for name in local_datas.keys():
+        for name in local_table_names:
             data_array = remote_datas[name]
             excel_array = local_datas[name]
             # if len(excel_array) == 0:
@@ -784,6 +917,8 @@ class SecondPage():
             #print('第%d个文件检查结束 《%s》,一共花费时间： %f'%(index, name, (time.clock()-time_1)))
             #index += 1
         #print('本次检查花费时间： %f'%(time.clock()-time_6))
+        self.insert_info("检查完毕，一共%s张表!" % len(local_datas.keys()), 1, 1)
+        messagebox.showinfo("提示", "检查完毕，一共%s张表!" % len(local_datas.keys()))
 
 
     #用于检查配置表与数据库表的差异
@@ -838,6 +973,8 @@ class SecondPage():
             # try:
             show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name, [data_array[0], excel_array[0]])
             tex.update()
+        self.insert_info("检查完毕，一共%s张表!" % len(names.keys()), 1, 1)
+        messagebox.showinfo("提示", "检查完毕，一共%s张表!" % len(names.keys()))
             # except Exception:
             #     print('data_array = %s'%str(data_array))
             #     print('excel_array = %s'%str(excel_array))
@@ -901,6 +1038,8 @@ class SecondPage():
             data_content_2 = dataanalyze.change_dic(data_content_2)
             dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = check_datas(data_content_1, data_content_2)
             show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name, [data_content_1[0], data_content_2[0]])
+        self.insert_info("检查完毕，一共%s张表!" % len(names.keys()), 1, 1)
+        messagebox.showinfo("提示", "检查完毕，一共%s张表!" % len(names.keys()))
 
 
     def get_data_content(self, data, name):
