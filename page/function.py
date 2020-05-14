@@ -108,8 +108,13 @@ def check_datas(data, excel):
                             continue
                     except:
                        pass
-                #print('type(a): %s = %s'%(a, type(a)))
-                #print('type(b): %s = %s'%(b, type(b)))
+                try:
+                    if float(a) == float(b):
+                        continue
+                except:
+                    pass
+                # print('type(a): %s = %s'%(a, type(a)))
+                # print('type(b): %s = %s'%(b, type(b)))
                 dif_array.append([i+1, j+1, a, b])
     if len_data > row:
         for i in range(row, len_data):
@@ -171,7 +176,7 @@ def show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_co
                 if content != '{}':
                     tex.insert(tk.END, '<%d行>多余的数据: \n'%key)
                     for i in content:
-                        tex.insert(tk.END, i, 'tag2')
+                        tex.insert(tk.END, str(i), 'tag2')
                         tex.insert(tk.END, '\t')
                     tex.insert(tk.END, '\n')
         if dif_column_data != []:
