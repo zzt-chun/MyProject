@@ -13,7 +13,7 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
-import pb.base_pb2 as base_pb2
+import pb.basketballPB.base_pb2 as base_pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='com.proto',
   serialized_pb=_b('\n\x0blogin.proto\x12\tcom.proto\x1a\nbase.proto\"3\n\x08LoginReq\x12\x12\n\naccount_id\x18\x01 \x01(\t\x12\x13\n\x0b\x61\x63\x63ount_pwd\x18\x02 \x01(\t\"\xcb\x03\n\x08LoginRes\x12\x0e\n\x03ret\x18\x01 \x01(\x11:\x01\x30\x12\x32\n\radministrator\x18\x02 \x01(\x0b\x32\x1b.com.proto.ManagerAccountPB\x12\x11\n\tui_switch\x18\x03 \x03(\t\x12,\n\x0bplayer_info\x18\x04 \x03(\x0b\x32\x17.com.proto.PlayerInfoPB\x12&\n\x08nba_team\x18\x05 \x03(\x0b\x32\x14.com.proto.NbaTeamPB\x12(\n\tjdbc_info\x18\x06 \x03(\x0b\x32\x15.com.proto.JdbcInfoPB\x12.\n\x0c\x63hannel_info\x18\x07 \x03(\x0b\x32\x18.com.proto.ChannelInfoPB\x12(\n\tdate_jdbc\x18\x08 \x03(\x0b\x32\x15.com.proto.JdbcInfoPB\x12\x1e\n\x16superstar_player_model\x18\t \x03(\x11\x12\x34\n\x0fmanager_account\x18\n \x03(\x0b\x32\x1b.com.proto.ManagerAccountPB\x12\'\n\x08sel_jdbc\x18\x0b \x01(\x0b\x32\x15.com.proto.JdbcInfoPB\x12\x0f\n\x07version\x18\x0c \x01(\x11\"C\n\rVerifyMailReq\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x10\n\x08language\x18\x02 \x01(\x11\x12\x12\n\nlogin_type\x18\x03 \x01(\x11\"/\n\x10ManagerVersionPB\x12\n\n\x02id\x18\x01 \x01(\x11\x12\x0f\n\x07version\x18\x02 \x01(\tB\'\n\x18\x63om.manager.biz.protocolB\x0bLoginProtos')
   ,
-  dependencies=[base_pb2.DESCRIPTOR,])
+  dependencies=[base_pb2.DESCRIPTOR, ])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 

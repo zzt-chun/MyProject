@@ -1,6 +1,6 @@
 option java_package = "com.manager.biz.protocol";
 option java_outer_classname = "LoginProtos"; 
-import "base.proto";
+import "pb/basketballPB/base.proto";
 
 
 //客户端用命名空间

@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+//区服信息
+message ServerInfoResS{
+        sint32      ret                         =1;//ret
+        repeated    JdbcInfoPBS     date_jdbc    =2;//data库区服信息
+        repeated    JdbcInfoPBS     game_jdbc    =3;//game库区服信息
+}
+
+//jdbc信息
+message JdbcInfoPBS{
+                    string          server_id                               = 1;//数据库ID
+                    string          server_name                             = 2;//数据库名字
+}
+
+
+// 数据对比回包
+message DataComparisonResS{
+    sint32      ret                         = 1;//响应码
+    repeated    DataComparisonPBS    data    = 2;//表及对应数据
+    string      extra                       = 3;//额外内容
+}
+
+// 数据对比回包
+message DataComparisonPBS{
+    string      table_name                  = 1;//表名
+    repeated    string      data            = 2;//数据
+}
+
+// 数据对比请求
+message DataComparisonReqS{
+    string      server_id                   = 1;//区服
+    string      source_mark                 = 2;//库类型:data,game
+    sint32      query_type                  = 3;//查询类型：1：表查询，2：字段查询
+    repeated    DataComparisonKey     query_param      = 4;//查询入参
+}
+
+// 数据对比内容
+message DataComparisonKey{
+    string          table_name      =1;//表名
+    string          col_name        =2;//列名
+    repeated    string    col_value       =3;//查询值
+}
