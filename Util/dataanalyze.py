@@ -108,16 +108,33 @@ def write_excel(data_array, filename):
     if not data_array:
         return False
     xls = xlwt.Workbook()
+    _index = 1
+    #先判断
+    if "field" in data_array.keys():
+        field_item = {"table_name": 0, "col_name": 1, "col_value": 2}
+        sheet = xls.add_sheet('field')
+        print(data_array['field'])
+        field_index = 0
+        for item in data_array['field']:
+            for _key, _value in field_item.items():
+                field_row = 1
+                sheet.write(0, field_index+_value, _key)
+                for _item in item[_key]:
+                    sheet.write(field_row, field_index+_value, _item)
+                    field_row += 1
+            field_index += 3
+        data_array.pop("field")
+        _index = 2
+
     sheet = xls.add_sheet('Tables')
     row = 0
     for name in data_array.keys():
-        sheet.write(row, 0, row+1)
+        sheet.write(row, 0, row+_index)
         sheet.write(row, 1, name)
         row += 1
-    key = 1
+    key = _index
     for name in data_array.keys():
         try:
-
             if len(name) >= 31:
                 sheet = xls.add_sheet(str(key))
             else:
@@ -161,12 +178,15 @@ def read_excel_columns(path, key, sheet_name=0):
 
 #一次性读取母文件及所有表内容
 def read_excel_mu_datas(path):
+    names = dict()
     excelfile = xlrd.open_workbook(path)
     sheet = excelfile.sheet_by_index(0)
+    if sheet.name == "field":
+        names['field'] = 0
+        sheet = excelfile.sheet_by_index(1)
     if sheet.ncols != 2:
         return -2
     big_datas = dict()
-    names = dict()
     for row in range(sheet.nrows):
         names[sheet.cell_value(row, 1)] = int(sheet.cell_value(row, 0))
     for name in names.keys():
@@ -203,7 +223,7 @@ def read_excel_datas(path, index):
     for row in range(sheet.nrows):
         content = []
         for col in range(sheet.ncols):
-            if sheet.cell_type(row, col) ==3:
+            if sheet.cell_type(row, col) == 3:
                 content.append(xlrd.xldate_as_datetime(sheet.cell_value(row, col), 0))
             else:
                 content.append(sheet.cell_value(row, col))
@@ -230,7 +250,9 @@ def read_excel_names(path):
     excelfile = xlrd.open_workbook(path)
     sheet = excelfile.sheet_by_index(0)
     if sheet.ncols != 2:
-        return -2
+        sheet = excelfile.sheet_by_index(1)
+        if sheet.ncols != 2:
+            return -2
     names = dict()
     for row in range(sheet.nrows):
         names[sheet.cell_value(row, 1)] = int(sheet.cell_value(row, 0))
@@ -238,15 +260,35 @@ def read_excel_names(path):
         if 'sheet' in name:
             return -2
     return names
+
+#读取字段下载方式文件（新足）
+def read_field_table(path):
+    result = []
+    excelfile = xlrd.open_workbook(path)
+    sheet = excelfile.sheet_by_index(0)
+    if sheet.ncols % 3 != 0:
+        return -1
+    for i in range(int(sheet.ncols / 3)):
+        interim = {}
+        j = 0
+        for _ in ["table_name", "col_name", "col_value"]:
+            items = set(sheet.col_values(i*3+j)[1:])
+            if '' in items:
+                items.remove('')
+            interim[_] = list(items)
+            j += 1
+        result.append(interim)
+    return result
+
 #读取配置文件（table list）
 def read_save_names(path):
     excelfile = xlrd.open_workbook(path)
     sheet = excelfile.sheet_by_index(0)
     array = []
-    if (sheet.nrows>=500) or (sheet.nrows==0) or (sheet.ncols>=500):
+    if (sheet.nrows >= 500) or (sheet.nrows == 0) or (sheet.ncols >= 500):
         return -1
-    for nrow in range(sheet.nrows):
-        for content in sheet.row_values(nrow):
+    for mcol in range(sheet.ncols):
+        for content in sheet.col_values(mcol):
             if content != '' and content not in array:
                 array.append(content)
     return array
@@ -265,6 +307,8 @@ if __name__ == '__main__':
     buf_1['list2'] = change_dic(buf)
     write_excel(buf_1)
     '''
-    array = read_save_names('C:/Users/admin/AppData/Local/Programs/Python/Python37/python_py/test.xls')
-    for each in array:
-        print(each)
+    # array = read_save_names('C:/Users/admin/AppData/Local/Programs/Python/Python37/python_py/test.xls')
+    # for each in array:
+    #     print(each)
+    #content = read_excel_columns(r"C:\Users\Administrator\Desktop\data.xlsx", 1, sheet_name="字段表")
+    pass
