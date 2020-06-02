@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2019/11/25 17:27
 # @Author  : zzt
-# @File    : fifthPage.py
+# @File    : fourthPage.py
 
 from tkinter import filedialog
 import os
@@ -10,7 +10,7 @@ import re
 import subprocess
 import datetime
 
-class FifthPage():
+class FourthPage():
     def __init__(self, parent):
         self.parent = parent
         self.create_buttons()

@@ -285,8 +285,8 @@ class SecondPage():
         with open('cfg.ini', 'w') as f:
             cfg.write(f)
 
-        self.insert_info('服务器： %s' % self._account[0], 1,1)
-        self.insert_info('管理后台账号： %s' % self._account[1], 1,1)
+        self.insert_info('服务器： %s' % self._account[0], 1, 1)
+        self.insert_info('管理后台账号： %s' % self._account[1], 1, 1)
         self.insert_info('管理后台密码： ******', 1, 1)
         self.insert_info('验证的邮箱账号： %s' % self._account[3], 1, 1)
         self.insert_info('验证的邮箱密码： ******', 1, 1)
@@ -345,6 +345,7 @@ class SecondPage():
         #初始化http
         self._http = FactoryHttpClient().create_client(self._account[0], self)
         ret = self._http.login(self._account[1:])
+        print(str(ret))
         # #先登录
         # self.insert_info('正在登陆管理后台账号：%s ...' % self._account[1], 1)
         # self._http.login(self._account[1], self._account[2])
@@ -583,6 +584,7 @@ class SecondPage():
         v.set(path)
         if is_save:
             array = dataanalyze.read_save_names(path)
+            print("array:", str(array))
         else:
             array = dataanalyze.read_excel_names(path)
         if array == -1:
@@ -622,7 +624,6 @@ class SecondPage():
         if local_table_names == -1:
             self.insert_info('文件第一页内容为空或超过300行/列，请检查配置文件', 1, 2)
             return
-        print("tales: ", str(local_table_names))
         field_tables = ''
         if self._account[0] == managemnt_background[2]:
             #最佳11人
@@ -647,6 +648,7 @@ class SecondPage():
             data = {
                 "server_id": self.server_id,
                 "source_mark": "data" if "data" in self.com1_4.get() else "game",
+                #"source_mark": "game",
                 "query_type": query_type,
                 "query_param": params,
             }
