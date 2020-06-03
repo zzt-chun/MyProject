@@ -10,6 +10,8 @@ import gitlab
 from page.topUiExcel import GitTopUiInfo
 import os
 from tkinter import messagebox
+import sys
+import gitlab.v4.objects
 
 
 def get_now_time():
@@ -61,7 +63,7 @@ class FifthPage(object):
         lf_2.grid(row=1, column=0, columnspan=2, pady=5, padx=10)
         but1 = tk.Button(f0, text='开  始  检  查', width=18, height=2, command=lambda: self.button_check_git())
         but1.grid(row=0, column=2, padx=5, pady=5)
-        but2 = tk.Button(f0, text='下  载  差  异', width=18, height=2, command=lambda: self.button_download())
+        but2 = tk.Button(f0, text='打  印  差  异', width=18, height=2, command=lambda: self.button_download())
         but2.grid(row=1, column=2, padx=5, pady=5)
         tk.Label(lf_2, text="分支创建时间: ").grid(row=1, column=0, padx=5, pady=5)
         ent1 = tk.StringVar()
@@ -111,7 +113,8 @@ class FifthPage(object):
             self.insert_info("未发现差异信息", 1, 1)
             return
         for _ in self.target_info[1:]:
-            self.insert_info(str(_))
+            if _[-2] == 2:
+                self.insert_info(str(_))
 
     def change_filter(self, ent):
         _value = ent.get()
@@ -132,8 +135,11 @@ class FifthPage(object):
 
     def choose_project(self, com1, com2):
         project_name = com1.get()
-        self._client = gitlab.Gitlab(PROJECT_INFO[project_name][0], private_token=PROJECT_INFO[project_name][1])
-        self._client.auth()
+        try:
+            self._client = gitlab.Gitlab(PROJECT_INFO[project_name][0], private_token=PROJECT_INFO[project_name][1])
+            self._client.auth()
+        except Exception:
+            self.insert_info(str(sys.exc_info()), 1, 2)
         self.insert_info("登录成功", 1, 1)
         #projects = client.projects.list()  # 获取所有项目信息
         self._project = self._client.projects.get(id=PROJECT_INFO[project_name][2])  # 获取对应项目
@@ -180,24 +186,27 @@ class FifthPage(object):
             master_info.append([info.title, info.created_at[:-10], info.committer_name, info.id, index, 0])
         del logs_target
         del logs_master
+        index_tar = 0
         for info in self.target_info[1:]:
+            index_tar += 1
             #不匹配过滤单位
             if info[-2] == 3:
                 continue
             exist = False
-            index = 0
+            index_mat = 0
             for _info in master_info[1:]:
+                index_mat += 1
                 # 不匹配过滤单位
                 if info[-2] == 3:
                     continue
                 if info[0] == _info[0]:
                     info[-2] = 1
-                    info[-1] = index
+                    info[-1] = index_mat
                     _info[-2] = 1
+                    _info[-1] = index_tar
                     print("找到相同项： %s" % info[0])
                     exist = True
                     continue
-                index += 1
             if not exist:
                 info[-2] = 2
         for _ in self.target_info[1:]:

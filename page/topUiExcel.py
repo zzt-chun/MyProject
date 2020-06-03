@@ -115,34 +115,61 @@ class GitTopUiInfo(object):
 
     def fun_left(self, event):
         idd = self.tree.identify_row(event.y)  # 获取表一点击选中行数
-        print("idd = %s" % str(idd))
+        #print("idd = %s" % str(idd))
         #self.tree_1.selection_set(idd)  # 设置表二中与表一相同位置为选中状态
-        x, y = self.tree.yview()  # 获取表一滚动条位置
+        #x, y = self.tree.yview()  # 获取表一滚动条位置
         #self.tree_1.yview(tk.MOVETO, x)  # 设置表二滚动条位置与表一一致
-        x_x, x_y = self.tree.xview()
+        #x_x, x_y = self.tree.xview()
         #self.tree_1.xview(tk.MOVETO, x_x)
-        print("x1, y1 = %s,  %s" % (x, y))
-        print("x2, y2 = %s,  %s" % (x_x, x_y))
+        # print("x1, y1 = %s,  %s" % (x, y))
+        # print("x2, y2 = %s,  %s" % (x_x, x_y))
         '''
         print('x, y = ', event.x, event.y)
         print('idd, col = ', self.tree.identify_row(event.y), self.tree.identify_column(event.x))
         print('bbox= ', self.tree.bbox(self.tree.identify_row(event.y), self.tree.identify_column(event.x)))
         '''
+        print("type(idd) = %s, idd = %s" % (type(idd), idd))
+        vals = self.tree.item(idd, "values")
+        _num = int(vals[-1])
+        if _num <= 0:
+            return
+        elif 0 < _num < 16:
+            num = "I00" + hex(_num)[2:].upper()
+        elif 16 <= _num < 256:
+            num = "I0" + hex(_num)[2:].upper()
+        else:
+            num = "I" + hex(_num)[2:].upper()
+            # print("num = %s" % str(_num))
+            # print("目标id:", num)
+        self.tree_1.selection_set(num)  # 设置表二中与表一相同位置为选中状态
+        self.tree_1.see(num)
 
     def fun_right(self, event):
         idd = self.tree_1.identify_row(event.y)  # 获取表一点击选中行数
-        print("idd = %s" % str(idd))
+        print("type(idd) = %s, idd = %s" % (type(idd), idd))
         vals = self.tree_1.item(idd, "values")
-        print("选中的为： %s" % str(vals))
-        self.tree.selection_set(idd)  # 设置表二中与表一相同位置为选中状态
-        x, y = self.tree_1.yview()  # 获取表一滚动条位置
+        #print("选中的为： %s" % str(vals))
+        _num = int(vals[-1])
+        if _num <= 0:
+            return
+        elif 0 < _num < 16:
+            num = "I00" + hex(_num)[2:].upper()
+        elif 16 <= _num < 256:
+            num = "I0" + hex(_num)[2:].upper()
+        else:
+            num = "I" + hex(_num)[2:].upper()
+
+        self.tree.selection_set(num)  # 设置表二中与表一相同位置为选中状态
+        #x, y = self.tree_1.yview()  # 获取表一滚动条位置
         #self.tree.yview(tk.MOVETO, x)  # 设置表二滚动条位置与表一一致
-        x_x, x_y = self.tree_1.xview()
+        #x_x, x_y = self.tree_1.xview()
         #self.tree.xview(tk.MOVETO, x_x)
         #self.tree.see(vals[-1])
-        self.tree.see("I4D7")
-        print("x1, y1 = %s,  %s" % (x, y))
-        print("x2, y2 = %s,  %s" % (x_x, x_y))
+            #print("num = %s" % str(_num))
+            #print("目标id:", num)
+        self.tree.see(num)
+        #print("x1, y1 = %s,  %s" % (x, y))
+        #print("x2, y2 = %s,  %s" % (x_x, x_y))
         #self.tree.yview_moveto(1.0)    #定位到最后一行
 
     def create_excel(self, data1, data2):
