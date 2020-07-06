@@ -1,6 +1,8 @@
-import xlwt
 import datetime
+
 import xlrd
+import xlwt
+
 
 def change_dic(dic):
     '''
@@ -14,6 +16,7 @@ def change_dic(dic):
         buf.append(list(each.values()))
     return buf
 
+
 def change_dic_by_name(dic):
     dic = change_dic(dic)
     _dic = list()
@@ -23,7 +26,8 @@ def change_dic_by_name(dic):
         _dic.append(_[0])
     return [_dic]
 
-#保存常规excel文件：内容保存在第一页sheet中的第一列
+
+# 保存常规excel文件：内容保存在第一页sheet中的第一列
 def write_general_excel(datas, file_name):
     xls = xlwt.Workbook()
     sheet = xls.add_sheet('Tables_list')
@@ -35,8 +39,8 @@ def write_general_excel(datas, file_name):
 def change_dif_data(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, row_name):
     data1, data2 = [], []
     max_row = max(len(row_name[0]), len(row_name[1]))
-    data1.append(['列']+row_name[0]+['']*(max_row-len(row_name[0])))
-    data2.append(['列']+row_name[1]+['']*(max_row-len(row_name[1])))
+    data1.append(['列'] + row_name[0] + [''] * (max_row - len(row_name[0])))
+    data2.append(['列'] + row_name[1] + [''] * (max_row - len(row_name[1])))
     if dif_column_excel != [] or dif_column_data != []:
         try:
             len_excel = len(dif_column_excel[0][1])
@@ -47,34 +51,34 @@ def change_dif_data(dif_array, dif_row_excel, dif_column_excel, dif_row_data, di
         except IndexError:
             len_data = 0
         for col in range(1, max(len_excel, len_data)):
-            buf_1, buf_2 = [col]+['']*max_row, [col]+['']*max_row
+            buf_1, buf_2 = [col] + [''] * max_row, [col] + [''] * max_row
             for row, content in dif_column_data:
-                buf_1[row+1] = content[col]
+                buf_1[row + 1] = content[col]
             for row, content in dif_column_excel:
-                buf_2[row+1] = content[col]
+                buf_2[row + 1] = content[col]
             data1.append(buf_1)
             data2.append(buf_2)
         for x, y, one, two in dif_array:
-            data1[x-1][y] = one
-            data2[x-1][y] = two
+            data1[x - 1][y] = one
+            data2[x - 1][y] = two
         for x, content in dif_row_data:
             if x >= len(data1):
-                data1.append([x]+content+['']*(max_row-len(row_name[0])))
-                data2.append([x]+['']*max_row)
+                data1.append([x] + content + [''] * (max_row - len(row_name[0])))
+                data2.append([x] + [''] * max_row)
             else:
                 data1[x][1:] = content
         for x, content in dif_row_excel:
             if x >= len(data2):
-                data2.append([x]+content+['']*(max_row-len(row_name[1])))
+                data2.append([x] + content + [''] * (max_row - len(row_name[1])))
                 data1.append([x] + [''] * max_row)
             else:
                 data2[x][1:] = content
     elif dif_array != []:
         for col in range(dif_array[-1][0]):
-            buf_1,  buf_2 = [col+1]+['']*max_row, [col+1]+['']*max_row
+            buf_1, buf_2 = [col + 1] + [''] * max_row, [col + 1] + [''] * max_row
             data1.append(buf_1)
             data2.append(buf_2)
-        buf = list(range(1, 1+dif_array[-1][0]))
+        buf = list(range(1, 1 + dif_array[-1][0]))
         for x, y, one, two in dif_array:
             if x in buf:
                 buf.remove(x)
@@ -84,21 +88,22 @@ def change_dif_data(dif_array, dif_row_excel, dif_column_excel, dif_row_data, di
             data1.pop(i)
             data2.pop(i)
         for x, content in dif_row_data:
-            data1.append([x+1]+content)
-            data2.append([x+1]+['']*max_row)
+            data1.append([x + 1] + content)
+            data2.append([x + 1] + [''] * max_row)
         for x, content in dif_row_excel:
-            data2.append([x+1]+content)
-            data1.append([x+1]+['']*max_row)
+            data2.append([x + 1] + content)
+            data1.append([x + 1] + [''] * max_row)
     else:
         for x, content in dif_row_data:
             if x >= len(data1):
-                data1.append([x+1]+content+['']*(max_row-len(row_name[0])))
-                data2.append([x+1]+['']*max_row)
+                data1.append([x + 1] + content + [''] * (max_row - len(row_name[0])))
+                data2.append([x + 1] + [''] * max_row)
         for x, content in dif_row_excel:
             if x >= len(data2):
-                data2.append([x+1]+content+['']*(max_row-len(row_name[1])))
+                data2.append([x + 1] + content + [''] * (max_row - len(row_name[1])))
                 data1.append([x + 1] + [''] * max_row)
     return data1, data2
+
 
 def write_excel(data_array, filename):
     '''
@@ -109,7 +114,7 @@ def write_excel(data_array, filename):
         return False
     xls = xlwt.Workbook()
     _index = 1
-    #先判断
+    # 先判断
     if "field" in data_array.keys():
         field_item = {"table_name": 0, "col_name": 1, "col_value": 2}
         sheet = xls.add_sheet('field')
@@ -118,9 +123,9 @@ def write_excel(data_array, filename):
         for item in data_array['field']:
             for _key, _value in field_item.items():
                 field_row = 1
-                sheet.write(0, field_index+_value, _key)
+                sheet.write(0, field_index + _value, _key)
                 for _item in item[_key]:
-                    sheet.write(field_row, field_index+_value, _item)
+                    sheet.write(field_row, field_index + _value, _item)
                     field_row += 1
             field_index += 3
         data_array.pop("field")
@@ -129,7 +134,7 @@ def write_excel(data_array, filename):
     sheet = xls.add_sheet('Tables')
     row = 0
     for name in data_array.keys():
-        sheet.write(row, 0, row+_index)
+        sheet.write(row, 0, row + _index)
         sheet.write(row, 1, name)
         row += 1
     key = _index
@@ -161,7 +166,8 @@ def write_excel(data_array, filename):
     xls.save(filename)
     return True
 
-#获取某sheet某name列内容
+
+# 获取某sheet某name列内容
 def read_excel_columns(path, key, sheet_name=0):
     ex = xlrd.open_workbook(path)
     if isinstance(sheet_name, int):
@@ -176,7 +182,8 @@ def read_excel_columns(path, key, sheet_name=0):
     index = rows.index(key)
     return sheet.col_values(index)
 
-#一次性读取母文件及所有表内容
+
+# 一次性读取母文件及所有表内容
 def read_excel_mu_datas(path):
     names = dict()
     excelfile = xlrd.open_workbook(path)
@@ -206,6 +213,7 @@ def read_excel_mu_datas(path):
         big_datas[name] = buf
     return big_datas
 
+
 def read_excel_datas(path, index):
     '''
     excelfile = xlrd.open_workbook(path)
@@ -230,11 +238,13 @@ def read_excel_datas(path, index):
         buf.append(content)
     return buf
 
-#读取sheet names
+
+# 读取sheet names
 def read_excel_sheets(path):
     return xlrd.open_workbook(path).sheet_names()
 
-#读取excel首行names
+
+# 读取excel首行names
 def read_cxcel_rows(path, name=None):
     ex = xlrd.open_workbook(path)
     if name == None:
@@ -245,7 +255,8 @@ def read_cxcel_rows(path, name=None):
         return -2
     return sheet.row_values(0)
 
-#读取母文件第一页sheet
+
+# 读取母文件第一页sheet
 def read_excel_names(path):
     excelfile = xlrd.open_workbook(path)
     sheet = excelfile.sheet_by_index(0)
@@ -261,7 +272,8 @@ def read_excel_names(path):
             return -2
     return names
 
-#读取字段下载方式文件（新足）
+
+# 读取字段下载方式文件（新足）
 def read_field_table(path):
     result = []
     excelfile = xlrd.open_workbook(path)
@@ -272,7 +284,7 @@ def read_field_table(path):
         interim = {}
         j = 0
         for _ in ["table_name", "col_name", "col_value"]:
-            items = set(sheet.col_values(i*3+j)[1:])
+            items = set(sheet.col_values(i * 3 + j)[1:])
             if '' in items:
                 items.remove('')
             interim[_] = list(items)
@@ -280,7 +292,8 @@ def read_field_table(path):
         result.append(interim)
     return result
 
-#读取配置文件（table list）
+
+# 读取配置文件（table list）
 def read_save_names(path):
     excelfile = xlrd.open_workbook(path)
     sheet = excelfile.sheet_by_index(0)
@@ -292,6 +305,7 @@ def read_save_names(path):
             if content != '' and content not in array:
                 array.append(content)
     return array
+
 
 if __name__ == '__main__':
     '''
@@ -310,5 +324,5 @@ if __name__ == '__main__':
     # array = read_save_names('C:/Users/admin/AppData/Local/Programs/Python/Python37/python_py/test.xls')
     # for each in array:
     #     print(each)
-    #content = read_excel_columns(r"C:\Users\Administrator\Desktop\data.xlsx", 1, sheet_name="字段表")
+    # content = read_excel_columns(r"C:\Users\Administrator\Desktop\data.xlsx", 1, sheet_name="字段表")
     pass

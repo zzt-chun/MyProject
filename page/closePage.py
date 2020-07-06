@@ -2,8 +2,8 @@
 # @Time    : 2020/3/5 12:28
 # @Author  : zzt
 # @File    : closePage.py
-from tkinter import messagebox
 import tkinter as tk
+
 
 def on_closing(root):
     top = tk.Toplevel()
@@ -14,13 +14,12 @@ def on_closing(root):
     but2.pack(side=tk.RIGHT)
 
 
-
 if __name__ == "__main__":
     root = tk.Tk()
     root.title('测试内部工具 v_2.2')
     root.resizable(0, 0)
     root.geometry("+500+200")
     root.protocol("WM_DELETE_WINDOW", on_closing(root))
-    #on_closing(root)
+    # on_closing(root)
 
     root.mainloop()

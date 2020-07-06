@@ -3,19 +3,20 @@
 # @Author  : zzt
 # @File    : uiShow.py
 
-import tkinter as tk
 import json
 import sys
+import tkinter as tk
 from tkinter import messagebox
+
 
 class UiShow(object):
 
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("发送与接口数据展示工具")
-        #self.root.resizable(0, 0)
-        #self.f = tk.Frame(self.root, height=300, width=130)
-        #self.f.pack()
+        # self.root.resizable(0, 0)
+        # self.f = tk.Frame(self.root, height=300, width=130)
+        # self.f.pack()
         self.f0 = tk.LabelFrame(self.root, text="req")
         self.f1 = tk.LabelFrame(self.root, text="res")
         self.f0.pack(side="left", expand="yes", fill="both")
@@ -40,6 +41,7 @@ class UiShow(object):
         self.tex1.insert(tk.END, res)
         self.root.mainloop()
 
+
 def except_ui_show(func):
     def warpper(*args, **kwargs):
         try:
@@ -47,6 +49,7 @@ def except_ui_show(func):
         except:
             error_buf = sys.exc_info()
             messagebox.showerror(error_buf[0].__name__, error_buf[1])
+
     return warpper
 
 
@@ -57,6 +60,7 @@ from google.protobuf.descriptor import FieldDescriptor as FD
 
 class ConvertException(Exception):
     pass
+
 
 def dict2pb(cls, adict, strict=False):
     """
@@ -132,13 +136,12 @@ def json2pb(cls, json, strict=False):
     """
     return dict2pb(cls, simplejson.loads(json), strict)
 
+
 def pb2json(obj):
     """
     Takes a ProtoBuf Message obj and convertes it to a json string.
     """
     return simplejson.dumps(pb2dict(obj), sort_keys=True, indent=4)
-
-
 
 
 if __name__ == "__main__":

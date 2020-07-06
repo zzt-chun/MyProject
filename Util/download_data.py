@@ -4,11 +4,12 @@
 # @File    : download_data.py
 
 import requests
-from pb.basketballPB.proto_pb2 import DataComparisonRes
-from pb.basketballPB.login_pb2 import LoginReq, LoginRes, VerifyMailReq
-from pb.basketballPB.base_pb2 import StringRes
 
+from pb.basketballPB.base_pb2 import StringRes
+from pb.basketballPB.login_pb2 import LoginReq, LoginRes, VerifyMailReq
+from pb.basketballPB.proto_pb2 import DataComparisonRes
 from pb.pbjson import dict2pb
+
 
 class HttpClient(object):
 
@@ -16,7 +17,7 @@ class HttpClient(object):
         self.host = {
             "篮球国内": "http://123.57.55.156:8003",
             "篮球港澳台": "http://47.90.44.198:8002",
-                     }
+        }
         self.style = style
         self._url = ''
         self.cookie = {}
@@ -68,7 +69,7 @@ class HttpClient(object):
         ret = self._request(_data)
         res = LoginRes()
         res.ParseFromString(ret.content)
-        #UiShow().show("", pb2json(res))
+        # UiShow().show("", pb2json(res))
         return res
 
     def set_url(self, url):
@@ -83,6 +84,7 @@ class HttpClient(object):
 
 if __name__ == "__main__":
     from pb.basketballPB.proto_pb2 import DataComparisonReq
+
     # a = DataComparisonReq()
     # a.server_id = "test_1"
     # a.table_name.append('1')

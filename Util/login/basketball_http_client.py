@@ -3,14 +3,16 @@
 # @Author  : zzt
 # @File    : basketball_http_client.py
 
-from Util.login.http_client import HttpClient
-from pb.basketballPB.proto_pb2 import DataComparisonRes, DataComparisonReq
-from pb.basketballPB.login_pb2 import LoginReq, LoginRes, VerifyMailReq
-from pb.basketballPB.base_pb2 import StringRes
 import requests
-from pb.pbjson import dict2pb
+
+from Util.login.http_client import HttpClient
 from Util.mailUtil import MailClient
-from Util.uiShow import pb2dict, except_ui_show
+from Util.uiShow import pb2dict
+from pb.basketballPB.base_pb2 import StringRes
+from pb.basketballPB.login_pb2 import LoginReq, LoginRes, VerifyMailReq
+from pb.basketballPB.proto_pb2 import DataComparisonRes, DataComparisonReq
+from pb.pbjson import dict2pb
+
 
 class BasketballHttpClient(HttpClient):
 
@@ -46,7 +48,7 @@ class BasketballHttpClient(HttpClient):
     def _get_email_msg(self, _id, _pwd):
         # 登录邮箱
         self.informer.insert_info('正在登陆验证码邮件账号：%s...' % _id, 1)
-        mc =  MailClient(_id, _pwd)
+        mc = MailClient(_id, _pwd)
         self.informer.insert_info('登陆验证码邮件账号成。 -》下一步验证邮箱', 1, 1)
         _msg = mc.find_my_mail('account@galasports.com', 'The server authentication code-GALA Sports').split(':')[1][:4]
         mc.close()
@@ -67,7 +69,6 @@ class BasketballHttpClient(HttpClient):
             return
         return pb2dict(ret)
 
-
     def download_content(self, data):
         self.set_url("/teamC/dataComparison")
         _data = dict2pb(DataComparisonReq, data).SerializeToString()
@@ -85,7 +86,7 @@ class BasketballHttpClient(HttpClient):
         ret = self._request(_data)
         res = LoginRes()
         res.ParseFromString(ret.content)
-        #UiShow().show("", pb2json(res))
+        # UiShow().show("", pb2json(res))
         return res
 
     def set_cookie(self, cookies: {}):

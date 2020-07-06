@@ -5,5 +5,5 @@ from tiaozhuan51x27_png import img as tiaozhuan51x27
 pics = {
     'log.jpg': log_jpg,
     'logo_29x16.jpg': logo_29x16,
-    'tiaozhuan51x27.png':tiaozhuan51x27,
+    'tiaozhuan51x27.png': tiaozhuan51x27,
 }

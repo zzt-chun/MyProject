@@ -1,7 +1,6 @@
-import imaplib
-import email
 import datetime
-import base64
+import email
+import imaplib
 import time
 
 
@@ -13,7 +12,7 @@ class MailClient():
         self.connect.login(user, password)
 
     def find_my_mail(self, send, toal_title):
-        d1 = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()-5*60))
+        d1 = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time() - 5 * 60))
         return self.re_connect_server1(d1, send, toal_title)
 
     def select_mail1(self, d1, send, toal_title, range=100):
@@ -54,7 +53,7 @@ class MailClient():
                                 else:
                                     text = part.get_payload(decode=True)
                                     try:
-                                        #print("邮件内容为：'%s'" % text.decode())
+                                        # print("邮件内容为：'%s'" % text.decode())
                                         return text.decode()
                                     except:
                                         raise Exception("邮件解码异常")
@@ -69,7 +68,7 @@ class MailClient():
             time.sleep(1)
             count -= 1
             toal_list = self.select_mail1(d1, send, total_title)
-            #print("toal_list = %s " % toal_list)
+            # print("toal_list = %s " % toal_list)
             if len(toal_list) == 0:
                 print("第'%s'次重连没找到指定邮件" % str(count))
             else:
@@ -81,9 +80,7 @@ class MailClient():
         self.connect.logout()
 
 
-
-
 if __name__ == '__main__':
-    a = MailClient('liyang@galasports.net',"23fPa'62")
-    a.find_my_mail('2019-05-20 11:56:23','a13we6511@163.com','11111')
+    a = MailClient('liyang@galasports.net', "23fPa'62")
+    a.find_my_mail('2019-05-20 11:56:23', 'a13we6511@163.com', '11111')
     del a

@@ -5,6 +5,7 @@
 
 import requests
 
+
 class HttpClient(object):
 
     def __init__(self, style, informer):
@@ -37,10 +38,3 @@ class HttpClient(object):
 
     def set_cookie(self, cookies: {}):
         raise NotImplementedError
-
-
-
-
-
-
-

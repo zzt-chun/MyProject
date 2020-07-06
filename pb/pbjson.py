@@ -11,6 +11,7 @@ from google.protobuf.descriptor import FieldDescriptor as FD
 class ConvertException(Exception):
     pass
 
+
 def dict2pb(cls, adict, strict=False):
     """
     Takes a class representing the ProtoBuf Message and fills it with data from
@@ -42,9 +43,9 @@ def dict2pb(cls, adict, strict=False):
                     item = getattr(obj, field.name).add()
                     item.CopyFrom(dict2pb(msg_type._concrete_class, sub_dict))
             else:
-                #源代码
-                #map(getattr(obj, field.name).append, adict[field.name])
-                #修改后的
+                # 源代码
+                # map(getattr(obj, field.name).append, adict[field.name])
+                # 修改后的
                 list(map(getattr(obj, field.name).append, adict[field.name]))
 
         else:
@@ -88,6 +89,7 @@ def json2pb(cls, json, strict=False):
     the json string.
     """
     return dict2pb(cls, simplejson.loads(json), strict)
+
 
 def pb2json(obj):
     """

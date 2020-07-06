@@ -14,10 +14,11 @@ class Soccer2HttpClient(HttpClient):
     def __init__(self, style, informer):
         super().__init__(style, informer)
         self.host = {
-            #"最佳11人": "http://192.168.1.114:8687", #内网登录中心
+            "内网测试": "http://192.168.1.114:8687", #内网登录中心
             "最佳11人": "http://123.57.55.156:8004", #外网线上
             "最佳11人登录中心": "http://47.94.138.239:8002", #外网线上登录
             "干洋": "http://192.168.2.58:7002",
+            "内网": "http://192.168.1.123:7002",
 
         }
         self.headers = {
@@ -39,6 +40,7 @@ class Soccer2HttpClient(HttpClient):
 
     def _login_head(self, _id, _pwd):
         self.style = "最佳11人登录中心"
+        #self.style = "内网测试"
         self.set_url("/session/login")
         ret = self._request({'userId': _id, "password": _pwd})
         self.set_cookie({
@@ -57,6 +59,8 @@ class Soccer2HttpClient(HttpClient):
 
     def _get_jdbc(self):
         self.style = "最佳11人"
+        #self.style = "内网"
+        #self.style = "干洋"
         self.headers = self._headers
         self.set_url("/api/serverC/serverInfoList")
         ret = self._request()

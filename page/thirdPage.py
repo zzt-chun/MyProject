@@ -4,18 +4,18 @@
 # @File    : thirdPage.py
 
 
+import configparser
 import datetime
-from tkinter import filedialog
 import os
-import tkinter as tk
-from tkinter import ttk
-import time
 import re
 import subprocess
 import threading
-import configparser
+import time
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import ttk
 
-third_entry_info ={
+third_entry_info = {
     '触摸事件(0-100)': [[0, 0], [0, 1, None], '--pct-touch'],
     '手势事件(0-100)': [[1, 0], [1, 1, None], '--pct-motion'],
     '缩放事件(0-100)': [[2, 0], [2, 1, None], '--pct-pinchzoom'],
@@ -38,8 +38,10 @@ third_label_info = {
     '延时ms（必填）': [[5, 0], ['100', 5, 1, None], ['修改延时', 5, 2, None]],
 }
 
+
 def get_now_time():
     return datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
+
 
 class ThirdPage():
     def __init__(self, parent):
@@ -67,16 +69,21 @@ class ThirdPage():
         lf_1 = tk.Frame(self.parent)
         lf_1.grid(row=0, column=0, padx=2)
         for each in third_label_info.keys():
-            tk.Label(lf_1, text=each).grid(row=third_label_info[each][0][0], column=third_label_info[each][0][1], padx=3, pady=1)
+            tk.Label(lf_1, text=each).grid(row=third_label_info[each][0][0], column=third_label_info[each][0][1],
+                                           padx=3, pady=1)
             third_label_info[each][1][3] = tk.StringVar()
-            tk.Entry(lf_1, text=third_label_info[each][1][0], textvariable=third_label_info[each][1][3], width=15).grid(row=third_label_info[each][1][1], column=third_label_info[each][1][2], padx=4, pady=1)
-            tk.Button(lf_1, text=third_label_info[each][2][0], width=10, command=self.third_info_command[each]).grid(row=third_label_info[each][2][1], column=third_label_info[each][2][2], padx=5, pady=1)
+            tk.Entry(lf_1, text=third_label_info[each][1][0], textvariable=third_label_info[each][1][3], width=15).grid(
+                row=third_label_info[each][1][1], column=third_label_info[each][1][2], padx=4, pady=1)
+            tk.Button(lf_1, text=third_label_info[each][2][0], width=10, command=self.third_info_command[each]).grid(
+                row=third_label_info[each][2][1], column=third_label_info[each][2][2], padx=5, pady=1)
         lf_2 = tk.LabelFrame(self.parent, text='事件（可选）')
         lf_2.grid(row=0, column=1, pady=5, padx=10)
         for each in third_entry_info.keys():
-            tk.Label(lf_2, text=each).grid(row=third_entry_info[each][0][0], column=third_entry_info[each][0][1], padx=3, pady=1)
+            tk.Label(lf_2, text=each).grid(row=third_entry_info[each][0][0], column=third_entry_info[each][0][1],
+                                           padx=3, pady=1)
             third_entry_info[each][1][2] = tk.Entry(lf_2, width=16)
-            third_entry_info[each][1][2].grid(row=third_entry_info[each][1][0], column=third_entry_info[each][1][1], padx=3, pady=1)
+            third_entry_info[each][1][2].grid(row=third_entry_info[each][1][0], column=third_entry_info[each][1][1],
+                                              padx=3, pady=1)
         lf_3 = tk.Frame(self.parent)
         lf_3.grid(row=1, column=0, columnspan=2, padx=10)
         self.com = ttk.Combobox(lf_3, state='readonly')
@@ -128,17 +135,17 @@ class ThirdPage():
         array = dict(cfg.items(section))
         for name in list(array.keys())[:3]:
             if name not in list(third_label_info.keys())[-3:]:
-                self.insert_info('配置文件<%s>异常，不存在《%s》'%(section, name), 1, 2)
+                self.insert_info('配置文件<%s>异常，不存在《%s》' % (section, name), 1, 2)
                 return
             value = array[name]
             if name != '日志等级（必填）' and value != '':
                 try:
-                     value = int(array[name])
+                    value = int(array[name])
                 except ValueError:
-                    self.insert_info('<%s> = %s, 配置异常， <%s>的值应为数字'%(name, value, name), 1, 2)
+                    self.insert_info('<%s> = %s, 配置异常， <%s>的值应为数字' % (name, value, name), 1, 2)
             third_label_info[name][1][3].set(value)
             self.third_info_command[name]()
-            self.insert_info('<%s> = "%s"'%(name, value))
+            self.insert_info('<%s> = "%s"' % (name, value))
         for name in list(array.keys())[3:]:
             if name not in list(third_entry_info.keys()):
                 self.insert_info('配置文件<%s>异常，不存在《%s》' % (section, name), 1, 2)
@@ -152,7 +159,7 @@ class ThirdPage():
         cfg.read('cfg.ini')
         section_name = self.save_entry.get()
         if section_name in cfg.sections():
-            self.insert_info('自定义名<%s>已存在，保存失败！'%section_name, 1, 2)
+            self.insert_info('自定义名<%s>已存在，保存失败！' % section_name, 1, 2)
             return
         cfg[section_name] = {}
         for name in list(third_label_info.keys())[-3:]:
@@ -161,7 +168,7 @@ class ThirdPage():
             cfg[section_name][name] = third_entry_info[name][1][2].get()
         with open('cfg.ini', 'w') as f:
             cfg.write(f)
-        self.insert_info('配置<%s>保存成功, 正在重新加载一键配置....'%section_name, 1, 1)
+        self.insert_info('配置<%s>保存成功, 正在重新加载一键配置....' % section_name, 1, 1)
         time.sleep(1)
         self.load_config(self.com)
 
@@ -170,14 +177,14 @@ class ThirdPage():
 
     def get_package_name(self):
         if self.device_id == None:
-            self.insert_info('请先获取设备号',1)
+            self.insert_info('请先获取设备号', 1)
             return
         path = filedialog.askopenfilename(filetypes=[('APK', '*.apk')])
         if path == '':
             self.insert_info('没有导入包', 1)
             return
         shell_c = 'aapt dump badging ' + path
-        #install = 'adb -s %s install '%self.device_id + path
+        # install = 'adb -s %s install '%self.device_id + path
         p = r"package: name='([a-z.]+)'"
         ret = self.subprocess_check_output(shell_c)
         '''
@@ -196,15 +203,15 @@ class ThirdPage():
         if len(name) == 1:
             third_label_info['待测包(必选)'][1][3].set(name[0])
             self.package_name = name[0]
-            self.insert_info('被测包名为： %s'%self.package_name)
+            self.insert_info('被测包名为： %s' % self.package_name)
         else:
             third_label_info['待测包(必选)'][1][3].set('')
             self.insert_info('请检查导入包是否为符合要求的.apk包, 或者路径有包含中文', 1, 2)
             self.package_name = ''
             return
         self.package_name = name[0]
-        #ret = subprocess.getoutput(install)
-        #self.insert_info(ret)
+        # ret = subprocess.getoutput(install)
+        # self.insert_info(ret)
 
     def set_random_key(self):
         value = third_label_info['伪随机值(可选)'][1][3].get()
@@ -212,7 +219,7 @@ class ThirdPage():
             value = int(value)
             if value > 0:
                 self.random_key = value
-                self.insert_info('<伪随机值>=%s, 修改成功！'%self.random_key, 1, 1)
+                self.insert_info('<伪随机值>=%s, 修改成功！' % self.random_key, 1, 1)
             else:
                 self.insert_info('<伪随机值>不能小于等于0, 请检查', 1, 2)
         except ValueError:
@@ -221,7 +228,7 @@ class ThirdPage():
     def set_log_level(self):
         value = third_label_info['日志等级（必填）'][1][3].get()
         if value not in ['', '-v', '-v -v', '-v -v -v']:
-            self.insert_info('<日志等级>格式不符要求<%s>，请检查'%['', '-v', '-v -v', '-v -v -v'], 1, 2)
+            self.insert_info('<日志等级>格式不符要求<%s>，请检查' % ['', '-v', '-v -v', '-v -v -v'], 1, 2)
             return
         self.log_level = value
         self.insert_info('<日志等级>=%s, 修改成功！' % self.log_level, 1, 1)
@@ -232,7 +239,7 @@ class ThirdPage():
             value = int(value)
             if value > 0:
                 self.event_count = value
-                self.insert_info('<事件数量>=%s, 修改成功！'%self.event_count, 1, 1)
+                self.insert_info('<事件数量>=%s, 修改成功！' % self.event_count, 1, 1)
             else:
                 self.insert_info('<事件数量>不能小于0, 请检查', 1, 2)
         except ValueError:
@@ -252,7 +259,7 @@ class ThirdPage():
 
     def insert_info(self, information, use_time=0, tag=0):
         if use_time:
-            time = get_now_time()+': '
+            time = get_now_time() + ': '
         else:
             time = ''
         if tag == 0:
@@ -261,11 +268,11 @@ class ThirdPage():
             this_tag = 'tag1'
         elif tag == 2:
             this_tag = 'tag2'
-        self.tex.insert(tk.END, time+information+'\n', this_tag)
+        self.tex.insert(tk.END, time + information + '\n', this_tag)
 
     def break_monkey(self):
-        find_monkey_pid = 'adb -s %s shell ps | find "monkey"'%self.device_id
-        kill_pid = 'adb -s %s shell kill '%self.device_id
+        find_monkey_pid = 'adb -s %s shell ps | find "monkey"' % self.device_id
+        kill_pid = 'adb -s %s shell kill ' % self.device_id
         p = 'shell[ ]+([0-9]+) '
         ret = self.subprocess_check_output(find_monkey_pid)
         pid = re.findall(p, ret)
@@ -274,8 +281,7 @@ class ThirdPage():
             return
         kill_pid = kill_pid + pid[0]
         ret = self.subprocess_check_output(kill_pid)
-        self.insert_info('pid= %s 删除完成'%pid[0], 1, 1)
-
+        self.insert_info('pid= %s 删除完成' % pid[0], 1, 1)
 
     def start_monkey(self):
         if self.is_run['is_alive'] != None:
@@ -284,37 +290,37 @@ class ThirdPage():
                 return
         self.shell_conmmand = 'adb'
         if self.device_id == None:
-            self.insert_info('请先获取设备号',1)
+            self.insert_info('请先获取设备号', 1)
             return
         else:
-            self.shell_conmmand = ''.join([self.shell_conmmand, ' -s %s shell monkey'%self.device_id])
+            self.shell_conmmand = ''.join([self.shell_conmmand, ' -s %s shell monkey' % self.device_id])
 
         if self.package_name == '':
             self.insert_info('需要先识别出被测apk包的包体名，用来锁定monkey指令集合都用于被测包', 1)
             return
         else:
-            self.shell_conmmand = ''.join([self.shell_conmmand, ' -p %s'%self.package_name])
+            self.shell_conmmand = ''.join([self.shell_conmmand, ' -p %s' % self.package_name])
         if self.log_level not in ['', '-v', '-v -v', '-v -v -v']:
-            self.insert_info('<日志等级>不符要求<%s>，请检查'%['', '-v', '-v -v', '-v -v -v'], 1, 2)
+            self.insert_info('<日志等级>不符要求<%s>，请检查' % ['', '-v', '-v -v', '-v -v -v'], 1, 2)
             return
         else:
-            self.shell_conmmand = ''.join([self.shell_conmmand, ' %s'%self.log_level])
+            self.shell_conmmand = ''.join([self.shell_conmmand, ' %s' % self.log_level])
         try:
             self.event_count = int(self.event_count)
             if self.event_count <= 0:
                 self.insert_info('<事件数量>不能小于0或为空')
                 return
         except ValueError or TypeError:
-            self.insert_info('<事件数量>不能为非数字： '%self.event_count, 1, 2)
+            self.insert_info('<事件数量>不能为非数字： ' % self.event_count, 1, 2)
             return
         try:
             self.interval = int(self.interval)
             if self.interval <= 0:
-                self.insert_info('<延时ms> 不能为小于0或为空',1)
+                self.insert_info('<延时ms> 不能为小于0或为空', 1)
                 return
-            self.shell_conmmand = ''.join([self.shell_conmmand, ' --throttle %d'%self.interval])
+            self.shell_conmmand = ''.join([self.shell_conmmand, ' --throttle %d' % self.interval])
         except ValueError:
-            self.insert_info('<延时ms>不能为非数字： '%self.interval,1)
+            self.insert_info('<延时ms>不能为非数字： ' % self.interval, 1)
             return
         total = 0
         is_continue = True
@@ -323,14 +329,14 @@ class ThirdPage():
             try:
                 value = int(value)
                 if 0 <= value <= 100:
-                    self.shell_conmmand = ''.join([self.shell_conmmand, ' %s %d'%(third_entry_info[name][2], value)])
+                    self.shell_conmmand = ''.join([self.shell_conmmand, ' %s %d' % (third_entry_info[name][2], value)])
                     total += value
                 else:
-                    self.insert_info('<%s>不能超过100或小于0'%name,1, 2)
+                    self.insert_info('<%s>不能超过100或小于0' % name, 1, 2)
                     is_continue = False
             except ValueError:
                 if value.strip() != '':
-                    self.insert_info('<%s>不能为非数字： %s'%(name, value),1, 2)
+                    self.insert_info('<%s>不能为非数字： %s' % (name, value), 1, 2)
                     is_continue = False
         if is_continue:
             if total > 100:
@@ -340,10 +346,12 @@ class ThirdPage():
                 if self.random_key == None:
                     send = ''
                 else:
-                    send = ' -s %s'%self.random_key
+                    send = ' -s %s' % self.random_key
                 filename = get_now_time().replace(':', '_')
                 filename = filename.replace(' ', '_')
-                self.shell_conmmand = ''.join([self.shell_conmmand,  send, ' %s' % self.event_count, ' >%s'%os.getcwd(), '\配置文件夹\monkey日志\monkey', filename, '.txt'])
+                self.shell_conmmand = ''.join(
+                    [self.shell_conmmand, send, ' %s' % self.event_count, ' >%s' % os.getcwd(),
+                     '\配置文件夹\monkey日志\monkey', filename, '.txt'])
                 self.insert_info('正在启动monkey.....', 1, 1)
                 self.insert_info('执行过程中，可随时中断', 1, 1)
                 self.insert_info(self.shell_conmmand)
@@ -373,8 +381,7 @@ class ThirdPage():
             self.device_id = None
             self.insert_info('这里不应该被执行')
 
-
-    #subprocess.getoutput()在打包“-w”后会出现subprocess无效问题而采用subprocess.Popen（）函数
+    # subprocess.getoutput()在打包“-w”后会出现subprocess无效问题而采用subprocess.Popen（）函数
     def subprocess_check_output(self, *args):
         p = subprocess.Popen(*args, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         msg = ''
@@ -383,16 +390,17 @@ class ThirdPage():
         status = p.wait()
         return msg
 
-#多线程启动跑monkey
+
+# 多线程启动跑monkey
 class MonkeyThread(threading.Thread):
     def __init__(self, shell_command, parent):
         threading.Thread.__init__(self)
         self.thread_stop = False
         self.shell_command = shell_command
         self.parent = parent
+
     def run(self):
         time.sleep(1)
         ret = ThirdPage.subprocess_check_output(self.parent, self.shell_command)
         ThirdPage.insert_info(self.parent, 'monkey执行完毕', 1, 1)
         ThirdPage.insert_info(self.parent, ret)
-
