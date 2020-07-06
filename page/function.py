@@ -62,11 +62,11 @@ def check_datas(data, excel):
     len_excel, len_data = len(excel), len(data)
     if not len_excel:
         if len_data:
-            dif_row_data = data
+            dif_row_data = [[1, data]]
         return dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data
     if not len_data:
         if len_excel > 1:
-            dif_row_excel = excel
+            dif_row_excel = [[1, excel]]
         return dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data
     col_excel, col_data = len(excel[0]), len(data[0])
     row = min(len_excel, len_data)
