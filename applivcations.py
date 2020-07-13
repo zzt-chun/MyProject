@@ -20,7 +20,7 @@ def callbackClose():
 
 
 root = tk.Tk()
-root.title('测试内部工具 v_3.0.1')
+root.title('测试内部工具 v_3.0.4')
 root.resizable(0, 0)
 root.geometry("+500+200")
 root.protocol("WM_DELETE_WINDOW", callbackClose)
@@ -61,8 +61,8 @@ f4.grid_forget()
 f5 = FunctionPageFrame(root, f0, rb_v, FifthPage, text='分支提交检查', photo=pics['logo_29x16.jpg'])
 f5.grid_forget()
 # 第六页
-f6 = FunctionPageFrame(root, f0, rb_v, SixthPage, text='一键导线上数据', photo=pics['logo_29x16.jpg'])
-f6.grid_forget()
+#f6 = FunctionPageFrame(root, f0, rb_v, SixthPage, text='一键导线上数据', photo=pics['logo_29x16.jpg'])
+#f6.grid_forget()
 
 # 最后一页
 f99 = FunctionPageFrame(root, f0, rb_v, text='待添加', photo=pics['logo_29x16.jpg'])

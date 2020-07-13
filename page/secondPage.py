@@ -641,7 +641,7 @@ class SecondPage():
             data = {
                 "server_id": self.server_id,
                 "source_mark": "data" if "data" in self.com1_4.get() else "game",
-                # "source_mark": "game",
+                #"source_mark": "game",
                 "query_type": query_type,
                 "query_param": params,
             }
@@ -901,8 +901,7 @@ class SecondPage():
 
             # time_4 = time.clock()
             # print('读取某文件花费时间： %f'%(time_4-time_3))
-            dif_array, dif_row_data, dif_column_data, dif_row_excel, dif_column_excel = check_datas(excel_array,
-                                                                                                    data_array)
+            dif_array, dif_row_data, dif_column_data, dif_row_excel, dif_column_excel = check_datas(data_array, excel_array)
             # time_5 = time.clock()
             # print('比对花费时间： %f'%(time_5-time_4))
             if len(data_array) == 0:

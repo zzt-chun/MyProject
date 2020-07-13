@@ -182,7 +182,7 @@ def show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_co
                         tex.insert(tk.END, '\t')
                     tex.insert(tk.END, '\n')
         if dif_row_data != []:
-            tex.insert(tk.END, '目标库或数据库一多的行内容：\n')
+            tex.insert(tk.END, '线上库或数据库一多的行内容：\n')
             for key, content in dif_row_data:
                 if content != '{}':
                     tex.insert(tk.END, '<%d行>多余的数据: \n' % key)
@@ -191,7 +191,7 @@ def show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_co
                         tex.insert(tk.END, '\t')
                     tex.insert(tk.END, '\n')
         if dif_column_data != []:
-            tex.insert(tk.END, '目标库或数据库一多的列内容：\n')
+            tex.insert(tk.END, '线上库或数据库一多的列内容：\n')
             for key, content in dif_column_data:
                 if content != '{}':
                     tex.insert(tk.END, '<%d列>多余的数据: \n' % key)
@@ -200,7 +200,7 @@ def show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_co
                         tex.insert(tk.END, '\t')
                     tex.insert(tk.END, '\n')
         if dif_array != []:
-            tex.insert(tk.END, '数据不一致部分(默认前者为目标库或数据库一, 后者为配置表或数据库二)： \n')
+            tex.insert(tk.END, '数据不一致部分(默认前者为线上库或数据库一, 后者为母文件或数据库二)： \n')
             for each in dif_array:
                 tex.insert(tk.END, '(%s行, %s列) %s <---> %s \n' % (each[0], each[1], each[2], each[3]), 'tag2')
 
@@ -215,18 +215,18 @@ def show_dif(dif_array, dif_data, dif_excel, tex, name='tables'):
         tex.insert(tk.END, '*****************<%s>存在差异*****************\n' % name, 'tag2')
         tex.tag_config('tag2', foreground='red')
         if dif_excel != []:
-            tex.insert(tk.END, '配置表或数据库二有多余数据：\n')
+            tex.insert(tk.END, '母文件或数据库二有多余数据：\n')
             for content in dif_excel:
                 if content != '{}':
                     tex.insert(tk.END, content, 'tag2')
             tex.insert(tk.END, '\n')
         if dif_data != []:
-            tex.insert(tk.END, '目标库或数据库一有多余数据： \n')
+            tex.insert(tk.END, '线上库或数据库一有多余数据： \n')
             for content in dif_data:
                 tex.insert(tk.END, content, 'tag2')
             tex.insert(tk.END, '\n')
         if dif_array != []:
-            tex.insert(tk.END, '数据不一致部分(默认前者为目标库或数据库一, 后者为配置表或数据库二)： \n')
+            tex.insert(tk.END, '数据不一致部分(默认前者为线上库或数据库一, 后者为母文件或数据库二)： \n')
             for content in dif_array:
                 tex.insert(tk.END, content, 'tag2')
             tex.insert(tk.END, '\n')
