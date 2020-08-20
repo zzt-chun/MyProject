@@ -11,6 +11,7 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import ttk
+import time
 
 from Util import linkdatabase, dataanalyze
 from Util.login.factory_client import FactoryHttpClient
@@ -651,7 +652,16 @@ class SecondPage():
                 "server_id": self.server_id,
                 "table_name": local_table_names
             }
-        print("data:", str(data))
+        # print("data:", str(data))
+        # for _ in params:
+        #     data["query_param"] = [_]
+        #     ret = self._http.download_content(data)
+        #     if getattr(ret, "ret"):
+        #         self.insert_info("下载数据失败： %s" % ret.extra, 1, 2)
+        #         print("下载失败：%s =  %s" % (str(_), str(ret)))
+        #     else:
+        #         print("下载成功： %s" % str(_))
+        # return
         ret = self._http.download_content(data)
         if self._account[0] == managemnt_background[2]:
             if getattr(ret, "ret"):
@@ -863,7 +873,7 @@ class SecondPage():
             if getattr(ret, "ret"):
                 self.insert_info("下载数据失败： %s" % ret.extra, 1, 2)
                 return
-            print("ret = ", str(ret))
+            #print("ret = ", str(ret))
         else:
             if ret.ret != 0:
                 self.insert_info("下载数据失败： %s" % ret.res, 1, 2)
@@ -973,8 +983,19 @@ class SecondPage():
             if len(excel_array) == 0:
                 excel_array = ['']
             # try:
+            # print("《%s》表的差异大小为： %s" % (name, sys.getsizeof(dif_array)+
+            #                            sys.getsizeof(dif_row_excel)+
+            #                            sys.getsizeof(dif_column_excel)+
+            #                            sys.getsizeof(dif_row_data)+
+            #                            sys.getsizeof(dif_column_data)))
             show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name,
                         [data_array[0], excel_array[0]])
+            # print("《%s》表的差异大小为： %s" % (name, sys.getsizeof(dif_array)+
+            #                            sys.getsizeof(dif_row_excel)+
+            #                            sys.getsizeof(dif_column_excel)+
+            #                            sys.getsizeof(dif_row_data)+
+            #                            sys.getsizeof(dif_column_data)))
+            #time.sleep(2)
             tex.update()
         self.insert_info("检查完毕，一共%s张表!" % len(names.keys()), 1, 1)
         messagebox.showinfo("提示", "检查完毕，一共%s张表!" % len(names.keys()))

@@ -87,6 +87,10 @@ def check_datas(data, excel):
                 if isinstance(a, datetime.datetime) and isinstance(b, str):
                     if str(a) == b:
                         continue
+                # 时间类型处理
+                if isinstance(b, datetime.datetime) and isinstance(a, str):
+                    if str(b) == a:
+                        continue
                 # 浮点数处理
                 if isinstance(a, float) and isinstance(b, str):
                     try:
@@ -116,8 +120,9 @@ def check_datas(data, excel):
                         continue
                 except:
                     pass
-                # print('type(a): %s = %s'%(a, type(a)))
-                # print('type(b): %s = %s'%(b, type(b)))
+                print('type(a): %s = %s，len(a)=%s'%(a, type(a), len(str(a))))
+                print('type(b): %s = %s，len(b)=%s'%(b, type(b), len(str(b))))
+                #print('type(b): %s = %s'%(b, type(b)))
                 dif_array.append([i + 1, j + 1, a, b])
     if len_data > row:
         for i in range(row, len_data):
