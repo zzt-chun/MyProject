@@ -859,6 +859,7 @@ class SecondPage():
             data = {
                 "server_id": self.server_id,
                 "source_mark": "data" if "data" in self.com1_4.get() else "game",
+                #"source_mark": "game",  #内网写死game
                 "query_type": query_type,
                 "query_param": params,
             }
@@ -868,6 +869,7 @@ class SecondPage():
                 "server_id": self.server_id,
                 "table_name": local_table_names
             }
+        print("Send contents: ", str(data))
         ret = self._http.download_content(data)
         if self._account[0] == managemnt_background[2]:
             if getattr(ret, "ret"):
@@ -974,8 +976,9 @@ class SecondPage():
             excel_array = names[name]
             # time_4 = time.clock()
             # print('读取某文件花费时间： %f'%(time_4-time_3))
-            dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = check_datas(data_array,
-                                                                                                    excel_array)
+            dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = check_datas(excel_array,
+                                                                                                    data_array,
+                                                                                                    )
             # time_5 = time.clock()
             # print('比对花费时间： %f'%(time_5-time_4))
             if len(data_array) == 0:
@@ -983,11 +986,11 @@ class SecondPage():
             if len(excel_array) == 0:
                 excel_array = ['']
             # try:
-            # print("《%s》表的差异大小为： %s" % (name, sys.getsizeof(dif_array)+
-            #                            sys.getsizeof(dif_row_excel)+
-            #                            sys.getsizeof(dif_column_excel)+
-            #                            sys.getsizeof(dif_row_data)+
-            #                            sys.getsizeof(dif_column_data)))
+            print("《%s》表的差异大小为： %s" % (name, sys.getsizeof(dif_array)+
+                                       sys.getsizeof(dif_row_excel)+
+                                       sys.getsizeof(dif_column_excel)+
+                                       sys.getsizeof(dif_row_data)+
+                                       sys.getsizeof(dif_column_data)))
             show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name,
                         [data_array[0], excel_array[0]])
             # print("《%s》表的差异大小为： %s" % (name, sys.getsizeof(dif_array)+

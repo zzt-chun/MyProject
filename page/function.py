@@ -120,8 +120,16 @@ def check_datas(data, excel):
                         continue
                 except:
                     pass
-                print('type(a): %s = %s，len(a)=%s'%(a, type(a), len(str(a))))
-                print('type(b): %s = %s，len(b)=%s'%(b, type(b), len(str(b))))
+
+                if isinstance(a, str) and isinstance(b, datetime.date):
+                    try:
+                        if a == b.strftime('%Y-%m-%d'):
+                            continue
+                    except:
+                        pass
+
+                # print('type(a): %s = %s，len(a)=%s'%(a, type(a), len(str(a))))
+                # print('type(b): %s = %s，len(b)=%s'%(b, type(b), len(str(b))))
                 #print('type(b): %s = %s'%(b, type(b)))
                 dif_array.append([i + 1, j + 1, a, b])
     if len_data > row:
