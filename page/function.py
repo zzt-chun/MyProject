@@ -127,7 +127,8 @@ def check_datas(data, excel):
                             continue
                     except:
                         pass
-
+                if a == '' and b == None:
+                    continue
                 # print('type(a): %s = %s，len(a)=%s'%(a, type(a), len(str(a))))
                 # print('type(b): %s = %s，len(b)=%s'%(b, type(b), len(str(b))))
                 #print('type(b): %s = %s'%(b, type(b)))
