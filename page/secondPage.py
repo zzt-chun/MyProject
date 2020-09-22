@@ -913,7 +913,7 @@ class SecondPage():
 
             # time_4 = time.clock()
             # print('读取某文件花费时间： %f'%(time_4-time_3))
-            dif_array, dif_row_data, dif_column_data, dif_row_excel, dif_column_excel = check_datas(data_array, excel_array)
+            dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = check_datas(data_array, excel_array)
             # time_5 = time.clock()
             # print('比对花费时间： %f'%(time_5-time_4))
             if len(data_array) == 0:
@@ -976,8 +976,8 @@ class SecondPage():
             excel_array = names[name]
             # time_4 = time.clock()
             # print('读取某文件花费时间： %f'%(time_4-time_3))
-            dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = check_datas(excel_array,
-                                                                                                    data_array,
+            dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = check_datas(data_array,
+                                                                                                    excel_array,
                                                                                                     )
             # time_5 = time.clock()
             # print('比对花费时间： %f'%(time_5-time_4))
