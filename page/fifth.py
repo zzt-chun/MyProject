@@ -21,9 +21,9 @@ def get_now_time():
 
 
 PROJECT_INFO = {
-    "篮球大师": ['http://git.wckj.com/', "9zsoYLmazszeHvEi8DS9", 37],
-    "足球大师": ['http://git.wckj.com/', "9zsoYLmazszeHvEi8DS9", 16],
-    "最佳11人": ['http://git.wckj.com/', "9zsoYLmazszeHvEi8DS9", 83],
+    "篮球大师": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 37],
+    "足球大师": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 16],
+    "最佳11人": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 83],
     # "最佳12人": ['http://git.wckj.com/', "9zsoYLmazszeHvEi8DS9", 83],
     # "最佳13人": ['http://git.wckj.com/', "9zsoYLmazszeHvEi8DS9", 83],
     # "最佳14人": ['http://git.wckj.com/', "9zsoYLmazszeHvEi8DS9", 83],
@@ -50,7 +50,7 @@ class FifthPage(object):
         f0.pack(anchor=tk.N)
         # 添加选择服务器下拉按钮
         com1 = ttk.Combobox(f0, state='readonly')
-        com1.bind("<<ComboboxSelected>>", lambda *args: self.choose_project(com1, com2))
+        com1.bind("<<ComboboxSelected>>", lambda *args: self.choose_project(com1, com2, com3))
         com1.set(' 选 择 项 目')
         com1['values'] = list(PROJECT_INFO.keys())
         com1.grid(row=0, column=0, padx=5, pady=10)
@@ -70,12 +70,18 @@ class FifthPage(object):
         tk.Entry(lf_2, text="2020-03-05", textvariable=ent1, width=26).grid(row=1, column=1, padx=5, pady=5)
         tk.Button(lf_2, text="修改创建时间", width=10, command=lambda: self.change_date(ent1)).grid(row=1, column=2, padx=5,
                                                                                               pady=5)
+
         ent1.set(self.target_branche_create_time)
         tk.Label(lf_2, text="过滤条件: ").grid(row=2, column=0, padx=5, pady=5)
         ent2 = tk.StringVar()
         tk.Entry(lf_2, text="Merge branch, Lua", textvariable=ent2, width=26).grid(row=2, column=1, padx=5, pady=5)
         tk.Button(lf_2, text="修改过滤条件", width=10, command=lambda: self.change_filter(ent2)).grid(row=2, column=2, padx=5,
                                                                                                 pady=5)
+        com3 = ttk.Combobox(lf_2, state='readonly', width=26)
+        com3.bind("<<ComboboxSelected>>", lambda *args: self.choose_branch(com3))
+        com3.set(' 选择目标分支（默认master）')
+        com3.grid(row=3, column=1, padx=5, pady=10)
+
         ent2.set("Merge branch, Lua")
         # 日志文本
         labelf = tk.LabelFrame(self.parent, text='日志文本：')
@@ -137,7 +143,7 @@ class FifthPage(object):
         else:
             self.insert_info("修改失败! 请检查时间格式是否满xx-xx-xx ：%s" % _value, 1, 2)
 
-    def choose_project(self, com1, com2):
+    def choose_project(self, com1, com2, com3):
         project_name = com1.get()
         try:
             self._client = gitlab.Gitlab(PROJECT_INFO[project_name][0], private_token=PROJECT_INFO[project_name][1])
@@ -153,6 +159,7 @@ class FifthPage(object):
         for i in branches:
             self._branches.update({i.name: getattr(i, "commit").get('created_at')})
         com2['values'] = list(self._branches.keys())
+        com3['values'] = list(self._branches.keys())
         # for _ in branches:
         #    print(_)
         self.insert_info("获取《%s》项目分支信息成功！" % project_name, 1, 1)
@@ -163,6 +170,14 @@ class FifthPage(object):
             self.insert_info("《%s》分支不存在！" % target, 1, 2)
             return
         self.target_branche = target
+        self.insert_info("选中《%s》分支成功！" % target, 1, 1)
+
+    def choose_branch_3(self, com3):
+        target = com3.get()
+        if target not in self._branches.keys():
+            self.insert_info("《%s》分支不存在！" % target, 1, 2)
+            return
+        self._master_name = target
         self.insert_info("选中《%s》分支成功！" % target, 1, 1)
 
     def button_check_git(self):
