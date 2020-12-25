@@ -53,34 +53,34 @@ class FifthPage(object):
         com1.bind("<<ComboboxSelected>>", lambda *args: self.choose_project(com1, com2, com3))
         com1.set(' 选 择 项 目')
         com1['values'] = list(PROJECT_INFO.keys())
-        com1.grid(row=0, column=0, padx=5, pady=10)
+        com1.grid(row=0, column=0, padx=5, pady=3)
         # 添加选择数据库下拉按钮
         com2 = ttk.Combobox(f0, state='readonly', width=26)
         com2.bind("<<ComboboxSelected>>", lambda *args: self.choose_branch(com2))
         com2.set(' 选 择 分 支')
-        com2.grid(row=0, column=1, padx=5, pady=10)
+        com2.grid(row=0, column=1, padx=5, pady=3)
         lf_2 = tk.LabelFrame(f0, text='可选')
-        lf_2.grid(row=1, column=0, columnspan=2, pady=5, padx=10)
+        lf_2.grid(row=1, column=0, columnspan=2, pady=3, padx=5)
         but1 = tk.Button(f0, text='开  始  检  查', width=18, height=2, command=lambda: self.button_check_git())
-        but1.grid(row=0, column=2, padx=5, pady=5)
+        but1.grid(row=0, column=2, padx=5, pady=3)
         but2 = tk.Button(f0, text='打  印  差  异', width=18, height=2, command=lambda: self.button_download())
-        but2.grid(row=1, column=2, padx=5, pady=5)
-        tk.Label(lf_2, text="分支创建时间: ").grid(row=1, column=0, padx=5, pady=5)
+        but2.grid(row=1, column=2, padx=5, pady=3)
+        tk.Label(lf_2, text="分支创建时间: ").grid(row=1, column=0, padx=5, pady=3)
         ent1 = tk.StringVar()
-        tk.Entry(lf_2, text="2020-03-05", textvariable=ent1, width=26).grid(row=1, column=1, padx=5, pady=5)
+        tk.Entry(lf_2, text="2020-12-25", textvariable=ent1, width=26).grid(row=1, column=1, padx=5, pady=3)
         tk.Button(lf_2, text="修改创建时间", width=10, command=lambda: self.change_date(ent1)).grid(row=1, column=2, padx=5,
-                                                                                              pady=5)
+                                                                                              pady=3)
 
         ent1.set(self.target_branche_create_time)
-        tk.Label(lf_2, text="过滤条件: ").grid(row=2, column=0, padx=5, pady=5)
+        tk.Label(lf_2, text="过滤条件: ").grid(row=2, column=0, padx=5, pady=3)
         ent2 = tk.StringVar()
-        tk.Entry(lf_2, text="Merge branch, Lua", textvariable=ent2, width=26).grid(row=2, column=1, padx=5, pady=5)
+        tk.Entry(lf_2, text="Merge branch, Lua", textvariable=ent2, width=26).grid(row=2, column=1, padx=5, pady=3)
         tk.Button(lf_2, text="修改过滤条件", width=10, command=lambda: self.change_filter(ent2)).grid(row=2, column=2, padx=5,
-                                                                                                pady=5)
+                                                                                                pady=3)
         com3 = ttk.Combobox(lf_2, state='readonly', width=26)
         com3.bind("<<ComboboxSelected>>", lambda *args: self.choose_branch(com3))
         com3.set(' 选择目标分支（默认master）')
-        com3.grid(row=3, column=1, padx=5, pady=10)
+        com3.grid(row=3, column=1, padx=5, pady=3)
 
         ent2.set("Merge branch, Lua")
         # 日志文本
@@ -96,10 +96,10 @@ class FifthPage(object):
         # 添加其他按钮
         tk.Button(self.parent, text='保存日志', command=lambda: self.save_log(self.tex), width=15).pack(anchor=tk.S,
                                                                                                     side=tk.RIGHT,
-                                                                                                    padx=3, pady=5)
+                                                                                                    padx=3, pady=3)
         tk.Button(self.parent, text='清除日志', command=lambda: self.tex.delete(1.0, tk.END)).pack(anchor=tk.S,
                                                                                                side=tk.RIGHT, padx=5,
-                                                                                               pady=5)
+                                                                                               pady=3)
 
     # 保存日志到当前目录（.txt）
     def save_log(self, e):

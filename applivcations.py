@@ -20,7 +20,7 @@ def callbackClose():
 
 
 root = tk.Tk()
-root.title('测试内部工具 v_3.0.4')
+root.title('测试内部工具 v_3.10.2')
 root.resizable(0, 0)
 root.geometry("+500+200")
 root.protocol("WM_DELETE_WINDOW", callbackClose)
