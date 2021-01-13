@@ -78,7 +78,7 @@ class FifthPage(object):
         tk.Button(lf_2, text="修改过滤条件", width=10, command=lambda: self.change_filter(ent2)).grid(row=2, column=2, padx=5,
                                                                                                 pady=3)
         com3 = ttk.Combobox(lf_2, state='readonly', width=26)
-        com3.bind("<<ComboboxSelected>>", lambda *args: self.choose_branch(com3))
+        com3.bind("<<ComboboxSelected>>", lambda *args: self.choose_branch_3(com3))
         com3.set(' 选择目标分支（默认master）')
         com3.grid(row=3, column=1, padx=5, pady=3)
 
