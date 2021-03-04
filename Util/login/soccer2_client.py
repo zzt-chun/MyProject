@@ -15,8 +15,13 @@ class Soccer2HttpClient(HttpClient):
         super().__init__(style, informer)
         self.host = {
             "内网测试": "http://192.168.1.114:8687", #内网登录中心
-            "最佳11人": "http://123.57.55.156:8004", #外网线上
-            "最佳11人登录中心": "http://47.94.138.239:8002", #外网线上登录
+            #"最佳11人": "http://123.57.55.156:8004", #外网线上
+            "最佳11人": "http://123.57.55.156:8088", #外网线上
+            #"最佳11人登录中心": "http://47.94.138.239:8002", #外网线上登录
+            # "最佳11人登录中心": "https://iac.nbabm.com/", #外网线上登录 弃用
+            # "最佳11人登录中心": "https://iac.nbabm.com/", #外网线上登录 弃用
+            "最佳11人登录中心-新马": "http://login.galasports.com:8891", #外网线上登录 国内也使用这个
+            "最佳11人server-新马": "http://34.87.150.134:9088", #外网线上登录
             "干洋": "http://192.168.2.58:7002",
             "内网": "http://192.168.1.123:7002",
 
@@ -25,7 +30,8 @@ class Soccer2HttpClient(HttpClient):
             "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko",
             "Accept-Encoding": "gzip, deflate",
             "Accept": "application/json, text/plain, */*",
-            "Content-Type": "application/x-www-form-urlencoded",
+            #"Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
             "Connection": "keep-alive"
         }
         self._headers = {
@@ -39,26 +45,36 @@ class Soccer2HttpClient(HttpClient):
         self.method = "POST"
 
     def _login_head(self, _id, _pwd):
-        self.style = "最佳11人登录中心"
+        #self.style = "最佳11人登录中心"
+        self.style = "最佳11人登录中心-新马"
         #self.style = "内网测试"
         self.set_url("/session/login")
-        ret = self._request({'userId': _id, "password": _pwd})
+        # 国内
+        # ret = self._request({'userId': _id, "password": _pwd})
+        # 海外
+        print("最佳11人管理后台登录中....")
+        data = {'email': _id, "password": _pwd, "systemId": ''}
+        ret = self._request(json.dumps(data))
         self.set_cookie({
             "IAC-TOKEN": ret.json()["data"]['token'],
-            "IAC-SID": ret.json()["data"]['sessionId'],
+            #"IAC-SID": ret.json()["data"]['sessionId'],
+            "IAC-SID": ret.json()["data"]['sid'],
         })
 
     def download_content(self, data):
+        self.headers = self._headers
         self.set_url("/api/data/dataComparison")
         _data = dict2pb(DataComparisonReqS, data).SerializeToString()
         ret = self._request(_data)
+        print("状态码： {}, msg: {}".format(str(ret.status_code), ret.content))
         res = DataComparisonResS()
         res.ParseFromString(ret.content)
         return res
 
 
     def _get_jdbc(self):
-        self.style = "最佳11人"
+        #self.style = "最佳11人"
+        #self.style = "最佳11人server-新马"
         #self.style = "内网"
         #self.style = "干洋"
         self.headers = self._headers
@@ -72,6 +88,8 @@ class Soccer2HttpClient(HttpClient):
         self.informer.insert_info('正在登陆管理后台账号：%s ...' % account_info[0], 1)
         self._login_head(account_info[0], account_info[1])
         self.informer.insert_info('登陆管理后台账号成功。-》拉取服务器信息', 1, 1)
+        print("login account_info: ", account_info)
+        self.style = "最佳11人server-新马" if "新马" in account_info[-1] else "最佳11人"
         ret = self._get_jdbc()
         ret = json.loads(pb2json(ret))
         self.informer.insert_info('拉取服务器信息', 1, 1)

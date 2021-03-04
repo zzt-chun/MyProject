@@ -32,7 +32,7 @@ servers['老足球(内网126)'] = "192.168.1.126", "dengchun", "Gala#2020", 3306
 # servers['中超(内网)'] = "192.168.1.204", "root", "wckj#2015", 3306
 # 存放活跃数据库对象实例useserver['now'] = xxx
 useserver = dict()
-managemnt_background = ["篮球国内", "篮球港澳台", "最佳11人"]
+managemnt_background = ["篮球国内", "篮球港澳台", "最佳11人", "最佳11人-新马"]
 
 
 def get_now_time():
@@ -343,8 +343,9 @@ class SecondPage():
             self.insert_info('登陆管理后台失败，服务器选择错误！ ： %s' % str(self._account), 1, 2)
             return
         # 初始化http
+        print("self._account: ", self._account)
         self._http = FactoryHttpClient().create_client(self._account[0], self)
-        ret = self._http.login(self._account[1:])
+        ret = self._http.login(self._account[1:] + [self._account[0]])
         print(str(ret))
         # #先登录
         # self.insert_info('正在登陆管理后台账号：%s ...' % self._account[1], 1)
@@ -390,6 +391,11 @@ class SecondPage():
             self.server_list["官网"] = self.list2dict(ret["game_jdbc"], "SIOS")
             self.server_list["混服"] = self.list2dict(ret["game_jdbc"], "SLY")
             self.server_list["腾讯"] = self.list2dict(ret["game_jdbc"], "STX")
+            self.com1_4['values'] = list(self.server_list.keys())
+            self.insert_info('服务器信息拉取成功， 所有步骤操作完成！！！', 1, 1)
+        elif self._account[0] == managemnt_background[3]:
+            self.server_list["data库"] = self.list2dict(ret["date_jdbc"])
+            self.server_list["官网"] = self.list2dict(ret["game_jdbc"], "SXM")
             self.com1_4['values'] = list(self.server_list.keys())
             self.insert_info('服务器信息拉取成功， 所有步骤操作完成！！！', 1, 1)
 
@@ -619,7 +625,7 @@ class SecondPage():
             self.insert_info('文件第一页内容为空或超过300行/列，请检查配置文件', 1, 2)
             return
         field_tables = ''
-        if self._account[0] == managemnt_background[2]:
+        if self._account[0] in managemnt_background[2:]:
             # 最佳11人
             params = []
             if not self.is_field_table(local_table_names):
@@ -652,18 +658,20 @@ class SecondPage():
                 "server_id": self.server_id,
                 "table_name": local_table_names
             }
-        # print("data:", str(data))
-        # for _ in params:
-        #     data["query_param"] = [_]
-        #     ret = self._http.download_content(data)
-        #     if getattr(ret, "ret"):
-        #         self.insert_info("下载数据失败： %s" % ret.extra, 1, 2)
-        #         print("下载失败：%s =  %s" % (str(_), str(ret)))
-        #     else:
-        #         print("下载成功： %s" % str(_))
-        # return
+        print("data:", str(data))
+        print("params:", str(params))
+        for _ in params:
+            data["query_param"] = [_]
+            print("xiaode data:", str(data))
+            ret = self._http.download_content(data)
+            if getattr(ret, "ret"):
+                self.insert_info("下载数据失败： %s" % ret.extra, 1, 2)
+                print("下载失败：%s =  %s" % (str(_), str(ret)))
+            else:
+                print("下载成功： %s" % str(_))
+        return
         ret = self._http.download_content(data)
-        if self._account[0] == managemnt_background[2]:
+        if self._account[0] in managemnt_background[2:]:
             if getattr(ret, "ret"):
                 self.insert_info("下载数据失败： %s" % ret.extra, 1, 2)
                 return
@@ -834,7 +842,7 @@ class SecondPage():
         local_datas = dataanalyze.read_excel_mu_datas(path)
         # print('一次性读取所有数据花费时间： %f'%(time.clock()-time_6))
         local_table_names = list(local_datas.keys())
-        if self._account[0] == managemnt_background[2]:
+        if self._account[0] in managemnt_background[2:]:
             # 最佳11人
             # todo 还需具体实现
             params = []
@@ -871,7 +879,7 @@ class SecondPage():
             }
         print("Send contents: ", str(data))
         ret = self._http.download_content(data)
-        if self._account[0] == managemnt_background[2]:
+        if self._account[0] in managemnt_background[2:]:
             if getattr(ret, "ret"):
                 self.insert_info("下载数据失败： %s" % ret.extra, 1, 2)
                 return
@@ -882,6 +890,7 @@ class SecondPage():
                 return
 
         data = pb2dict(ret)
+        print("res data: ", data)
         bigdatas = dict()
         for _ in data['data']:
             bigdatas[_['table_name']] = _['data']
