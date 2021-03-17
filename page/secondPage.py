@@ -11,12 +11,15 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import ttk
+import json
 import time
 
 from Util import linkdatabase, dataanalyze
 from Util.login.factory_client import FactoryHttpClient
 from Util.uiShow import pb2dict
-from page.function import show_dif, show_dif_ui, check_datas
+from page.function import show_dif, show_dif_ui, check_datas, get_names_by_key, check_data_by_key, filter_by_key
+from resource import pics
+from page.topUiExcel import TopUiDeepExcel
 
 # 存放服务器信息
 servers = dict()
@@ -51,7 +54,8 @@ class SecondPage():
         self.server_id = None
 
     def create_buttons(self):
-        tapcontrol = ttk.Notebook(self.parent, height=70, width=796)
+        #tapcontrol = ttk.Notebook(self.parent, height=70, width=796)
+        tapcontrol = ttk.Notebook(self.parent, height=100, width=796)
         tab1 = tk.Frame(tapcontrol)
         tapcontrol.add(tab1, text='内网母-库比对')
         tab2 = tk.Frame(tapcontrol)
@@ -67,28 +71,38 @@ class SecondPage():
         com1.bind("<<ComboboxSelected>>", lambda *args: self.choose_server(com1, com2, tex))
         com1.set('选择服务器')
         com1['values'] = list(servers.keys())
-        com1.grid(row=0, column=0, padx=10, pady=3, rowspan=2)
+        com1.grid(row=0, column=0, padx=10, pady=3, rowspan=3)
         # 添加选择数据库下拉按钮
         com2 = ttk.Combobox(tab1, state='readonly')
         com2.bind("<<ComboboxSelected>>", lambda *args: self.choose_database(com2, tex))
         com2.set('选择数据库')
-        com2.grid(row=0, column=1, padx=10, pady=3, rowspan=2)
+        com2.grid(row=0, column=1, padx=10, pady=3, rowspan=3)
         # 添加文本显示框
         ent1_v = tk.StringVar()
         ent1 = tk.Entry(tab1, textvariable=ent1_v, width=12)
         ent1_v.set('导入配置文件')
         ent1.grid(row=0, column=3, padx=3, pady=1)
+
         ent2_v = tk.StringVar()
         ent2 = tk.Entry(tab1, textvariable=ent2_v, width=23)
         ent2_v.set('导入母文件')
         ent2.grid(row=1, column=2, padx=3, pady=1, columnspan=2)
+
+        ent2_1_v = tk.StringVar()
+        ent2_1 = tk.Entry(tab1, textvariable=ent2_1_v, width=23)
+        ent2_1_v.set('导入母文件')
+        ent2_1.grid(row=2, column=2, padx=3, pady=1, columnspan=2)
+
         but6 = tk.Button(tab1, text='查看所有表', command=lambda: self.show_tables(tex))
         but6.grid(row=0, column=2, padx=3, pady=1)
+
         # 添加导入文件按钮
         but1 = tk.Button(tab1, text='导入', command=lambda: self.import_file(ent1_v, tex, True))
         but1.grid(row=0, column=4, padx=3, pady=1)
         but2 = tk.Button(tab1, text='导入', command=lambda: self.import_file(ent2_v, tex, False))
         but2.grid(row=1, column=4, padx=3, pady=1)
+        but2_1 = tk.Button(tab1, text='导入', command=lambda: self.import_file(ent2_1_v, tex, False))
+        but2_1.grid(row=2, column=4, padx=3, pady=1)
         # 添加保存母文件按钮
         ent3_v = tk.StringVar()
         ent3 = tk.Entry(tab1, textvariable=ent3_v, width=12)
@@ -98,6 +112,8 @@ class SecondPage():
         but3.grid(row=0, column=6, padx=3, pady=1)
         but4 = tk.Button(tab1, text='开始检查', command=lambda: self.button_check_file(ent2_v, tex), width=26)
         but4.grid(row=1, column=5, padx=3, pady=1, columnspan=2)
+        but4_1 = tk.Button(tab1, text='深度检查', command=lambda: self.button_check_file_1(ent2_1_v, tex), width=26)
+        but4_1.grid(row=2, column=5, padx=3, pady=1, columnspan=2)
 
         # 第二页二小页
         com1_2 = ttk.Combobox(tab2, state='readonly')
@@ -177,11 +193,17 @@ class SecondPage():
         ent2_4 = tk.Entry(tab4, textvariable=ent2_v_4, width=23)
         ent2_v_4.set('导入母文件')
         ent2_4.grid(row=1, column=3, padx=3, pady=1)
+        ent3_v_4_1 = tk.StringVar()
+        ent3_4_1 = tk.Entry(tab4, textvariable=ent3_v_4_1, width=23)
+        ent3_v_4_1.set('导入母文件')
+        ent3_4_1.grid(row=2, column=3, padx=3, pady=1)
         # 添加导入文件按钮
         but1_4 = tk.Button(tab4, text='导入', command=lambda: self.import_file(ent1_v_4, tex, True))
         but1_4.grid(row=0, column=4, padx=3, pady=1)
         but2_4 = tk.Button(tab4, text='导入', command=lambda: self.import_file(ent2_v_4, tex, False))
         but2_4.grid(row=1, column=4, padx=3, pady=1)
+        but3_4 = tk.Button(tab4, text='导入', command=lambda: self.import_file(ent3_v_4_1, tex, False))
+        but3_4.grid(row=2, column=4, padx=3, pady=1)
         # 添加保存母文件按钮
         ent3_v_4 = tk.StringVar()
         ent3_4 = tk.Entry(tab4, textvariable=ent3_v_4, width=12)
@@ -191,13 +213,16 @@ class SecondPage():
         but3_4.grid(row=0, column=6, padx=3, pady=1)
         but4_4 = tk.Button(tab4, text='开始检查', command=lambda: self.button_check_file_4(ent2_v_4, tex), width=26)
         but4_4.grid(row=1, column=5, padx=3, pady=1, columnspan=2)
+        but5_4_1 = tk.Button(tab4, text='深度检查', command=lambda: self.button_check_file_5(ent3_v_4_1, tex), width=26)
+        but5_4_1.grid(row=2, column=5, padx=3, pady=1, columnspan=2)
 
         # 添加日志文本
         labelf = tk.LabelFrame(self.parent, text='日志文本：')
         labelf.pack(anchor=tk.N, expand=True)
         sb = tk.Scrollbar(labelf)
         sb.pack(side=tk.RIGHT, fill=tk.Y)
-        tex = tk.Text(labelf, height=33, yscrollcommand=sb.set, width=107)
+        # tex = tk.Text(labelf, height=33, yscrollcommand=sb.set, width=107)
+        tex = tk.Text(labelf, height=30, yscrollcommand=sb.set, width=107)
         tex.pack(side=tk.LEFT, fill=tk.BOTH)
         sb.config(command=tex.yview)
         # 添加其他按钮
@@ -210,6 +235,207 @@ class SecondPage():
         self.tex = tex
         self.tex.tag_config('tag1', foreground='green')
         self.tex.tag_config('tag2', foreground='red')
+
+    def button_check_file_5(self, v, tex):
+        path = v.get()
+        if not self.is_valid_4(path):
+            return
+
+        names = dataanalyze.read_excel_mu_datas(path)
+        print("name_content: ", names)
+        table_key = names.pop("Tables-key")
+        # todo 读取文件需要重构，保存表指定对比rule
+        # print('一次性读取所有数据花费时间： %f'%(time.clock()-time_6))
+        # 存放数据库所有表名
+        local_table_names = list(names.keys())
+        data = self.initSendInfo(local_table_names, path)
+        if not data:
+            return
+        print("Send contents: ", str(data))
+        ret = self._http.download_content(data)
+        if self._account[0] in managemnt_background[2:]:
+            if getattr(ret, "ret"):
+                self.insert_info("下载数据失败： %s" % ret.extra, 1, 2)
+                return
+            # print("ret = ", str(ret))
+        else:
+            if ret.ret != 0:
+                self.insert_info("下载数据失败： %s" % ret.res, 1, 2)
+                return
+
+        data = pb2dict(ret)
+        print("res data: ", data)
+        bigdatas = dict()
+        for _ in data['data']:
+            bigdatas[_['table_name']] = _['data']
+        del data
+        # 存放数据库所有数据
+        remote_datas = dict()
+        # 存放数据库所有表名
+        remote_table_names = list(bigdatas.keys())
+        if "field" in local_table_names:
+            local_table_names.remove('field')
+        if len(local_table_names) != len(remote_table_names):
+            self.insert_info("下载的数据表数量与导入配置表不一致，请联系管理员", 1, 2)
+            self.insert_info("下载的数据表: %s " % remote_table_names, 1)
+            self.insert_info("导入的配置表: %s " % local_table_names, 1)
+            return
+        for _key, _value in bigdatas.items():
+            content = []
+            for _ in _value:
+                content.append(_.split('|'))
+            remote_datas[_key] = content
+        del bigdatas
+
+        for name in names.keys():
+
+            excel_array = names[name]
+            data_array = remote_datas[name]
+            def deep_diff(excel_array, data_array, key, is_ui=True):
+                # 深度比对 条件过滤
+                if key is not None:
+                    data_array, excel_array = filter_by_key(excel_array, data_array, key, name)
+
+                # data_array位置不变，excel_array表按key重新排序
+                data_array_names = []
+                excel_array_names = []
+                if key is not None and key["table_key"] != "":
+                    data_array_names = get_names_by_key(data_array, key["table_key"])
+                    excel_array_names = get_names_by_key(excel_array, key["table_key"])
+
+                # time_4 = time.clock()
+                # print('读取某文件花费时间： %f'%(time_4-time_3))
+                dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = check_data_by_key(
+                    data_array, excel_array, data_array_names, excel_array_names)
+
+                if is_ui:
+                    return dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data
+                else:
+                    return dataanalyze.change_dif_data_by_key(dif_array, dif_row_excel, dif_column_excel,
+                                                              dif_row_data,
+                                                              dif_column_data, [data_array[0], excel_array[0]])
+
+            # time_5 = time.clock()
+            # print('比对花费时间： %f'%(time_5-time_4))
+            if len(data_array) == 0:
+                data_array = ['']
+            if len(excel_array) == 0:
+                excel_array = ['']
+            _table_key = None
+            try:
+                if table_key != None and isinstance(table_key[name], str):
+                    _table_key = json.loads(table_key[name])
+            except Exception as e:
+                self.insert_info(str(e), 1, 2)
+            dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = deep_diff(excel_array,
+                                                                                                  data_array,
+                                                                                                  _table_key)
+            show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name,
+                        [data_array[0], excel_array[0]], _table_key,
+                        lambda key: deep_diff(excel_array, data_array, key, False))
+
+
+            tex.update()
+        self.insert_info("检查完毕，一共%s张表!" % len(names.keys()), 1, 1)
+        messagebox.showinfo("提示", "检查完毕，一共%s张表!" % len(names.keys()))
+
+    def button_check_file_1(self, v, tex):
+        path = v.get()
+        if not self.is_valid(path, tex):
+            return
+        datas = useserver['now'].show_tables()
+        # time_6 = time.clock()
+        names = dataanalyze.read_excel_mu_datas(path)
+        print("name_content: ", names)
+        table_key = names.pop("Tables-key")
+        # todo 读取文件需要重构，保存表指定对比rule
+        # print('一次性读取所有数据花费时间： %f'%(time.clock()-time_6))
+        # 存放数据库所有表名
+        datanames = []
+        # 数据库格式转化为字符串
+        datas = dataanalyze.change_dic(datas)
+        for name in datas:
+            datanames.append(name[0])
+        is_continue = True
+        for each in names.keys():
+            if each not in datanames:
+                tex.insert(tk.END, '数据库里找不到表<%s>\n' % each)
+                is_continue = False
+        if not is_continue:
+            now_time = self.get_now_time()
+            tex.insert(tk.END, now_time + ': 配置表有误，检查不通过！\n')
+            return
+        # index = 1
+
+        for name in names.keys():
+            # print('开始检查<%s>'%name)
+            # time_1 = time.clock()
+            data_array = useserver['now'].get_table(name)
+            if len(data_array) == 0:
+                data_array = useserver['now'].get_table_row([name])
+                data_array = dataanalyze.change_dic_by_name(data_array)
+                # print('data_array = %s ' % data_array)
+            else:
+                # time_2 = time.clock()
+                # print('从数据库读取花费时间： %f'%(time_2-time_1))
+                data_array = dataanalyze.change_dic(data_array)
+            # time_3 = time.clock()
+            # print('转化数据库数据花费时间： %f'%(time_3-time_2))
+
+            excel_array = names[name]
+
+            def deep_diff(excel_array, data_array, key, is_ui=True):
+                # 深度比对 条件过滤
+                if key is not None:
+                    data_array, excel_array = filter_by_key(excel_array, data_array, key, name)
+
+                # data_array位置不变，excel_array表按key重新排序
+                data_array_names = []
+                excel_array_names = []
+                if key is not None and key["table_key"] != "":
+                    data_array_names = get_names_by_key(data_array, key["table_key"])
+                    excel_array_names = get_names_by_key(excel_array, key["table_key"])
+
+
+                # time_4 = time.clock()
+                # print('读取某文件花费时间： %f'%(time_4-time_3))
+                dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = check_data_by_key(
+                    data_array, excel_array, data_array_names, excel_array_names)
+
+                if is_ui:
+                    return dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data
+                else:
+                    return dataanalyze.change_dif_data_by_key(dif_array, dif_row_excel, dif_column_excel,
+                                                                    dif_row_data,
+                                                                    dif_column_data, [data_array[0], excel_array[0]])
+            # time_5 = time.clock()
+            # print('比对花费时间： %f'%(time_5-time_4))
+            if len(data_array) == 0:
+                data_array = ['']
+            if len(excel_array) == 0:
+                excel_array = ['']
+            _table_key = None
+            try:
+                if table_key != None and isinstance(table_key[name], str):
+                    _table_key = json.loads(table_key[name])
+            except Exception as e:
+                self.insert_info(str(e), 1, 2)
+            dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = deep_diff(excel_array, data_array, _table_key)
+            show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name,
+                        [data_array[0], excel_array[0]], _table_key, lambda key: deep_diff(excel_array, data_array, key, False))
+
+            # tex.insert(tk.END, '*****************<%s>存在差异*****************' % "这张表有差异", 'tag2')
+            # tex.window_create(tk.END,
+            #                   window=tk.Button(tex, image=pics['tiaozhuan51x27.png'], bd=0, cursor='arrow',
+            #                                    bg='#FFFFFF',
+            #                                    command=lambda: TopUiDeepExcel(name, [[1], [2], [3]], [[4], [5], [6]],
+            #                                                                   _table_key, [1, excel_array[0]])))
+            # tex.insert(tk.END, '\n')
+
+            tex.update()
+        self.insert_info("检查完毕，一共%s张表!" % len(names.keys()), 1, 1)
+        messagebox.showinfo("提示", "检查完毕，一共%s张表!" % len(names.keys()))
+
 
     def next_cursor(self):
         pos = self.tex.search("存在差异", tk.INSERT)
@@ -343,10 +569,10 @@ class SecondPage():
             self.insert_info('登陆管理后台失败，服务器选择错误！ ： %s' % str(self._account), 1, 2)
             return
         # 初始化http
-        print("self._account: ", self._account)
+        # print("self._account: ", self._account)
         self._http = FactoryHttpClient().create_client(self._account[0], self)
         ret = self._http.login(self._account[1:] + [self._account[0]])
-        print(str(ret))
+        # print(str(ret))
         # #先登录
         # self.insert_info('正在登陆管理后台账号：%s ...' % self._account[1], 1)
         # self._http.login(self._account[1], self._account[2])
@@ -584,7 +810,7 @@ class SecondPage():
         v.set(path)
         if is_save:
             array = dataanalyze.read_save_names(path)
-            print("array:", str(array))
+            # print("array:", str(array))
         else:
             array = dataanalyze.read_excel_names(path)
         if array == -1:
@@ -599,6 +825,8 @@ class SecondPage():
             array = array.keys()
         for name in array:
             try:
+                if isinstance(name, list):
+                    name = name[0]
                 tex.insert(tk.END, str(name) + '\n')
             except:
                 error_buf = sys.exc_info()
@@ -630,7 +858,7 @@ class SecondPage():
             params = []
             if not self.is_field_table(local_table_names):
                 # 正常下载方式
-                params = [{'table_name': table_name} for table_name in local_table_names]
+                params = [{'table_name': table_name if not isinstance(table_name, list) else table_name[0]} for table_name in local_table_names]
                 query_type = 1
             else:
                 # 字段表下载方式
@@ -640,7 +868,7 @@ class SecondPage():
                 if field_tables == -1:
                     self.insert_info("字段下载文件没有内容或不是 tables， key， value 格式", 1, 2)
                     return
-                print("field_tables: ", str(field_tables))
+                # print("field_tables: ", str(field_tables))
                 for item in field_tables:
                     _col_value = list(map(lambda x: x if not isinstance(x, float) else str(int(x)), item['col_value']))
                     for _ in item.get('table_name', []):
@@ -654,28 +882,35 @@ class SecondPage():
             }
         else:
             # 篮球
+            table_names = []
+            for _names in local_table_names:
+                if not isinstance(_names, list):
+                    table_names = local_table_names
+                    break
+                else:
+                    table_names.append(_names[0])
             data = {
                 "server_id": self.server_id,
-                "table_name": local_table_names
+                "table_name": table_names
             }
-        print("data:", str(data))
+        # print("data:", str(data))
         print("params:", str(params))
-        for _ in params:
-            data["query_param"] = [_]
-            print("xiaode data:", str(data))
-            ret = self._http.download_content(data)
-            if getattr(ret, "ret"):
-                self.insert_info("下载数据失败： %s" % ret.extra, 1, 2)
-                print("下载失败：%s =  %s" % (str(_), str(ret)))
-            else:
-                print("下载成功： %s" % str(_))
-        return
+        # for _ in params:
+        #     data["query_param"] = [_]
+        #     print("xiaode data:", str(data))
+        #     ret = self._http.download_content(data)
+        #     if getattr(ret, "ret"):
+        #         self.insert_info("下载数据失败： %s" % ret.extra, 1, 2)
+        #         print("下载失败：%s =  %s" % (str(_), str(ret)))
+        #     else:
+        #         print("下载成功： %s" % str(_))
+        # return
         ret = self._http.download_content(data)
         if self._account[0] in managemnt_background[2:]:
             if getattr(ret, "ret"):
                 self.insert_info("下载数据失败： %s" % ret.extra, 1, 2)
                 return
-            print("ret = ", str(ret))
+            # print("ret = ", str(ret))
         else:
             if ret.ret != 0:
                 self.insert_info("下载数据失败： %s" % ret.res, 1, 2)
@@ -696,7 +931,15 @@ class SecondPage():
         if len(set(local_table_names)) != len(remote_table_names):
             self.insert_info("下载的数据表数量与导入配置表不一致，请联系管理员", 1, 2)
             self.insert_info("下载的数据表: %s " % remote_table_names, 1)
-            self.insert_info("导入的配置表: %s " % local_table_names, 1)
+            _snapNames = []
+            for _names in local_table_names:
+                if not isinstance(_names, list):
+                    _snapNames = local_table_names
+                    break
+                else:
+                    _snapNames.append(_names[0])
+
+            self.insert_info("导入的配置表: %s " % _snapNames, 1)
             return
         for _key, _value in remote_data.items():
             content = []
@@ -714,7 +957,7 @@ class SecondPage():
         if filename == '自定义文件名_':
             filename = ''
         filename = ''.join([os.getcwd(), '\配置文件夹\母文件\\', filename, '母文件_', get_now_time().replace(':', '_'), '.xlsx'])
-        key = dataanalyze.write_excel(bigdatas, filename)
+        key = dataanalyze.write_excel(bigdatas, filename, local_table_names)
         if key:
             self.insert_info('保存成功, 路径为<%s>' % filename, 1, 1)
         else:
@@ -749,6 +992,9 @@ class SecondPage():
             datanames.append(name[0])
         is_continue = True
         for each in savenames:
+            # read_save_names 返回 [name, ] or [[name, other]]
+            if isinstance(each, list):
+                each = each[0]
             if each not in datanames:
                 tex.insert(tk.END, '数据库里找不到表<%s>\n' % each)
                 is_continue = False
@@ -758,6 +1004,9 @@ class SecondPage():
             return
         bigdatas = dict()
         for name in savenames:
+            # read_save_names 返回 [name, ] or [[name, other]]
+            if isinstance(name, list):
+                name = name[0]
             datas = useserver['now'].get_table(name)
             if datas == 'no table':
                 now_time = self.get_now_time()
@@ -778,7 +1027,7 @@ class SecondPage():
         if filename == '自定义文件名_':
             filename = ''
         filename = ''.join([os.getcwd(), '\配置文件夹\母文件\\', filename, '母文件_', get_now_time().replace(':', '_'), '.xlsx'])
-        key = dataanalyze.write_excel(bigdatas, filename)
+        key = dataanalyze.write_excel(bigdatas, filename, savenames)
         now_time = self.get_now_time()
         if key:
             tex.insert(tk.END, now_time + ': 保存成功, 路径为<%s>\n' % filename)
@@ -833,22 +1082,14 @@ class SecondPage():
             return False
         return True
 
-    # 用于检查配置表与数据库表的差异
-    def button_check_file_4(self, v, tex):
-        path = v.get()
-        if not self.is_valid_4(path):
-            return
-        # time_6 = time.clock()
-        local_datas = dataanalyze.read_excel_mu_datas(path)
-        # print('一次性读取所有数据花费时间： %f'%(time.clock()-time_6))
-        local_table_names = list(local_datas.keys())
+    def initSendInfo(self, table_names, path):
         if self._account[0] in managemnt_background[2:]:
             # 最佳11人
             # todo 还需具体实现
             params = []
-            if "field" not in local_table_names:
+            if "field" not in table_names:
                 # 正常下载方式
-                params = [{'table_name': table_name} for table_name in local_table_names]
+                params = [{'table_name': table_name} for table_name in table_names]
                 query_type = 1
             else:
                 # 字段表下载方式
@@ -857,7 +1098,7 @@ class SecondPage():
                 field_tables = dataanalyze.read_field_table(path)
                 if field_tables == -1:
                     self.insert_info("字段下载文件没有内容或不是 tables， key， value 格式", 1, 2)
-                    return
+                    return False
                 print("field_tables: ", str(field_tables))
                 for item in field_tables:
                     _col_value = list(map(lambda x: x if not isinstance(x, float) else str(int(x)), item['col_value']))
@@ -875,8 +1116,25 @@ class SecondPage():
             # 篮球
             data = {
                 "server_id": self.server_id,
-                "table_name": local_table_names
+                "table_name": table_names
             }
+
+        return data
+
+    # 用于检查配置表与数据库表的差异
+    def button_check_file_4(self, v, tex):
+        path = v.get()
+        if not self.is_valid_4(path):
+            return
+        # time_6 = time.clock()
+        local_datas = dataanalyze.read_excel_mu_datas(path)
+        table_key = local_datas.pop("Tables-key")
+        # print('一次性读取所有数据花费时间： %f'%(time.clock()-time_6))
+        local_table_names = list(local_datas.keys())
+
+        data = self.initSendInfo(local_table_names, path)
+        if not data:
+            return
         print("Send contents: ", str(data))
         ret = self._http.download_content(data)
         if self._account[0] in managemnt_background[2:]:
@@ -951,6 +1209,7 @@ class SecondPage():
         datas = useserver['now'].show_tables()
         # time_6 = time.clock()
         names = dataanalyze.read_excel_mu_datas(path)
+        table_key = names.pop("Tables-key")
         # print('一次性读取所有数据花费时间： %f'%(time.clock()-time_6))
         # 存放数据库所有表名
         datanames = []
@@ -1044,7 +1303,7 @@ class SecondPage():
         if not useserver['now'].set_database(data1):
             return
         datas_1 = useserver['now'].show_tables()
-        names = dataanalyze.read_save_names(path)
+        names = dataanalyze._read_save_names(path)
         # 存放数据库所有表名
         datanames_1 = []
         # 数据库格式转化为字符串
