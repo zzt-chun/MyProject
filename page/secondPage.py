@@ -38,6 +38,39 @@ useserver = dict()
 managemnt_background = ["篮球国内", "篮球港澳台", "最佳11人", "最佳11人-新马"]
 
 
+class Fun(object):
+
+    def __init__(self, excel_array, data_array, name):
+        self.excel_array = excel_array
+        self.data_array = data_array
+        self.name = name
+
+
+    def deep_diff(self, key, is_ui=True):
+        # 深度比对 条件过滤
+        if key is not None:
+            self.data_array, self.excel_array = filter_by_key(self.excel_array, self.data_array, key, self.name)
+
+        # data_array位置不变，excel_array表按key重新排序
+        data_array_names = []
+        excel_array_names = []
+        if key is not None and key["table_key"] != "":
+            data_array_names = get_names_by_key(self.data_array, key["table_key"])
+            excel_array_names = get_names_by_key(self.excel_array, key["table_key"])
+
+        # time_4 = time.clock()
+        # print('读取某文件花费时间： %f'%(time_4-time_3))
+        dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = check_data_by_key(
+            self.data_array, self.excel_array, data_array_names, excel_array_names)
+
+        if is_ui:
+            return dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data
+        else:
+            return dataanalyze.change_dif_data_by_key(dif_array, dif_row_excel, dif_column_excel,
+                                                      dif_row_data,
+                                                      dif_column_data, [self.data_array[0], self.excel_array[0]])
+
+
 def get_now_time():
     return datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
 
@@ -143,7 +176,7 @@ class SecondPage():
                            width=15)
         but4_2.grid(row=0, column=4, padx=3, pady=1, rowspan=2)
 
-        # 第二页三小页
+        # 第二页三小页-
         com1_3 = ttk.Combobox(tab3, state='readonly')
         com1_3.bind("<<ComboboxSelected>>", lambda *args: self.choose_server(com1_3, com2_3, tex))
         com1_3.set('选择服务器')
@@ -291,29 +324,29 @@ class SecondPage():
 
             excel_array = names[name]
             data_array = remote_datas[name]
-            def deep_diff(excel_array, data_array, key, is_ui=True):
-                # 深度比对 条件过滤
-                if key is not None:
-                    data_array, excel_array = filter_by_key(excel_array, data_array, key, name)
-
-                # data_array位置不变，excel_array表按key重新排序
-                data_array_names = []
-                excel_array_names = []
-                if key is not None and key["table_key"] != "":
-                    data_array_names = get_names_by_key(data_array, key["table_key"])
-                    excel_array_names = get_names_by_key(excel_array, key["table_key"])
-
-                # time_4 = time.clock()
-                # print('读取某文件花费时间： %f'%(time_4-time_3))
-                dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = check_data_by_key(
-                    data_array, excel_array, data_array_names, excel_array_names)
-
-                if is_ui:
-                    return dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data
-                else:
-                    return dataanalyze.change_dif_data_by_key(dif_array, dif_row_excel, dif_column_excel,
-                                                              dif_row_data,
-                                                              dif_column_data, [data_array[0], excel_array[0]])
+            # def deep_diff(excel_array, data_array, key, is_ui=True):
+            #     # 深度比对 条件过滤
+            #     if key is not None:
+            #         data_array, excel_array = filter_by_key(excel_array, data_array, key, name)
+            #
+            #     # data_array位置不变，excel_array表按key重新排序
+            #     data_array_names = []
+            #     excel_array_names = []
+            #     if key is not None and key["table_key"] != "":
+            #         data_array_names = get_names_by_key(data_array, key["table_key"])
+            #         excel_array_names = get_names_by_key(excel_array, key["table_key"])
+            #
+            #     # time_4 = time.clock()
+            #     # print('读取某文件花费时间： %f'%(time_4-time_3))
+            #     dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = check_data_by_key(
+            #         data_array, excel_array, data_array_names, excel_array_names)
+            #
+            #     if is_ui:
+            #         return dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data
+            #     else:
+            #         return dataanalyze.change_dif_data_by_key(dif_array, dif_row_excel, dif_column_excel,
+            #                                                   dif_row_data,
+            #                                                   dif_column_data, [data_array[0], excel_array[0]])
 
             # time_5 = time.clock()
             # print('比对花费时间： %f'%(time_5-time_4))
@@ -327,13 +360,17 @@ class SecondPage():
                     _table_key = json.loads(table_key[name])
             except Exception as e:
                 self.insert_info(str(e), 1, 2)
-            dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = deep_diff(excel_array,
-                                                                                                  data_array,
-                                                                                                  _table_key)
-            show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name,
-                        [data_array[0], excel_array[0]], _table_key,
-                        lambda key: deep_diff(excel_array, data_array, key, False))
+            # dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = deep_diff(excel_array,
+            #                                                                                       data_array,
+            #                                                                                       _table_key)
+            # show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name,
+            #             [data_array[0], excel_array[0]], _table_key,
+            #             lambda key: deep_diff(excel_array, data_array, key, False))
 
+            fun = Fun(excel_array, data_array, name)
+            dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = fun.deep_diff(_table_key)
+            show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name,
+                        [data_array[0], excel_array[0]], _table_key, fun)
 
             tex.update()
         self.insert_info("检查完毕，一共%s张表!" % len(names.keys()), 1, 1)
@@ -384,30 +421,30 @@ class SecondPage():
 
             excel_array = names[name]
 
-            def deep_diff(excel_array, data_array, key, is_ui=True):
-                # 深度比对 条件过滤
-                if key is not None:
-                    data_array, excel_array = filter_by_key(excel_array, data_array, key, name)
-
-                # data_array位置不变，excel_array表按key重新排序
-                data_array_names = []
-                excel_array_names = []
-                if key is not None and key["table_key"] != "":
-                    data_array_names = get_names_by_key(data_array, key["table_key"])
-                    excel_array_names = get_names_by_key(excel_array, key["table_key"])
-
-
-                # time_4 = time.clock()
-                # print('读取某文件花费时间： %f'%(time_4-time_3))
-                dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = check_data_by_key(
-                    data_array, excel_array, data_array_names, excel_array_names)
-
-                if is_ui:
-                    return dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data
-                else:
-                    return dataanalyze.change_dif_data_by_key(dif_array, dif_row_excel, dif_column_excel,
-                                                                    dif_row_data,
-                                                                    dif_column_data, [data_array[0], excel_array[0]])
+            # def deep_diff(excel_array, data_array, key, is_ui=True):
+            #     # 深度比对 条件过滤
+            #     if key is not None:
+            #         data_array, excel_array = filter_by_key(excel_array, data_array, key, name)
+            #
+            #     # data_array位置不变，excel_array表按key重新排序
+            #     data_array_names = []
+            #     excel_array_names = []
+            #     if key is not None and key["table_key"] != "":
+            #         data_array_names = get_names_by_key(data_array, key["table_key"])
+            #         excel_array_names = get_names_by_key(excel_array, key["table_key"])
+            #
+            #
+            #     # time_4 = time.clock()
+            #     # print('读取某文件花费时间： %f'%(time_4-time_3))
+            #     dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = check_data_by_key(
+            #         data_array, excel_array, data_array_names, excel_array_names)
+            #
+            #     if is_ui:
+            #         return dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data
+            #     else:
+            #         return dataanalyze.change_dif_data_by_key(dif_array, dif_row_excel, dif_column_excel,
+            #                                                         dif_row_data,
+            #                                                         dif_column_data, [data_array[0], excel_array[0]])
             # time_5 = time.clock()
             # print('比对花费时间： %f'%(time_5-time_4))
             if len(data_array) == 0:
@@ -420,9 +457,10 @@ class SecondPage():
                     _table_key = json.loads(table_key[name])
             except Exception as e:
                 self.insert_info(str(e), 1, 2)
-            dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = deep_diff(excel_array, data_array, _table_key)
+            fun = Fun(excel_array, data_array, name)
+            dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = fun.deep_diff(_table_key)
             show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name,
-                        [data_array[0], excel_array[0]], _table_key, lambda key: deep_diff(excel_array, data_array, key, False))
+                        [data_array[0], excel_array[0]], _table_key, fun)
 
             # tex.insert(tk.END, '*****************<%s>存在差异*****************' % "这张表有差异", 'tag2')
             # tex.window_create(tk.END,
@@ -436,6 +474,39 @@ class SecondPage():
         self.insert_info("检查完毕，一共%s张表!" % len(names.keys()), 1, 1)
         messagebox.showinfo("提示", "检查完毕，一共%s张表!" % len(names.keys()))
 
+    # class Fun(object):
+    #
+    #     def __init__(self, excel_array, data_array, name):
+    #         self.excel_array = excel_array
+    #         self.data_array = data_array
+    #         self.name = name
+    #
+    #
+    #
+    #     def deep_diff(self, key, is_ui=True):
+    #         # 深度比对 条件过滤
+    #         if key is not None:
+    #             self.data_array, self.excel_array = filter_by_key(self.excel_array, self.data_array, key, self.name)
+    #
+    #         # data_array位置不变，excel_array表按key重新排序
+    #         data_array_names = []
+    #         excel_array_names = []
+    #         if key is not None and key["table_key"] != "":
+    #             data_array_names = get_names_by_key(self.data_array, key["table_key"])
+    #             excel_array_names = get_names_by_key(self.excel_array, key["table_key"])
+    #
+    #         # time_4 = time.clock()
+    #         # print('读取某文件花费时间： %f'%(time_4-time_3))
+    #         dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = check_data_by_key(
+    #             self.data_array, self.excel_array, data_array_names, excel_array_names)
+    #
+    #         if is_ui:
+    #             return dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data
+    #         else:
+    #             return dataanalyze.change_dif_data_by_key(dif_array, dif_row_excel, dif_column_excel,
+    #                                                       dif_row_data,
+    #                                                       dif_column_data, [self.data_array[0], self.excel_array[0]])
+    #
 
     def next_cursor(self):
         pos = self.tex.search("存在差异", tk.INSERT)
