@@ -45,12 +45,16 @@ def check_data_by_key(data, excel, data_names, excel_names):
         name_excel = dict(zip(excel_names, range(len(excel_names))))
         for name in list(name_data.keys()):
             i = name_data[name]
-            if name in name_excel:
+            name_ex = name
+            if name_ex not in name_excel and str(name_ex) in name_excel:
+                name_ex = str(name_ex)
+
+            if name_ex in name_excel:
                 col = min(col_data, col_excel)
                 for j in range(col):
-                    if dif_data(data[i][j], excel[name_excel[name]][j]):
+                    if dif_data(data[i][j], excel[name_excel[name_ex]][j]):
                         continue
-                    dif_array.append([i + 1, j + 1, name_excel[name] + 1, j + 1, data[i][j], excel[name_excel[name]][j]])
+                    dif_array.append([i + 1, j + 1, name_excel[name_ex] + 1, j + 1, data[i][j], excel[name_excel[name_ex]][j]])
 
                 if col_data > col:
                     dif_column_data.append([i+1, col+1, data[col:col_data]])
@@ -58,7 +62,7 @@ def check_data_by_key(data, excel, data_names, excel_names):
                     dif_column_excel.append([i + 1, col + 1, excel[col:col_excel]])
 
                 name_data.pop(name)
-                name_excel.pop(name)
+                name_excel.pop(name_ex)
 
         for i in name_data.keys():
             index = name_data[i]
@@ -191,7 +195,6 @@ def filter_by_key(excel_array, data_array, table_key, table_name):
                 excel_array = snap_excel_array
                 snap_excel_array = [excel_array[0]]
                 snap_data_array = [data_array[0]]
-
         return data_array, excel_array
 
 
