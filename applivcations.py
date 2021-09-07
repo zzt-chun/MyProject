@@ -12,6 +12,18 @@ from page.secondPage import SecondPage
 from page.sixthPage import SixthPage
 from page.thirdPage import ThirdPage
 from resource import pics
+from loguru import logger
+import time
+
+t = time.strftime("%Y_%m_%d")
+
+logger.add(
+    f"log_{t}.log",
+    format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {name} | {line} | {message}",
+    rotation="1 MB",
+    encoding="utf-8",
+    # enqueue=True,
+)
 
 
 def callbackClose():
@@ -20,7 +32,7 @@ def callbackClose():
 
 
 root = tk.Tk()
-root.title('测试内部工具 v_3.10.2')
+root.title('测试内部工具 v_4.0.8')
 root.resizable(0, 0)
 root.geometry("+500+200")
 root.protocol("WM_DELETE_WINDOW", callbackClose)
