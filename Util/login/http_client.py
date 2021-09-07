@@ -23,7 +23,7 @@ class HttpClient(object):
             url="".join([self.host[self.style], self._url]),
             headers=self.headers,
             cookies=self.cookie,
-            data=data
+            data=data,
         )
 
     def download_content(self, data):

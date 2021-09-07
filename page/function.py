@@ -1,11 +1,15 @@
 import datetime
 import decimal
 import tkinter as tk
+import sys
 
 from Util import dataanalyze
 from page.topUiExcel import TopUiExcel, TopUiDeepExcel
 from resource import pics
 import copy
+from loguru import logger
+import gc
+import time
 
 
 def get_now_time():
@@ -25,6 +29,7 @@ def check_data_by_key(data, excel, data_names, excel_names):
     dif_row_data [y, [:]]
     dif_column_data  [x, y, [y-1:]]
     '''
+    size_control = 240*1024
     dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = [], [], [], [], []
     len_excel, len_data = len(excel), len(data)
     if len_excel == 1:
@@ -46,9 +51,11 @@ def check_data_by_key(data, excel, data_names, excel_names):
         for name in list(name_data.keys()):
             i = name_data[name]
             name_ex = name
-            if name_ex not in name_excel and str(name_ex) in name_excel:
-                name_ex = str(name_ex)
-
+            if name_ex not in name_excel:
+                if isinstance(name_ex, int) and str(name_ex) in name_excel:
+                    name_ex = str(name_ex)
+                elif isinstance(name_ex, str) and name_ex.isdigit() and float(int(name_ex)) in name_excel:
+                    name_ex = float(int(name_ex))
             if name_ex in name_excel:
                 col = min(col_data, col_excel)
                 for j in range(col):
@@ -93,6 +100,17 @@ def check_data_by_key(data, excel, data_names, excel_names):
             for i in range(row, len_excel):
                 dif_row_excel.append([i, excel[i]])
 
+    # 减小diff包大小
+    # if sys.getsizeof(dif_array) > size_control or\
+    #     sys.getsizeof(dif_row_excel) > size_control or\
+    #     sys.getsizeof(dif_column_excel) > size_control or\
+    #     sys.getsizeof(dif_row_data) > size_control or\
+    #     sys.getsizeof(dif_column_data) > size_control:
+    #     logger.info("size control out")
+    #     del dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data
+    #     logger.warning("gc: " + str(gc.collect()))
+    #     return [], [], [], [], ['这个表太大了： ']
+    time.sleep(0.1)
     return dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data
 
 
@@ -195,6 +213,8 @@ def filter_by_key(excel_array, data_array, table_key, table_name):
                 excel_array = snap_excel_array
                 snap_excel_array = [excel_array[0]]
                 snap_data_array = [data_array[0]]
+        logger.info("data_array: " + str(data_array)[100:])
+        logger.info("excel_array: " + str(excel_array)[100:])
         return data_array, excel_array
 
 
@@ -317,6 +337,7 @@ def dif_data(a, b):
 
 # 检查两份数据，返回差异部分，dif_array, dif_data, dif_excel
 def check_datas(data, excel):
+    size_control = 5*1024
     dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = [], [], [], [], []
     len_excel, len_data = len(excel), len(data)
     if not len_excel:
@@ -335,7 +356,6 @@ def check_datas(data, excel):
             a, b = data[i][j], excel[i][j]
             if dif_data(a, b):
                 continue
-
             dif_array.append([i + 1, j + 1, a, b])
     if len_data > row:
         for i in range(row, len_data):
@@ -355,6 +375,14 @@ def check_datas(data, excel):
             for j in range(len_excel):
                 array_1.append(excel[j][i])
             dif_column_excel.append([i, array_1])
+    # 减小diff包大小
+    if sys.getsizeof(dif_array) > size_control or\
+        sys.getsizeof(dif_row_excel) > size_control or\
+        sys.getsizeof(dif_column_excel) > size_control or\
+        sys.getsizeof(dif_row_data) > size_control or\
+        sys.getsizeof(dif_column_data) > size_control:
+        logger.info("size control out")
+        return [], [], [], [], ['这个表太大了： ']
     return dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data
 
 
@@ -417,13 +445,16 @@ def show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_co
                     tex.insert(tk.END, '\n')
         if dif_column_data != []:
             tex.insert(tk.END, '线上库或数据库一多的列内容：\n')
-            for key, content in dif_column_data:
-                if content != '{}':
-                    tex.insert(tk.END, '<%d列>多余的数据: \n' % key)
-                    for i in content:
-                        tex.insert(tk.END, i, 'tag2')
-                        tex.insert(tk.END, '\t')
-                    tex.insert(tk.END, '\n')
+            try:
+                for key, content in dif_column_data:
+                    if content != '{}':
+                        tex.insert(tk.END, '<%d列>多余的数据: \n' % key)
+                        for i in content:
+                            tex.insert(tk.END, i, 'tag2')
+                            tex.insert(tk.END, '\t')
+                        tex.insert(tk.END, '\n')
+            except ValueError:
+                print("too many values to unpack (expected 2): \n", "dif_column_data: ", str(dif_column_data)[100:])
         if dif_array != []:
             tex.insert(tk.END, '数据不一致部分(默认前者为线上库或数据库一, 后者为母文件或数据库二)： \n')
             for each in dif_array:

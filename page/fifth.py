@@ -24,6 +24,7 @@ PROJECT_INFO = {
     "篮球大师": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 37],
     "足球大师": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 16],
     "最佳11人": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 83],
+    "最佳11人后台": ['http://git.wckj.com/', "nXxTgtyB7xRyFw5s2nvm", 99],
     # "最佳12人": ['http://git.wckj.com/', "9zsoYLmazszeHvEi8DS9", 83],
     # "最佳13人": ['http://git.wckj.com/', "9zsoYLmazszeHvEi8DS9", 83],
     # "最佳14人": ['http://git.wckj.com/', "9zsoYLmazszeHvEi8DS9", 83],

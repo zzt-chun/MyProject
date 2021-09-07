@@ -230,6 +230,7 @@ def write_excel(data_array, filename, name_key):
         row += 1
     key = _index
     for name in data_array.keys():
+        print("table: ", name)
         try:
             if len(name) >= 31:
                 sheet = xls.add_sheet(str(key))
