@@ -17,10 +17,10 @@ class HttpClient(object):
         self.method = ''
         self.informer = informer
 
-    def _request(self, data=None):
+    def _request(self, data=None, des_style=""):
         return requests.request(
             method=self.method,
-            url="".join([self.host[self.style], self._url]),
+            url="".join([self.host[des_style or self.style], self._url]),
             headers=self.headers,
             cookies=self.cookie,
             data=data,
