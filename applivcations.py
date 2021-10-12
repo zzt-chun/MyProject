@@ -4,12 +4,13 @@ import sys
 import tkinter as tk
 from tkinter import messagebox
 
+from page.sixth import SixthPage
 from page.fifth import FifthPage
 from page.firstPage import FirstPage
 from page.fourthPage import FourthPage
 from page.functionPageFrame import FunctionPageFrame
 from page.secondPage import SecondPage
-from page.sixthPage import SixthPage
+# from page.sixthPage import SixthPage
 from page.thirdPage import ThirdPage
 from resource import pics
 from loguru import logger
@@ -32,7 +33,7 @@ def callbackClose():
 
 
 root = tk.Tk()
-root.title('测试内部工具 v_4.0.8')
+root.title('测试内部工具 v_5.0.0')
 root.resizable(0, 0)
 root.geometry("+500+200")
 root.protocol("WM_DELETE_WINDOW", callbackClose)
@@ -72,6 +73,9 @@ f4.grid_forget()
 # 第五页
 f5 = FunctionPageFrame(root, f0, rb_v, FifthPage, text='分支提交检查', photo=pics['logo_29x16.jpg'])
 f5.grid_forget()
+# 第五页
+f6 = FunctionPageFrame(root, f0, rb_v, SixthPage, text='前端静态文件检查', photo=pics['logo_29x16.jpg'])
+f6.grid_forget()
 # 第六页
 #f6 = FunctionPageFrame(root, f0, rb_v, SixthPage, text='一键导线上数据', photo=pics['logo_29x16.jpg'])
 #f6.grid_forget()

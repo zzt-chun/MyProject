@@ -4,6 +4,7 @@ import xlrd
 import xlwt
 from xlutils.copy import copy
 import json
+import win32com.client as win32
 from openpyxl import load_workbook
 
 
@@ -482,5 +483,12 @@ if __name__ == '__main__':
     # for each in array:
     #     print(each)
     # content = read_excel_columns(r"C:\Users\Administrator\Desktop\data.xlsx", 1, sheet_name="字段表")
-    modifyExcel(r'C:\Users\Administrator\Desktop\test_1.xlsx', ['test', {"1": 1, "2": 8888888, "3": 3}])
+    # modifyExcel(r'C:\Users\Administrator\Desktop\test_1.xlsx', ['test', {"1": 1, "2": 8888888, "3": 3}])
+    import time
+    import sys
+
+    start_time = time.time()
+    buf = read_excel_mu_datas(r"C:\Users\ga'la\Desktop\test_data_2.3.0_20210325_母文件_2021-03-25 10_15_47(1).xlsx")
+    print("cost time : ", (time.time() - start_time))
+    print("sizeof(buf): ", sys.getsizeof(buf))
     pass

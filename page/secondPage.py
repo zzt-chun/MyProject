@@ -403,7 +403,7 @@ class SecondPage():
         datas = useserver['now'].show_tables()
         # time_6 = time.clock()
         names = dataanalyze.read_excel_mu_datas(path)
-        print("name_content: ", names)
+        # print("name_content: ", names)
         table_key = names.pop("Tables-key")
         # todo 读取文件需要重构，保存表指定对比rule
         # print('一次性读取所有数据花费时间： %f'%(time.clock()-time_6))
