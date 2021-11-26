@@ -15,64 +15,39 @@ import json
 import time
 from loguru import logger
 import gc
+from google.protobuf import json_format
+import ast
 
 from Util import linkdatabase, dataanalyze
 from Util.login.factory_client import FactoryHttpClient
 from Util.uiShow import pb2dict
-from page.function import show_dif, show_dif_ui, check_datas, get_names_by_key, check_data_by_key, filter_by_key
+from page.function import show_dif, show_dif_ui, check_datas, get_names_by_key, check_data_by_key, filter_by_key, show_dif_new_UI
+from page.qt.diffPage import Table
+from PyQt5 import QtWidgets
 from resource import pics
 from page.topUiExcel import TopUiDeepExcel
+from page.function import Fun
 
 # 存放服务器信息
 servers = dict()
 
 # servers['篮球242'] = "192.168.1.242", "root", "wckj#2017", 3306
 # servers['篮球242_1(内网)'] = "192.168.1.242", "nbatest", "DGAG(&Jh23858klh", 3306
-servers['篮球201(内网)'] = "192.168.1.201", "test", "L*&k34HC98K.kDG%KH", 3307
-servers['篮球139_合服(内网)'] = "192.168.1.139", "lizheng", "DT*^^kjdg245", 3306
-servers['新足球(内网)'] = "192.168.1.201", "dengchun", "Gala#2020", 3309
+servers['篮球201(内网)'] = "192.168.1.201", "basketball_test", "iQcnB2s&GUo7KscW", 3307
+servers['篮球139_合服(内网)'] = "192.168.1.139", "basketball_test", "iQcnB2s&GUo7KscW", 3306
+servers['新足球(内网)'] = "192.168.1.201", "newsoccer_test", "YWfdbquE05", 3309
 servers['新足球(外网)'] = "47.94.228.86", "test", "S7#ks%^&&*khlls234", 3306
-# servers['新足球(内网153)'] = "192.168.1.153", "test", "wckj@2020", 3306
-servers['新足球(内网153)'] = "192.168.1.153", "test", "wckj@test", 3306
-servers['老足球(内网)'] = "192.168.1.204", "dengchun", "Gala#2020", 3306
-servers['老足球(内网126)'] = "192.168.1.126", "dengchun", "Gala#2020", 3306
+servers['新足球(外网)'] = "47.94.228.86", "test_", "S7#ks%^&&*khlls234", 3306
+servers['新足球(内网153)'] = "192.168.1.153", "newsoccer_test", "YWfdbquE05", 3306
+servers['老足球(内网)'] = "192.168.1.201", "soccer_test", "N!DzWS4ecC%Xui6P", 3307
+servers['老足球(合服153)'] = "192.168.1.153", "soccer_test", "N!DzWS4ecC%Xui6P", 3307
+servers['棒球(内网)'] = "192.168.1.201", "baseball_test", "eNl5vaJ9", 3309
+servers['双11(内网)'] = "192.168.1.201", "double11_test", "DC&^35DaIO", 3309
+
 # servers['中超(内网)'] = "192.168.1.204", "root", "wckj#2015", 3306
 # 存放活跃数据库对象实例useserver['now'] = xxx
 useserver = dict()
 managemnt_background = ["篮球国内", "篮球港澳台", "最佳11人", "最佳11人-新马"]
-
-
-class Fun(object):
-
-    def __init__(self, excel_array, data_array, name):
-        self.excel_array = excel_array
-        self.data_array = data_array
-        self.name = name
-
-
-    def deep_diff(self, key, is_ui=True):
-        # 深度比对 条件过滤
-        if key is not None:
-            self.data_array, self.excel_array = filter_by_key(self.excel_array, self.data_array, key, self.name)
-
-        # data_array位置不变，excel_array表按key重新排序
-        data_array_names = []
-        excel_array_names = []
-        if key is not None and key["table_key"] != "":
-            data_array_names = get_names_by_key(self.data_array, key["table_key"])
-            excel_array_names = get_names_by_key(self.excel_array, key["table_key"])
-
-        # time_4 = time.clock()
-        # print('读取某文件花费时间： %f'%(time_4-time_3))
-        dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = check_data_by_key(
-            self.data_array, self.excel_array, data_array_names, excel_array_names)
-
-        if is_ui:
-            return dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data
-        else:
-            return dataanalyze.change_dif_data_by_key(dif_array, dif_row_excel, dif_column_excel,
-                                                      dif_row_data,
-                                                      dif_column_data, [self.data_array[0], self.excel_array[0]])
 
 
 def get_now_time():
@@ -89,6 +64,9 @@ class SecondPage():
         self._http = None
         self.server_list = {}
         self.server_id = None
+        self.qt_main_ui = QtWidgets.QMainWindow()
+        # self.diff_obj_list = list()
+
 
     def create_buttons(self):
         #tapcontrol = ttk.Notebook(self.parent, height=70, width=796)
@@ -272,13 +250,15 @@ class SecondPage():
         self.tex = tex
         self.tex.tag_config('tag1', foreground='green')
         self.tex.tag_config('tag2', foreground='red')
+        # self.tex.config(insertbackground="yellow")
 
     def button_check_file_5(self, v, tex):
         path = v.get()
         if not self.is_valid_4(path):
             return
-
+        start_time = time.time()
         names = dataanalyze.read_excel_mu_datas(path)
+        logger.info("母表读取完成，下一步构造下载data, cost time: {}".format(time.time() - start_time))
         # print("name_content: ", names)
         table_key = names.pop("Tables-key")
         # todo 读取文件需要重构，保存表指定对比rule
@@ -286,10 +266,12 @@ class SecondPage():
         # 存放数据库所有表名
         local_table_names = list(names.keys())
         data = self.initSendInfo(local_table_names, path)
+        logger.info("构造data完毕，下一步下载data, cost time: {}".format(time.time() - start_time))
         if not data:
             return
         # print("Send contents: ", str(data))
         ret = self._http.download_content(data)
+        logger.info("下载data完毕，下一步解析转化data, cost time: {}".format(time.time() - start_time))
         if self._account[0] in managemnt_background[2:]:
             if getattr(ret, "ret"):
                 self.insert_info("下载数据失败： %s" % ret.extra, 1, 2)
@@ -300,12 +282,15 @@ class SecondPage():
                 self.insert_info("下载数据失败： %s" % ret.res, 1, 2)
                 return
 
-        data = pb2dict(ret)
+        # data = pb2dict(ret)
+        data = json_format.MessageToDict(ret, preserving_proto_field_name=True)
+        logger.info("转化data：pb -> dict，下一步解析data, cost time: {}".format(time.time() - start_time))
         # print("res data: ", data)
         bigdatas = dict()
         for _ in data['data']:
             bigdatas[_['table_name']] = _['data']
         del data
+        logger.info("解析data完毕，下一步检查两份表的合法性, cost time: {}".format(time.time() - start_time))
         # 存放数据库所有数据
         remote_datas = dict()
         # 存放数据库所有表名
@@ -317,12 +302,16 @@ class SecondPage():
             self.insert_info("下载的数据表: %s " % remote_table_names, 1)
             self.insert_info("导入的配置表: %s " % local_table_names, 1)
             return
+        logger.info("两份表的合法性完毕，下一步解析母文件data, cost time: {}".format(time.time() - start_time))
         for _key, _value in bigdatas.items():
             content = []
             for _ in _value:
                 content.append(_.split('|'))
             remote_datas[_key] = content
         del bigdatas
+        # print("getsizeof(remote_datas): ", sys.getsizeof(remote_datas))
+        # print("getsizeof(names): ", sys.getsizeof(names))
+        logger.info("解析母文件data完毕，下一步逐个进行表diff, cost time: {}".format(time.time() - start_time))
         name_list = list(names.keys())
         for name in name_list:
 
@@ -360,43 +349,39 @@ class SecondPage():
                 excel_array = ['']
             _table_key = None
             try:
-                if table_key != None and isinstance(table_key[name], str):
+                if table_key != None and isinstance(table_key[name], str) and table_key[name]:
                     _table_key = json.loads(table_key[name])
             except Exception as e:
-                self.insert_info(str(e), 1, 2)
-            # dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = deep_diff(excel_array,
-            #                                                                                       data_array,
-            #                                                                                       _table_key)
-            # show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name,
-            #             [data_array[0], excel_array[0]], _table_key,
-            #             lambda key: deep_diff(excel_array, data_array, key, False))
+                _table_key = ast.literal_eval(table_key[name])
+                self.insert_info("双引号处理：" + str(e), 1, 1)
 
-            fun = Fun(excel_array, data_array, name)
-            print("table: ", name)
+            fun = Fun(excel_array, data_array, name, self.qt_main_ui)
+            # print("table: ", name)
             logger.info("table: " + name)
-            dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = fun.deep_diff(_table_key)
-            logger.info(f"《{name}》表的差异大小： \
-            dif_array = {sys.getsizeof(dif_array)}, \
-            dif_row_excel = {sys.getsizeof(dif_row_excel)}, \
-            dif_column_excel = {sys.getsizeof(dif_column_excel)},\
-            dif_row_data = {sys.getsizeof(dif_row_data)},\
-            dif_column_data = {sys.getsizeof(dif_column_data)}")
+            dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, data1, data2 = fun.deep_diff(_table_key, ret_new_data=True)
 
-            # if dif_array == [] and dif_row_excel == [] and dif_column_excel == [] and dif_row_data == [] and dif_column_data == []:
-            #     del data_array, excel_array, names[name], remote_datas[name], fun
-            #
-            #     logger.warning("gc data_array, excel_array: " + str(gc.collect()))
-            #     data_array, excel_array = [''], ['']
-            #     fun = None
-
-            show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name,
-                        [data_array[0], excel_array[0]], _table_key, fun)
-
+            if dif_array == [] and dif_row_excel == [] and dif_column_excel == [] and dif_row_data == [] and dif_column_data == []:
+                del data_array, excel_array, fun, data1, data2
+                logger.warning("gc data_array, excel_array: " + str(gc.collect()))
+                data_array, excel_array = [''], ['']
+                fun = None
+                self.insert_info('<%s>完全一致' % name, 1, 1)
+            else:
+                show_dif_new_UI(tex, name, _table_key, [data_array[0], excel_array[0]], fun)
+            # if fun:
+            #     logger.info(f"《{name}》表的差异大小： dif_array={sys.getsizeof(dif_array)}, "
+            #                 f"dif_row_excel={sys.getsizeof(dif_row_excel)}, dif_column_excel = {sys.getsizeof(dif_column_excel)}, "
+            #                 f"dif_row_data = {sys.getsizeof(dif_row_data)}, dif_column_data = {sys.getsizeof(dif_column_data)}")
+            # show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name,
+            #             [data_array[0], excel_array[0]], _table_key, fun)
+            time.sleep(0.02)
             tex.update()
         self.insert_info("检查完毕，一共%s张表!" % len(names.keys()), 1, 1)
         messagebox.showinfo("提示", "检查完毕，一共%s张表!" % len(names.keys()))
 
+
     def button_check_file_1(self, v, tex):
+        # self.diff_obj_list = list()
         path = v.get()
         if not self.is_valid(path, tex):
             return
@@ -427,6 +412,7 @@ class SecondPage():
         for name in names.keys():
             # print('开始检查<%s>'%name)
             # time_1 = time.clock()
+            print('table: ', name)
             data_array = useserver['now'].get_table(name)
             if len(data_array) == 0:
                 data_array = useserver['now'].get_table_row([name])
@@ -473,12 +459,17 @@ class SecondPage():
                 excel_array = ['']
             _table_key = None
             try:
-                if table_key != None and isinstance(table_key[name], str):
+                if table_key != None and isinstance(table_key[name], str) and table_key[name]:
+
                     _table_key = json.loads(table_key[name])
+                    # _table_key = ast.literal_eval(table_key[name])
+                    print("_table_key: ", _table_key)
+                    print("type(_table_key): ", type(_table_key))
             except Exception as e:
-                self.insert_info(str(e), 1, 2)
-            fun = Fun(excel_array, data_array, name)
-            dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data = fun.deep_diff(_table_key)
+                _table_key = ast.literal_eval(table_key[name])
+                self.insert_info("双引号处理：" + str(e), 1, 2)
+            fun = Fun(excel_array, data_array, name, self.qt_main_ui)
+            dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, data1, data2 = fun.deep_diff(_table_key, ret_new_data=True)
             logger.info(f"《{name}》表的差异大小： \
             dif_array = {sys.getsizeof(dif_array)}, \
             dif_row_excel = {sys.getsizeof(dif_row_excel)}, \
@@ -487,12 +478,24 @@ class SecondPage():
             dif_column_data = {sys.getsizeof(dif_column_data)}")
 
             if dif_array == [] and dif_row_excel == [] and dif_column_excel == [] and dif_row_data == [] and dif_column_data == []:
-                del data_array, excel_array
+                # names[name] = 0
+                del data_array, excel_array, fun, data1, data2
                 logger.warning("gc data_array, excel_array: " + str(gc.collect()))
                 data_array, excel_array = [''], ['']
+                fun = None
+                self.insert_info('<%s>完全一致' % name, 1, 1)
+            else:
+                # now_time = get_now_time()
+                # self.tex.insert(tk.END, now_time + '*****************<%s>存在差异*****************' % name, 'tag2')
+                # self.tex.window_create(tk.END,
+                #                   window=tk.Button(tex, image=pics['tiaozhuan51x27.png'], bd=0, cursor='arrow',
+                #                                    bg='#FFFFFF',
+                #                                    command=lambda: create_new_diff_ui(name, _table_key, [data_array[0], excel_array[0]], fun)))
+                # self.tex.insert(tk.END, '\n')
 
-            show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name,
-                        [data_array[0], excel_array[0]], _table_key, fun)
+                show_dif_new_UI(tex, name, _table_key, [data_array[0], excel_array[0]], fun)
+            # show_dif_ui(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, tex, name,
+            #             [data_array[0], excel_array[0]], _table_key, fun)
 
             # tex.insert(tk.END, '*****************<%s>存在差异*****************' % "这张表有差异", 'tag2')
             # tex.window_create(tk.END,
@@ -501,10 +504,15 @@ class SecondPage():
             #                                    command=lambda: TopUiDeepExcel(name, [[1], [2], [3]], [[4], [5], [6]],
             #                                                                   _table_key, [1, excel_array[0]])))
             # tex.insert(tk.END, '\n')
-            print('table: ', name)
+
+            # if fun:
+            #     self.diff_obj_list.append(fun)
             tex.update()
+            time.sleep(0.002)
+
         self.insert_info("检查完毕，一共%s张表!" % len(names.keys()), 1, 1)
         messagebox.showinfo("提示", "检查完毕，一共%s张表!" % len(names.keys()))
+
 
     # class Fun(object):
     #
@@ -725,7 +733,14 @@ class SecondPage():
             self.insert_info('服务器信息拉取成功， 所有步骤操作完成！！！', 1, 1)
         elif self._account[0] == managemnt_background[3]:
             self.server_list["data库"] = self.list2dict(ret["date_jdbc"])
-            self.server_list["官网"] = self.list2dict(ret["game_jdbc"], "SXM")
+            for key, value in self.server_list['data库'].items():
+                key: str
+                value: str
+                name = key.replace("data库", "").replace(" ", "")
+                filter_key = value[:value.index("_")]
+                self.server_list.update({name: self.list2dict(ret['game_jdbc'], filter_key)})
+            # self.server_list["官网"] = self.list2dict(ret["game_jdbc"], "SXM")
+            # self.server_list["越南"] = self.list2dict(ret["game_jdbc"], "SVN")
             self.com1_4['values'] = list(self.server_list.keys())
             self.insert_info('服务器信息拉取成功， 所有步骤操作完成！！！', 1, 1)
 
@@ -831,6 +846,7 @@ class SecondPage():
         now_time = self.get_now_time()
         tex.insert(tk.END, now_time + content)
 
+    # @profile(precision=4, stream=open('memory_profiler.log', 'w+'))
     def choose_server(self, com1, com2, tex):
         '''
         展示该服务器下的所有数据库

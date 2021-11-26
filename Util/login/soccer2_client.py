@@ -90,7 +90,7 @@ class Soccer2HttpClient(HttpClient):
         self.set_url("/api/data/dataComparison")
         _data = dict2pb(DataComparisonReqS, data).SerializeToString()
         ret = self._request(_data)
-        print("状态码： {}, msg: {}".format(str(ret.status_code), ret.content))
+        # print("状态码： {}, msg: {}".format(str(ret.status_code), ret.content))
         res = DataComparisonResS()
         res.ParseFromString(ret.content)
         return res

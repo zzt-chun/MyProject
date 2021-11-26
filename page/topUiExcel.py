@@ -297,6 +297,7 @@ class TopUiDeepExcel(object):
             self.rules[self.definition[1]][self.definition[4]] = self.com2_1.get()
         if self.rules[self.definition[0]][self.definition[5]] != "":
             self.rules[self.definition[0]][self.definition[4]] = self.com2.get()
+        # deep_diff中False弃用
         data1, data2 = self.command.deep_diff(self.rules, False)
         self.deleteAllTree()
         self.insert_info_for_tree(data1, data2)

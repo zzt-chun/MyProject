@@ -1,11 +1,72 @@
 import datetime
+import decimal
+import os
 
 import xlrd
 import xlwt
 from xlutils.copy import copy
 import json
-import win32com.client as win32
-from openpyxl import load_workbook
+import time
+
+def dif_data(a, b):
+    if a != b:
+        # 对于excel全是str情况的的处理
+        # 数据库int类型处理
+        if isinstance(a, int) and isinstance(b, str):
+            try:
+                if a == int(b):
+                    return True
+            except ValueError:
+                pass
+        # 时间类型处理
+        if isinstance(a, datetime.datetime) and isinstance(b, str):
+            if str(a) == b:
+                return True
+        # 时间类型处理
+        if isinstance(b, datetime.datetime) and isinstance(a, str):
+            if str(b) == a:
+                return True
+        # 浮点数处理
+        if isinstance(a, float) and isinstance(b, str):
+            try:
+                if a == float(b):
+                    return True
+            except ValueError:
+                pass
+        # null处理
+        if a == None and b == '':
+            return True
+        # 科学计数类型处理
+        if isinstance(a, decimal.Decimal) and isinstance(b, str):
+            try:
+                if a == decimal.Decimal(b):
+                    return True
+            except:
+                pass
+        # 处理datetime.timedelta类型
+        if isinstance(a, datetime.timedelta) and isinstance(b, str):
+            try:
+                if str(a) == b:
+                    return True
+            except:
+                pass
+        try:
+            if float(a) == float(b):
+                return True
+        except:
+            pass
+
+        if isinstance(a, str) and isinstance(b, datetime.date):
+            try:
+                if a == b.strftime('%Y-%m-%d'):
+                    return True
+            except:
+                pass
+        if a == '' and b == None:
+            return True
+
+        return False
+    return True
 
 
 def change_dic(dic):
@@ -38,6 +99,111 @@ def write_general_excel(datas, file_name):
     for row in range(len(datas)):
         sheet.write(row, 0, datas[row])
     xls.save(file_name)
+
+
+def change_dif_data_by_deep_key(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, _data1, _data2):
+    data1 = list()
+    data2 = list()
+    index = 1
+    data_index = 1
+    # max_row = max(len(_data1[0]), len(_data2[1]))
+    max_row = max(len(_data1[0]), len(_data2[0]))
+    data1.append(['列'] + _data1[0] + [''] * (max_row - len(_data1[0])))
+    data2.append(['列'] + _data2[0] + [''] * (max_row - len(_data2[0])))
+
+    for diff_item in dif_array:
+        if diff_item[0] != index:
+            index = diff_item[0]
+            data_index += 1
+            data1.append([diff_item[0]-1] + _data1[diff_item[0]-1])
+            data2.append([diff_item[2]-1] + _data2[diff_item[2]-1])
+
+        diff_item[0] = data_index
+        diff_item[2] = data_index
+
+    snap_list = list()
+    for item in dif_column_data:
+        time.sleep(0.01)
+        # item : x, y, content
+        data_index += 1
+        snap_list.append([item[0]] + _data1[item[0]-1])
+        item[0] = data_index
+
+    data1.extend(snap_list)
+    data2.extend([""] * len(snap_list))
+
+    snap_list = list()
+    for item in dif_column_excel:
+        # item : x, y, content
+        data_index += 1
+        snap_list.append([item[0]] + _data1[item[0]-1])
+        item[0] = data_index
+
+    data2.extend(snap_list)
+    data1.extend([""] * len(snap_list))
+
+    snap_list = list()
+    for item in dif_row_data:
+        # item : x, content
+        print("len(snap_list): ", len(snap_list))
+        # todo 这里长度超过15 就奔溃，无任何报错信息，作了大量尝试无果
+        # if len(snap_list_1) == 14:
+        #     break
+        # print("start data_index befor : ", item)
+        data_index += 1
+        # _list = [item[0] + 1]
+        # _list.extend(item[1])
+        # snap_list_1.append(_list)
+        snap_list.append([item[0] + 1] + item[1])
+        # print("data1 after")
+        # snap_list_2.append([1])
+        # print("data_index: %s, data: %s" % (data_index, item[1]))
+        # print("befor item: ", item)
+        item[0] = data_index
+        # print("after item[0]: ", item[0])
+
+    # snap_list_2 = list()
+    # for i in range(len(snap_list_1)):
+    #     print(" i: ", i)
+    #     data2.append([''])
+    # snap_list_2.extend([[''] for i in range(len(snap_list_1))])
+    data1.extend(snap_list)
+    # todo 选择在循环外面增加[""]却不会奔溃 ？？？
+    data2.extend([""]*len(snap_list))
+
+    # for item in dif_row_data:
+    #     # item : x, content
+    #     time.sleep(0.03)
+    #     try:
+    #         print("start data_index befor : ", item)
+    #         data_index += 1
+    #         if data_index == 406:
+    #             print("data1: ", data1[-10:])
+    #             print("data2: ", data2[-10:])
+    #         data1.append([item[0] + 1] + item[1])
+    #         print("data1 after")
+    #         data2.append([''])
+    #         print("data_index: %s, data: %s" % (data_index, item[1]))
+    #         print("befor item: ", item)
+    #         item[0] = data_index
+    #         print("after item[0]: ", item[0])
+    #     except Exception as e:
+    #         print("Exception: ", str(e))
+    #         sys.exit()
+    snap_list = list()
+    for item in dif_row_excel:
+        # item : x, content
+        print("len(snap_list): ", len(snap_list))
+        data_index += 1
+        snap_list.append([item[0] + 1] + item[1])
+        item[0] = data_index
+    data2.extend(snap_list)
+    data1.extend([""] * len(snap_list))
+    return data1, data2
+
+
+
+
 
 def change_dif_data_by_key(dif_array, dif_row_excel, dif_column_excel, dif_row_data, dif_column_data, row_name):
     data1, data2 = [], []
@@ -226,6 +392,7 @@ def write_excel(data_array, filename, name_key):
         sheet.write(row, 0, row + _index)
         sheet.write(row, 1, name)
         if isinstance(name_key[0], list):
+            print("name_key[row]: %s, name: %s" % (name_key[row], name))
             assert name == name_key[row][0]
             sheet.write(row, 2, json.dumps(name_key[row][1]))
         row += 1
@@ -295,7 +462,12 @@ def read_excel_mu_datas(path):
         snap_key = dict()
         for row in range(sheet.nrows):
             names[sheet.cell_value(row, 1)] = int(sheet.cell_value(row, 0))
-            snap_key[sheet.cell_value(row, 1)] = sheet.cell_value(row, 2)
+            _value = sheet.cell_value(row, 2)
+            if _value.startswith('"'):
+                _value = _value[1:]
+            if _value.endswith('"'):
+                _value = _value[:-1]
+            snap_key[sheet.cell_value(row, 1)] = _value
         table_key["Tables-key"] = snap_key
     else:
         for row in range(sheet.nrows):
@@ -423,7 +595,8 @@ def read_save_names(path):
         if sheet.ncols != 2:
             return -2
         for row in range(sheet.nrows):
-            array.append([sheet.cell_value(row, 0), int(sheet.cell_value(row, 1))])
+            # array.append([sheet.cell_value(row, 0), int(sheet.cell_value(row, 1))])
+            array.append([sheet.cell_value(row, 0), sheet.cell_value(row, 1)])
         return array
 
     if (sheet.nrows >= 500) or (sheet.nrows == 0) or (sheet.ncols >= 500):
@@ -434,9 +607,14 @@ def read_save_names(path):
                 array.append(content)
     return array
 
-def modifyExcel(path, content):
+def modifyExcel(path: str, content):
 
-    fileOpen = xlrd.open_workbook(path, formatting_info=True)
+    # if path.endswith(".xlsx"):
+    #     new_path = path[:-5] + ".xls"
+    #     os.rename(path, new_path)
+    #     path = new_path
+    print(path)
+    fileOpen = xlrd.open_workbook(path, formatting_info=False)
     data = copy(fileOpen)
 
     # 获取第一张表
@@ -456,7 +634,8 @@ def modifyExcel(path, content):
 
     for i in range(len(table._cell_values)):
         if table._cell_values[i][idx-1] == content[0]:
-            tableRead.write(i, idx, json.dumps(content[1]))
+            # tableRead.write(i, idx, json.dumps(content[1]))
+            tableRead.write(i, idx, str(content[1]))
             data.save(path)
             return [True, "success"]
 

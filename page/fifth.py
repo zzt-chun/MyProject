@@ -156,6 +156,7 @@ class FifthPage(object):
         self._project = self._client.projects.get(id=PROJECT_INFO[project_name][2])  # 获取对应项目
         # logs = project.commits.list(ref_name="master", since="2020-03-05T11:01:23.000+07:00")  # 获取对应分支 某事件后的提交信息
         branches = self._project.branches.list(all=True, order_by="created_at")
+        files = self._project.files.get
         self._branches = {}
         for i in branches:
             self._branches.update({i.name: getattr(i, "commit").get('created_at')})

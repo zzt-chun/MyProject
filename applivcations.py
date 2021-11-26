@@ -33,7 +33,7 @@ def callbackClose():
 
 
 root = tk.Tk()
-root.title('测试内部工具 v_5.0.0')
+root.title('测试内部工具 v_5.2.0')
 root.resizable(0, 0)
 root.geometry("+500+200")
 root.protocol("WM_DELETE_WINDOW", callbackClose)
@@ -59,6 +59,7 @@ f0_1.grid(row=0, column=1)
 f0.grid(row=0, column=0)
 # TODO 后续应考虑选中指定界面时才加载ui
 # 第一页
+
 f1 = FunctionPageFrame(root, f0, rb_v, FirstPage, text='版本号检查', photo=pics['logo_29x16.jpg'])
 f1.grid_forget()
 # 第二页
@@ -84,6 +85,10 @@ f6.grid_forget()
 f99 = FunctionPageFrame(root, f0, rb_v, text='待添加', photo=pics['logo_29x16.jpg'])
 tk.Label(f99, image=pics['log.jpg']).pack()
 tk.Label(f99).pack()
-
 if __name__ == '__main__':
+    from PyQt5 import QtWidgets
+    app = QtWidgets.QApplication(sys.argv)
+    # print(sys.argv)
     root.mainloop()
+    sys.exit(app.exec_())
+
