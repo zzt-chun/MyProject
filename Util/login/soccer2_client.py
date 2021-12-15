@@ -4,6 +4,7 @@
 # @File    : soccer2_client.py
 import json
 
+
 from Util.login.http_client import HttpClient
 #import jsonpath
 from pb.soccerPB.s_proto_pb2 import ServerInfoResS, DataComparisonReqS, DataComparisonResS
@@ -15,18 +16,18 @@ class Soccer2HttpClient(HttpClient):
         super().__init__(style, informer)
         print("style: ", self.style)
         self.host = {
-            "内网测试": "http://192.168.1.114:8891", #内网登录中心
+            # "内网测试": "http://192.168.1.114:8891", #内网登录中心
+            "内网测试": "http://login.test.galasports.com", #内网登录中心
             #"最佳11人": "http://123.57.55.156:8004", #外网线上
             # "最佳11人": "http://123.57.55.156:8088", #外网线上
             "最佳11人": "https://soccer3-manager.galasports.com", #外网线上
             #"最佳11人登录中心": "http://47.94.138.239:8002", #外网线上登录
-            # "最佳11人登录中心": "https://iac.nbabm.com/", #外网线上登录 弃用
-            # "最佳11人登录中心": "https://iac.nbabm.com/", #外网线上登录 弃用
             "最佳11人登录中心": "http://login.galasports.com:8891", #外网线上登录 国内也使用这个
             # "最佳11人server-新马": "http://34.87.150.134:9088", #外网线上登录
             "最佳11人-新马": "https://soccer3-manager-sea.galasports.com:443", #外网线上登录
             # "最佳11人server-新马": "http://iac.k2twonline.com", #外网线上登录
-            "干洋": "http://192.168.2.58:7002",
+            "开发": "http://192.168.1.123:7002",
+            "向星": "http://192.168.2.57:7002",
             "内网": "http://192.168.1.123:8088",
 
         }
@@ -50,8 +51,9 @@ class Soccer2HttpClient(HttpClient):
 
     def _login_head(self, _id, _pwd):
         # 国内/海外公用
+        # _style = "内网测试"
         _style = "最佳11人登录中心"
-        # self.style = "内网测试"
+        # self.style = ""
         self.set_url("/session/login")
         # 国内
         # ret = self._request({'userId': _id, "password": _pwd})
@@ -91,9 +93,11 @@ class Soccer2HttpClient(HttpClient):
         _data = dict2pb(DataComparisonReqS, data).SerializeToString()
         ret = self._request(_data)
         # print("状态码： {}, msg: {}".format(str(ret.status_code), ret.content))
+        print("download ret: ", ret.content)
         res = DataComparisonResS()
         res.ParseFromString(ret.content)
-        return res
+        ret = pb2dict(res)
+        return ret
 
 
     def _get_jdbc(self):
@@ -101,7 +105,8 @@ class Soccer2HttpClient(HttpClient):
 
 
         # self.style = "最佳11人server-新马"
-        # self.style = "内网"
+        # self.style = "向星"
+        # self.style = "内网测试"
         #self.style = "干洋"
         self.headers = self._headers
         # self.method = "GET"

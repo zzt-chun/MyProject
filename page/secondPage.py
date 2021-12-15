@@ -17,6 +17,9 @@ from loguru import logger
 import gc
 from google.protobuf import json_format
 import ast
+import requests
+import zipfile
+from io import StringIO, BytesIO
 
 from Util import linkdatabase, dataanalyze
 from Util.login.factory_client import FactoryHttpClient
@@ -273,21 +276,41 @@ class SecondPage():
         ret = self._http.download_content(data)
         logger.info("下载data完毕，下一步解析转化data, cost time: {}".format(time.time() - start_time))
         if self._account[0] in managemnt_background[2:]:
-            if getattr(ret, "ret"):
-                self.insert_info("下载数据失败： %s" % ret.extra, 1, 2)
+            # if getattr(ret, "ret"):
+            if ret.get("ret", None):
+                self.insert_info("下载数据失败： %s" % ret['extra'], 1, 2)
                 return
             # print("ret = ", str(ret))
+            data = requests.post(
+                url=self._http.host[self._http.style] + "/api/ExportTask/downloadFile",
+                json={
+                    "filePath": ret['extra']
+                },
+                headers={
+                    "Content-Type": "application/json;charset=UTF-8"
+                },
+            )
+            # data = self._request(ret.content)
+
+            print("download_content data: ", data.content)
+            fio = zipfile.ZipFile(
+                file=BytesIO(data.content)
+            )
+            data = json.loads(fio.read(fio.namelist()[0]))
+            print("ret = ", str(ret))
         else:
             if ret.ret != 0:
                 self.insert_info("下载数据失败： %s" % ret.res, 1, 2)
                 return
+            data = pb2dict(data)['data']
+
 
         # data = pb2dict(ret)
-        data = json_format.MessageToDict(ret, preserving_proto_field_name=True)
-        logger.info("转化data：pb -> dict，下一步解析data, cost time: {}".format(time.time() - start_time))
+        # data = json_format.MessageToDict(ret, preserving_proto_field_name=True)
+        # logger.info("转化data：pb -> dict，下一步解析data, cost time: {}".format(time.time() - start_time))
         # print("res data: ", data)
         bigdatas = dict()
-        for _ in data['data']:
+        for _ in data:
             bigdatas[_['table_name']] = _['data']
         del data
         logger.info("解析data完毕，下一步检查两份表的合法性, cost time: {}".format(time.time() - start_time))
@@ -1013,32 +1036,40 @@ class SecondPage():
                 "server_id": self.server_id,
                 "table_name": table_names
             }
-        # print("data:", str(data))
-        print("params:", str(params))
-        # for _ in params:
-        #     data["query_param"] = [_]
-        #     print("xiaode data:", str(data))
-        #     ret = self._http.download_content(data)
-        #     if getattr(ret, "ret"):
-        #         self.insert_info("下载数据失败： %s" % ret.extra, 1, 2)
-        #         print("下载失败：%s =  %s" % (str(_), str(ret)))
-        #     else:
-        #         print("下载成功： %s" % str(_))
-        # return
+
         ret = self._http.download_content(data)
         if self._account[0] in managemnt_background[2:]:
-            if getattr(ret, "ret"):
-                self.insert_info("下载数据失败： %s" % ret.extra, 1, 2)
+            # if getattr(ret, "ret"):
+            if ret.get("ret", None):
+                self.insert_info("下载数据失败： %s" % ret['extra'], 1, 2)
                 return
-            # print("ret = ", str(ret))
+            data = requests.post(
+                url=self._http.host[self._http.style] + "/api/ExportTask/downloadFile",
+                json={
+                    "filePath": ret['extra']
+                },
+                headers={
+                    "Content-Type": "application/json;charset=UTF-8"
+                },
+            )
+            # data = self._request(ret.content)
+
+            print("download_content data: ", data.content)
+            fio = zipfile.ZipFile(
+                file=BytesIO(data.content)
+            )
+            data = json.loads(fio.read(fio.namelist()[0]))
+            print("ret = ", str(ret))
         else:
             if ret.ret != 0:
                 self.insert_info("下载数据失败： %s" % ret.res, 1, 2)
                 return
-        data = pb2dict(ret)
+            data = pb2dict(data)['data']
         remote_data = dict()
-        for _ in data['data']:
+        # print("data: ", data)
+        for _ in data:
             remote_data[_['table_name']] = _['data']
+        # remote_data = dict()
         bigdatas = dict()
         remote_table_names = list(remote_data.keys())
         if self.is_field_table(local_table_names):
