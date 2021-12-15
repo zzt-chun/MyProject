@@ -425,7 +425,7 @@ class Table(object):
             # print("row_data2: ", row_data2)
             if row_data2:
                 for x in range(row_data2[0], row_data2[1]):
-                    for  y in range(row_data1[2]):
+                    for y in range(row_data2[2]):
                         # print("x-offset, y", [x-x_offset, y])
                         self.TableWidget_right.item(x - x_offset, y + y_offset).setBackground(
                             QtGui.QBrush(QtGui.QColor(255, 0, 0)))
@@ -602,13 +602,13 @@ class Table(object):
         # self.conbox_3_1.addItems(['31', '32', '33'])
         self.text_1_2 = QtWidgets.QLineEdit()
         self.text_1_2.textChanged.connect(
-            lambda *args: self.choose_label(self.text_1_2, self.definition[0], self.definition[4]))
+            lambda *args: self.choose_label(self.text_1_2, self.definition[0], self.definition[5]))
         self.text_2_2 = QtWidgets.QLineEdit()
         self.text_2_2.textChanged.connect(
-            lambda *args: self.choose_label(self.text_2_2, self.definition[1], self.definition[4]))
+            lambda *args: self.choose_label(self.text_2_2, self.definition[1], self.definition[5]))
         self.text_3_2 = QtWidgets.QLineEdit()
         self.text_3_2.textChanged.connect(
-            lambda *args: self.choose_label(self.text_3_2, self.definition[2], self.definition[4]))
+            lambda *args: self.choose_label(self.text_3_2, self.definition[2], self.definition[5]))
         self.text_1_2.setMaximumSize(120, 30)
         self.text_2_2.setMaximumSize(120, 30)
         self.text_3_2.setMaximumSize(120, 30)
