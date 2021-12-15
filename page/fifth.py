@@ -25,7 +25,7 @@ PROJECT_INFO = {
     "足球大师": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 16],
     "最佳11人": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 83],
     "最佳11人后台": ['http://git.wckj.com/', "nXxTgtyB7xRyFw5s2nvm", 99],
-    # "最佳12人": ['http://git.wckj.com/', "9zsoYLmazszeHvEi8DS9", 83],
+    "双11前端": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 204],
     # "最佳13人": ['http://git.wckj.com/', "9zsoYLmazszeHvEi8DS9", 83],
     # "最佳14人": ['http://git.wckj.com/', "9zsoYLmazszeHvEi8DS9", 83],
 }
@@ -68,7 +68,7 @@ class FifthPage(object):
         but2.grid(row=1, column=2, padx=5, pady=3)
         tk.Label(lf_2, text="分支创建时间: ").grid(row=1, column=0, padx=5, pady=3)
         ent1 = tk.StringVar()
-        tk.Entry(lf_2, text="2020-12-25", textvariable=ent1, width=26).grid(row=1, column=1, padx=5, pady=3)
+        tk.Entry(lf_2, text="2021-11-1", textvariable=ent1, width=26).grid(row=1, column=1, padx=5, pady=3)
         tk.Button(lf_2, text="修改创建时间", width=10, command=lambda: self.change_date(ent1)).grid(row=1, column=2, padx=5,
                                                                                               pady=3)
 
