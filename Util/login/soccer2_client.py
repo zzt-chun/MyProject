@@ -107,13 +107,14 @@ class Soccer2HttpClient(HttpClient):
         # self.style = "最佳11人server-新马"
         # self.style = "向星"
         # self.style = "内网测试"
+        # self.style = "内网"
         #self.style = "干洋"
         self.headers = self._headers
         # self.method = "GET"
         self.set_url("/api/serverC/serverInfoList")
         ret = self._request()
-        print("cookie: ", self.cookie)
-        print("ret:         ", ret)
+        print("_get_jdbc cookie: ", self.cookie)
+        print("_get_jdbc ret:         ", ret)
         res = ServerInfoResS()
         res.ParseFromString(ret.content)
         return res

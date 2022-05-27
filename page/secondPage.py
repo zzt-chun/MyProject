@@ -280,7 +280,7 @@ class SecondPage():
             if ret.get("ret", None):
                 self.insert_info("下载数据失败： %s" % ret['extra'], 1, 2)
                 return
-            # print("ret = ", str(ret))
+            print("ret = ", str(ret))
             data = requests.post(
                 url=self._http.host[self._http.style] + "/api/ExportTask/downloadFile",
                 json={
@@ -289,10 +289,12 @@ class SecondPage():
                 headers={
                     "Content-Type": "application/json;charset=UTF-8"
                 },
+                cookies=self._http.cookie
             )
             # data = self._request(ret.content)
 
             print("download_content data: ", data.content)
+            print("download_content url: ", self._http.host[self._http.style] + "/api/ExportTask/downloadFile")
             fio = zipfile.ZipFile(
                 file=BytesIO(data.content)
             )
@@ -302,7 +304,7 @@ class SecondPage():
             if ret.ret != 0:
                 self.insert_info("下载数据失败： %s" % ret.res, 1, 2)
                 return
-            data = pb2dict(data)['data']
+            data = pb2dict(ret)['data']
 
 
         # data = pb2dict(ret)
@@ -508,6 +510,7 @@ class SecondPage():
                 fun = None
                 self.insert_info('<%s>完全一致' % name, 1, 1)
             else:
+
                 # now_time = get_now_time()
                 # self.tex.insert(tk.END, now_time + '*****************<%s>存在差异*****************' % name, 'tag2')
                 # self.tex.window_create(tk.END,
@@ -706,7 +709,7 @@ class SecondPage():
         # print("self._account: ", self._account)
         self._http = FactoryHttpClient().create_client(self._account[0], self)
         ret = self._http.login(self._account[1:] + [self._account[0]])
-        print("ret: ", ret)
+        print("login ret: ", ret)
         # print(str(ret))
         # #先登录
         # self.insert_info('正在登陆管理后台账号：%s ...' % self._account[1], 1)
@@ -756,14 +759,19 @@ class SecondPage():
             self.insert_info('服务器信息拉取成功， 所有步骤操作完成！！！', 1, 1)
         elif self._account[0] == managemnt_background[3]:
             self.server_list["data库"] = self.list2dict(ret["date_jdbc"])
-            for key, value in self.server_list['data库'].items():
-                key: str
-                value: str
-                name = key.replace("data库", "").replace(" ", "")
-                filter_key = value[:value.index("_")]
-                self.server_list.update({name: self.list2dict(ret['game_jdbc'], filter_key)})
-            # self.server_list["官网"] = self.list2dict(ret["game_jdbc"], "SXM")
-            # self.server_list["越南"] = self.list2dict(ret["game_jdbc"], "SVN")
+            # for key, value in self.server_list['data库'].items():
+            #     key: str
+            #     value: str
+            #     name = key.replace("data库", "").replace(" ", "")
+            #     filter_key = value[:value.index("_")]
+            #     self.server_list.update({name: self.list2dict(ret['game_jdbc'], filter_key)})
+            self.server_list["新马"] = self.list2dict(ret["game_jdbc"], "SXM")
+            self.server_list["北美"] = self.list2dict(ret["game_jdbc"], "SUS")
+            self.server_list["越南"] = self.list2dict(ret["game_jdbc"], "SVN")
+            self.server_list["欧洲"] = self.list2dict(ret["game_jdbc"], "SEU")
+            self.server_list["所有"] = self.list2dict(ret["game_jdbc"])
+            self.server_list["官网"] = self.list2dict(ret["game_jdbc"], "SXM")
+            self.server_list["越南"] = self.list2dict(ret["game_jdbc"], "SVN")
             self.com1_4['values'] = list(self.server_list.keys())
             self.insert_info('服务器信息拉取成功， 所有步骤操作完成！！！', 1, 1)
 

@@ -416,7 +416,7 @@ def write_excel(data_array, filename, name_key):
             for each_row in each_col:
                 if isinstance(each_row, datetime.datetime):
                     sheet.write(col, row, each_row, style)
-                elif isinstance(each_row, datetime.date):
+                elif isinstance(each_row, datetime.date) or isinstance(each_row, datetime.timedelta):
                     sheet.write(col, row, str(each_row))
                 else:
                     try:

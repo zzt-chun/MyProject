@@ -133,16 +133,25 @@ class SixthPage(object):
 
 
     def download_single_file(self, file_path, deeper_file_name):
-        deeper_files = self._project.repository_tree(self.specify_folder + "/" + file_path + "/Cfgs", all=True)
+        deeper_files = self._project.repository_tree(self.specify_folder + "/" + file_path + "/Cfgs", all=True, ref=self.target_branche)
+        # print("deeper_files:", len(deeper_files))
+        # index = 1
         for j in deeper_files:
             if not j['name'].endswith(".meta"):
+                # index += 1
                 # self.insert_info("第三层:" + j['name'] + ", style: " + j['type'])
-                with open(deeper_file_name + "/" + j['name'], "w", encoding='utf-8') as f:
-                    _name = self.specify_folder + "/" + file_path + "/Cfgs/" + j['name']
-                    # self.insert_info(_name, tag=1)
-                    # print("_name:", _name)
-                    f.write(self._project.files.get(_name, ref=self.target_branche).decode().decode())
-
+                try:
+                    with open(deeper_file_name + "/" + j['name'], "w", encoding='utf-8') as f:
+                        _name = self.specify_folder + "/" + file_path + "/Cfgs/" + j['name']
+                        # print(file_path + ": " + _name)
+                        # print(deeper_file_name + "/" + j['name'])
+                        # print("_name:", _name)
+                        # continue
+                        f.write(self._project.files.get(_name, ref=self.target_branche).decode().decode())
+                except Exception:
+                    print("exception file name: ", deeper_file_name + "/" + j['name'])
+                    break
+        # print("index： ", index)
     # 保存日志到当前目录（.txt）
     def save_log(self, e):
         array = e.get(1.0, tk.END)

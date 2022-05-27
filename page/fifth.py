@@ -24,8 +24,11 @@ PROJECT_INFO = {
     "篮球大师": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 37],
     "足球大师": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 16],
     "最佳11人": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 83],
+    "最佳11人-static_data": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 189],
+    "最佳11人-管理后台": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 138],
     "最佳11人后台": ['http://git.wckj.com/', "nXxTgtyB7xRyFw5s2nvm", 99],
-    "双11前端": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 204],
+    # "双11前端": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 204],
+    "双11前端": ['http://git.wckj.com/', "Pf7-ssZdX9PE2xpmXg7n", 296],
     # "最佳13人": ['http://git.wckj.com/', "9zsoYLmazszeHvEi8DS9", 83],
     # "最佳14人": ['http://git.wckj.com/', "9zsoYLmazszeHvEi8DS9", 83],
 }
@@ -40,7 +43,7 @@ class FifthPage(object):
         self.target_branche = ''
         self._master_name = "master"
         self.filters = ["Merge branch", "Lua"]
-        self.target_branche_create_time = "2020-03-13"
+        self.target_branche_create_time = "2022-03-3"
         self.target_info = []
         self.create_buttons()
 
@@ -94,6 +97,7 @@ class FifthPage(object):
         sb.config(command=self.tex.yview)
         self.tex.tag_config('tag1', foreground='green')
         self.tex.tag_config('tag2', foreground='red')
+        # self.tex.tag_config('tag2', foreground='#f79b88')
         # 添加其他按钮
         tk.Button(self.parent, text='保存日志', command=lambda: self.save_log(self.tex), width=15).pack(anchor=tk.S,
                                                                                                     side=tk.RIGHT,

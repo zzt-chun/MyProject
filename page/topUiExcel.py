@@ -614,9 +614,11 @@ class GitTopUiInfo(object):
         key = 0
         self.tree.tag_configure("yel", background='Chartreuse')
         self.tree.tag_configure("gray", background='Gray')
-        self.tree.tag_configure("red", background='red')
+        # self.tree.tag_configure("red", background='red')
+        self.tree.tag_configure("red", background='#f79b88')
         self.tree_1.tag_configure("yel", background='Chartreuse')
-        self.tree_1.tag_configure("red", background='red')
+        # self.tree_1.tag_configure("red", background='red')
+        self.tree_1.tag_configure("red", background='#f79b88')
         self.tree_1.tag_configure("gray", background='Gray')
         colour = {1: "yel", 2: "red", 0: "", 3: "gray"}
         for row in data1:

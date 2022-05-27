@@ -33,7 +33,7 @@ def callbackClose():
 
 
 root = tk.Tk()
-root.title('测试内部工具 v_5.2.0')
+root.title('测试内部工具 v_5.3.8')
 root.resizable(0, 0)
 root.geometry("+500+200")
 root.protocol("WM_DELETE_WINDOW", callbackClose)
@@ -91,4 +91,10 @@ if __name__ == '__main__':
     # print(sys.argv)
     root.mainloop()
     sys.exit(app.exec_())
+
+    # -F
+    # -w
+    # -i
+    # logo_3.ico
+    # $FileNameWithoutExtension$.py
 
